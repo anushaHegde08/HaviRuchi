@@ -1,0 +1,12 @@
+schema: "graphql/schema.graphql"
+documents: "graphql/**/*.graphql"
+generates:
+  lib/generated/graphql.ts:
+    plugins:
+      - typescript
+      - typescript-operations
+      - typescript-urql
+    config:
+      withHooks: true
+      withComponent: false
+      withHOC: false

@@ -51,6 +51,14 @@ module.exports = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        badge: {
+          easy: "hsl(var(--badge-easy))",
+          medium: "hsl(var(--badge-medium))",
+          hard: "hsl(var(--badge-hard))",
+          time: "hsl(var(--badge-time))",
+          category: "hsl(var(--badge-category))",
+          servings: "hsl(var(--badge-servings))",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -70,6 +78,9 @@ module.exports = {
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+      },
+      fontFamily: {
+        sans: ["var(--font-inter)"],
       },
     },
   },

@@ -1,0 +1,48 @@
+type Recipe {
+  id: ID!
+  title: String!
+  description: String!
+  ingredients: [String!]!
+  instructions: [String!]!
+  prepTime: Int
+  cookTime: Int
+  servings: Int
+  tags: [String!]
+  createdAt: String!
+  updatedAt: String!
+}
+
+type Query {
+  recipes(limit: Int, offset: Int): [Recipe!]!
+  recipe(id: ID!): Recipe
+  recipesByTag(tag: String!): [Recipe!]!
+}
+
+input RecipeInput {
+  title: String!
+  description: String!
+  ingredients: [String!]!
+  instructions: [String!]!
+  prepTime: Int
+  cookTime: Int
+  servings: Int
+  tags: [String!]
+}
+
+type Mutation {
+  createRecipe(input: RecipeInput!): Recipe!
+  updateRecipe(id: ID!, input: RecipeInput!): Recipe!
+  deleteRecipe(id: ID!): Boolean!
+}
+
+type User {
+  id: ID!
+  username: String!
+  email: String!
+  recipes: [Recipe!]!
+}
+
+type Query {
+  me: User
+  user(id: ID!): User
+}

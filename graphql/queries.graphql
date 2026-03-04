@@ -1,0 +1,27 @@
+query GetRecipes {
+  recipes {
+    id
+    title
+    description
+    ingredients
+    instructions
+  }
+}
+
+query GetRecipe($id: ID!) {
+  recipe(id: $id) {
+    id
+    title
+    description
+    ingredients
+    instructions
+  }
+}
+
+mutation CreateRecipe($input: RecipeInput!) {
+  createRecipe(input: $input) {
+    id
+    title
+    description
+  }
+}

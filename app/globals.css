@@ -3,31 +3,50 @@
 @tailwind utilities;
 
 :root {
-  --background: 0 0% 100%;
-  --foreground: 224 71.4% 4.1%;
-  --card: 0 0% 100%;
-  --card-foreground: 224 71.4% 4.1%;
+  --background: 0 0% 100%; /* #FFFFFF */
+  --foreground: 231 26% 21%; /* #2B2D42 */
+
+  --card: 8 83% 62% / 0.12;
+  --card-foreground: 231 26% 21%;
+
   --popover: 0 0% 100%;
-  --popover-foreground: 224 71.4% 4.1%;
-  --primary: 220.9 39.3% 11%;
-  --primary-foreground: 210 20% 98%;
-  --secondary: 220 14.3% 95.9%;
-  --secondary-foreground: 220.9 39.3% 11%;
-  --muted: 220 14.3% 95.9%;
-  --muted-foreground: 220 8.9% 46.1%;
-  --accent: 220 14.3% 95.9%;
-  --accent-foreground: 220.9 39.3% 11%;
-  --destructive: 0 84.2% 60.2%;
-  --destructive-foreground: 210 20% 98%;
-  --border: 220 13% 91%;
-  --input: 220 13% 91%;
-  --ring: 224 71.4% 4.1%;
-  --chart-1: 12 76% 61%;
-  --chart-2: 173 58% 39%;
-  --chart-3: 197 37% 24%;
-  --chart-4: 43 74% 66%;
-  --chart-5: 27 87% 67%;
-  --radius: 0.5rem;
+  --popover-foreground: 231 26% 21%;
+
+  --primary: 8 83% 62%; /* #EF6351 */
+  --primary-foreground: 0 0% 100%;
+
+  --secondary: 231 26% 21%; /* #2B2D42 */
+  --secondary-foreground: 0 0% 100%;
+
+  --muted: 231 26% 21% / 0.08;
+  --muted-foreground: 231 26% 21% / 0.6; /* 60% */
+
+  --accent: 8 84% 85%; /* soft warm accent */
+  --accent-foreground: 231 26% 21%;
+
+  --destructive: 8 83% 62% / 0.9; /* #EF6B51 90% */
+  --destructive-foreground: 0 0% 100%;
+
+  --border: 231 26% 21% / 0.15;
+  --input: 231 26% 21% / 0.12;
+  --ring: 0 0% 100%;
+  --ring-success: 142 76% 36%; /* green */
+  --ring-warning: 38 92% 50%; /* orange */
+  --ring-danger: 0 84% 60%;
+
+  --chart-1: 8 83% 62%;
+  --chart-2: 231 26% 21%;
+  --chart-3: 35 85% 65%;
+  --chart-4: 20 90% 70%;
+  --chart-5: 15 80% 55%;
+
+  --badge-easy: 142 76% 36%; /* #22C55E approx */
+  --badge-medium: 38 92% 50%; /* #F59E0B approx */
+  --badge-hard: 0 84% 60%; /* #EF4444 approx */
+  --badge-time: 235 15% 19%; /* #3B82F6 approx */
+  --badge-category: 143 73% 41%; /* #8B5CF6 approx */
+  --badge-servings: 24 95% 53%; /* #F97316 approx */
+  /* --radius: 0.5rem; */
 }
 
 .dark {
