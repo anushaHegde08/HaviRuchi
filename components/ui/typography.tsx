@@ -4,14 +4,11 @@ import { cn } from "@/lib/utils";
 const typographyVariants = cva("text-[text-secondary-foreground]", {
   variants: {
     variant: {
-      h1: "text-5xl font-semibold",
-      h2: "text-3xl font-semibold",
-      h3: "text-2xl font-semibold",
-      h4: "text-xl font-semibold",
-      h5: "text-lg font-semibold",
-      h6: "text-base font-semibold",
-      body: "text-sm",
-      caption: "text-xs text-[text-secondary-foreground]/70",
+      h1: "text-4xl md:text-5xl lg:text-6xl font-bold",
+      h2: "text-3xl sm:text-4xl lg:text-5xl font-semibold",
+      h3: "text-base sm:text-lg lg:text-2xl font-semibold",
+      body: "text-sm md:text-base lg:text-lg",
+      caption: "text-xs md:text-sm text-[text-secondary-foreground]/70",
     },
     weight: {
       normal: "font-normal",

@@ -58,6 +58,8 @@ module.exports = {
           time: "hsl(var(--badge-time))",
           category: "hsl(var(--badge-category))",
           servings: "hsl(var(--badge-servings))",
+          unselected: "hsl(var(--badge-unselected))",
+          selected: "hsl(var(--badge-selected))",
         },
       },
       borderRadius: {

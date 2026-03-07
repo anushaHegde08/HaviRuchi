@@ -27,6 +27,10 @@ const badgeVariants = cva(
           "bg-badge-category/5 text-badge-category border-badge-category/25 hover:bg-badge-category/20",
         servings:
           "bg-badge-servings/5 text-badge-servings border-badge-servings/25 hover:bg-badge-servings/20",
+        unselected:
+          "bg-badge-unselected/5 text-badge-unselected/90 border-badge-unselected/25 hover:bg-badge-unselected/20",
+        selected:
+          "bg-badge-selected/25 text-badge-selected border-badge-selected/25 hover:bg-badge-selected/40",
       },
     },
     defaultVariants: {

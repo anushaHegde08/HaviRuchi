@@ -1,4 +1,3 @@
-import React from "react";
 import {
   Pagination,
   PaginationContent,
@@ -9,27 +8,26 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 
-const PaginationComponent = () => {
+const PaginationComponent = ({
+  totalPages,
+  currentPage,
+}: {
+  totalPages: number;
+  currentPage: number;
+}) => {
   return (
     <Pagination>
       <PaginationContent>
         <PaginationItem>
           <PaginationPrevious href="#" />
         </PaginationItem>
-        <PaginationItem>
-          <PaginationLink href="#">1</PaginationLink>
-        </PaginationItem>
-        <PaginationItem>
-          <PaginationLink href="#" isActive>
-            2
-          </PaginationLink>
-        </PaginationItem>
-        <PaginationItem>
-          <PaginationLink href="#">3</PaginationLink>
-        </PaginationItem>
-        <PaginationItem>
-          <PaginationEllipsis />
-        </PaginationItem>
+        {Array.from({ length: totalPages }, (_, i) => (
+          <PaginationItem key={i + 1}>
+            <PaginationLink href="#" isActive={i + 1 === currentPage}>
+              {i + 1}
+            </PaginationLink>
+          </PaginationItem>
+        ))}
         <PaginationItem>
           <PaginationNext href="#" />
         </PaginationItem>

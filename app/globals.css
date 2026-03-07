@@ -40,6 +40,8 @@
   --chart-4: 20 90% 70%;
   --chart-5: 15 80% 55%;
 
+  --badge-unselected: 231 26% 21%; /* #2B2D42 */
+  --badge-selected: 8 83% 62%; /* #EF6351 */
   --badge-easy: 142 76% 36%; /* #22C55E approx */
   --badge-medium: 38 92% 50%; /* #F59E0B approx */
   --badge-hard: 0 84% 60%; /* #EF4444 approx */

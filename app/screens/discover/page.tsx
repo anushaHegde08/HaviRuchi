@@ -1,22 +1,32 @@
+"use client";
 import PaginationComponent from "@/components/discover/Pagination";
 import RecipeCard, { RecipeItem } from "@/components/discover/RecipeCard";
-import SearchBar from "@/components/discover/SearchBar";
-import { Typography } from "@/components/ui/typography";
+import { useGlobalContext } from "@/context";
 import { discoverMockData } from "@/mockData/data";
+import SearchOverlay from "../search-overlay/page";
+import { categories } from "@/mockData/constatnts";
+import { Badge } from "@/components/ui/badge";
+import SearchBar from "@/components/discover/SearchBar";
 
 const Discover = () => {
+  const totalPages = Math.ceil(discoverMockData.length / 10);
+  const currentPage = 2;
+  const { searchOpen, setSearchOpen } = useGlobalContext();
+
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex items-center pt-4">
-        <Typography
-          variant="body"
-          weight="bold"
-          color="primary"
-          className="flex-[2] sm:text-lg md:text-xl"
-        >
-          Discover Recipes
-        </Typography>
-        <div className="flex-[3]">
+    <div className="flex flex-col gap-4 py-4">
+      <div className="flex items-center">
+        <div className="flex flex-[2] items-center gap-2">
+          {categories.map((category) => (
+            <Badge
+              key={category}
+              tone={category === "All" ? "selected" : "unselected"}
+            >
+              {category}
+            </Badge>
+          ))}
+        </div>
+        <div className="flex-[1]">
           <SearchBar />
         </div>
       </div>
@@ -25,7 +35,7 @@ const Discover = () => {
           <RecipeCard key={item.id} item={item} />
         ))}
       </div>
-      <PaginationComponent />
+      <PaginationComponent totalPages={totalPages} currentPage={currentPage} />
     </div>
   );
 };

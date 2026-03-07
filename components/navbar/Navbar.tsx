@@ -10,33 +10,38 @@ import {
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 import {
-  Book,
-  BookA,
-  BookOpenIcon,
-  BookOpenText,
   Filter,
   Heading,
   Heart,
   Home,
   PlusCircle,
-  User,
-  User2,
+  Search,
   UserCircle,
 } from "lucide-react";
+import { useGlobalContext } from "@/context";
+import { Button } from "../ui/button";
+
+interface NavItem {
+  name: string;
+  icon: React.ReactNode;
+  href?: string;
+  handleClick?: () => void;
+}
 
 export function Navbar() {
   const pathname = usePathname();
+  const { searchOpen, setSearchOpen } = useGlobalContext();
 
-  const navItems = [
+  const navItems: NavItem[] = [
+    // {
+    //   name: "Search",
+    //   icon: <Search className="h-5 w-5" />,
+    //   handleClick: () => setSearchOpen(!searchOpen),
+    // },
     {
       name: "Home",
       icon: <Home className="h-5 w-5" />,
       href: "/screens/discover",
-    },
-    {
-      name: "Recipes",
-      icon: <BookOpenText className="h-5 w-5" />,
-      href: "/screens/recipes",
     },
     {
       name: "Add",
@@ -54,26 +59,44 @@ export function Navbar() {
     <header className="h-16 border-b bg-background">
       <div className="mx-auto flex h-full items-center justify-between">
         {/* Logo */}
-        <Link href="/" className="text-xl font-bold text-primary">
+        <Link href="/" className="text-2xl font-bold text-primary">
           Haviruchi
         </Link>
 
         {/* Navigation */}
         <nav className="flex items-center gap-4 md:gap-8">
-          {navItems.map((item) => (
-            <Link
-              key={item.name}
-              href={item.href}
-              className={cn(
-                "text-sm font-medium transition-colors hover:text-primary",
-                pathname === item.href ? "text-primary" : "text-secondary",
-              )}
-            >
-              <div className="flex items-center gap-1">
-                {item.icon} {item.name}
-              </div>
-            </Link>
-          ))}
+          {navItems.map((item) =>
+            item.href ? (
+              <Link
+                key={item.name}
+                href={item.href}
+                onClick={item.handleClick}
+                className={cn(
+                  "text-sm font-medium transition-colors hover:text-primary",
+                  pathname === item.href && !searchOpen
+                    ? "text-primary"
+                    : "text-secondary",
+                )}
+              >
+                <div className="flex items-center gap-1">
+                  {item.icon} {item.name}
+                </div>
+              </Link>
+            ) : null,
+            // <Button
+            //   key={item.name}
+            //   variant="ghost"
+            //   onClick={item.handleClick}
+            //   className={cn(
+            //     "text-sm font-medium transition-colors hover:bg-transparent hover:text-primary",
+            //     searchOpen ? "text-primary" : "text-secondary",
+            //   )}
+            // >
+            //   <div className="flex items-center gap-1">
+            //     {item.icon} {item.name}
+            //   </div>
+            // </Button>
+          )}
 
           {/* Filter Dropdown */}
           <DropdownMenu>

@@ -4,6 +4,7 @@ import RootProvider from "@/providers/rootProvider";
 import { Inter } from "next/font/google";
 import { Navbar } from "@/components/navbar/Navbar";
 import "../../app/globals.css";
+import SearchOverlay from "./search-overlay/page";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -23,12 +24,15 @@ export default function ScreensLayout({
   return (
     <html lang="en">
       <body className={`${inter.variable} font-sans antialiased`}>
-        <div className="mx-6 md:mx-8">
-          <div className="sticky top-0 z-50">
-            <Navbar />
+        <RootProvider>
+          <div className="mx-6 md:mx-8">
+            <div className="sticky top-0 z-50">
+              <Navbar />
+            </div>
+            <SearchOverlay />
+            <main>{children}</main>
           </div>
-          <RootProvider>{children}</RootProvider>
-        </div>
+        </RootProvider>
       </body>
     </html>
   );

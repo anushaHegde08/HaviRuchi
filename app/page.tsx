@@ -21,17 +21,10 @@ export default function Home() {
       }}
     >
       <Card className="rounded-full aspect-square w-80 sm:w-96 lg:w-[28rem] bg-[#D9D9D9]/50 border-none flex flex-col items-center justify-center gap-4 text-center">
-        <Typography
-          variant="h2"
-          color="primary"
-          className="text-3xl sm:text-4xl lg:text-5xl"
-        >
+        <Typography variant="h2" color="primary">
           Welcome to Havi Ruchi
         </Typography>
-        <Typography
-          variant="h4"
-          className="text-base sm:text-lg lg:text-2xl px-4 sm:px-6 md:px-8"
-        >
+        <Typography variant="h3" className="px-4 sm:px-6 md:px-8">
           Timeless Flavors from the Heart of Havyaka Homes
         </Typography>
         <Link href="/screens/discover">
