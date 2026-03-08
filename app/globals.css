@@ -48,7 +48,7 @@
   --badge-time: 235 15% 19%; /* #3B82F6 approx */
   --badge-category: 143 73% 41%; /* #8B5CF6 approx */
   --badge-servings: 24 95% 53%; /* #F97316 approx */
-  /* --radius: 0.5rem; */
+  --radius: 0.75rem;
 }
 
 .dark {

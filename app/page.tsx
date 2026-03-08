@@ -29,7 +29,7 @@ export default function Home() {
         </Typography>
         <Link href="/screens/discover">
           <Button
-            className="mt-4 px-6 sm:px-8 py-2 sm:py-3 text-sm sm:text-base rounded-xl"
+            className="mt-4 px-6 sm:px-8 py-2 sm:py-3 text-sm sm:text-base"
             onClick={handleGetstartedClick}
           >
             Get Started

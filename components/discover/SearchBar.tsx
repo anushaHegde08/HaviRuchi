@@ -1,21 +1,23 @@
-import { Button } from "../ui/button";
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupInput,
-} from "../ui/input-group";
-import { Search, SearchIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { ButtonGroup } from "@/components/ui/button-group";
+import { Field } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import { Search } from "lucide-react";
 
 const SearchBar = () => {
   return (
-    <div className="flex w-full items-center">
-      <InputGroup className="rounded-s-xl border-secondary flex-1">
-        <InputGroupInput placeholder="Discover Recipes (e.g., dosa, idli)" />
-      </InputGroup>
-      <Button className="rounded-e-xl -ml-0.4">
-        <Search className="h-5 w-5" />
-      </Button>
-    </div>
+    <Field>
+      <ButtonGroup>
+        <Input
+          id="input-button-group"
+          className="rounded-s-xl border-secondary"
+          placeholder="Discover Recipes (e.g., dosa, idli)"
+        />
+        <Button variant="outline" className="border-secondary rounded-e-xl">
+          <Search />
+        </Button>
+      </ButtonGroup>
+    </Field>
   );
 };
 

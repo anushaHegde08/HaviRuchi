@@ -9,6 +9,7 @@ const typographyVariants = cva("text-[text-secondary-foreground]", {
       h3: "text-base sm:text-lg lg:text-2xl font-semibold",
       body: "text-sm md:text-base lg:text-lg",
       caption: "text-xs md:text-sm text-[text-secondary-foreground]/70",
+      small: "text-xs",
     },
     weight: {
       normal: "font-normal",

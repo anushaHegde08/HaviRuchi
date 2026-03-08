@@ -46,7 +46,7 @@ export function Navbar() {
     {
       name: "Add",
       icon: <PlusCircle className="h-5 w-5" />,
-      href: "/screens/add",
+      href: "/screens/add-recipe",
     },
     {
       name: "Favorites",
@@ -65,24 +65,25 @@ export function Navbar() {
 
         {/* Navigation */}
         <nav className="flex items-center gap-4 md:gap-8">
-          {navItems.map((item) =>
-            item.href ? (
-              <Link
-                key={item.name}
-                href={item.href}
-                onClick={item.handleClick}
-                className={cn(
-                  "text-sm font-medium transition-colors hover:text-primary",
-                  pathname === item.href && !searchOpen
-                    ? "text-primary"
-                    : "text-secondary",
-                )}
-              >
-                <div className="flex items-center gap-1">
-                  {item.icon} {item.name}
-                </div>
-              </Link>
-            ) : null,
+          {navItems.map(
+            (item) =>
+              item.href ? (
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  onClick={item.handleClick}
+                  className={cn(
+                    "text-sm font-medium transition-colors hover:text-primary",
+                    pathname === item.href && !searchOpen
+                      ? "text-primary"
+                      : "text-secondary",
+                  )}
+                >
+                  <div className="flex items-center gap-1">
+                    {item.icon} {item.name}
+                  </div>
+                </Link>
+              ) : null,
             // <Button
             //   key={item.name}
             //   variant="ghost"
