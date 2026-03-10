@@ -1,12 +1,13 @@
 "use client";
-import PaginationComponent from "@/components/discover/Pagination";
-import RecipeCard, { RecipeItem } from "@/components/discover/RecipeCard";
+import PaginationComponent from "@/components/discover/PaginationComponent";
+import RecipeCard from "@/components/discover/RecipeCard";
 import { useGlobalContext } from "@/context";
 import { discoverMockData } from "@/mockData/data";
 import SearchOverlay from "../search-overlay/page";
 import { categories } from "@/mockData/constatnts";
 import { Badge } from "@/components/ui/badge";
 import SearchBar from "@/components/discover/SearchBar";
+import { RecipeItem } from "@/types";
 
 const Discover = () => {
   const totalPages = Math.ceil(discoverMockData.length / 10);

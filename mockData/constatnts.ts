@@ -8,4 +8,6 @@ const categories = [
   "Beverage",
 ];
 
-export { categories };
+const itemsPerPage = 6;
+
+export { categories, itemsPerPage };

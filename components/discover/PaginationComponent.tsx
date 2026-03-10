@@ -19,7 +19,10 @@ const PaginationComponent = ({
     <Pagination>
       <PaginationContent>
         <PaginationItem>
-          <PaginationPrevious href="#" />
+          <PaginationPrevious
+            href="#"
+            className={`${currentPage === 1 ? "hover:bg-transparent hover:text-muted-foreground bg-transparent text-muted-foreground" : "hover:bg-primary"}`}
+          />
         </PaginationItem>
         {Array.from({ length: totalPages }, (_, i) => (
           <PaginationItem key={i + 1}>
@@ -29,7 +32,10 @@ const PaginationComponent = ({
           </PaginationItem>
         ))}
         <PaginationItem>
-          <PaginationNext href="#" />
+          <PaginationNext
+            href="#"
+            className={`${currentPage === totalPages ? "hover:bg-transparent hover:text-muted-foreground bg-transparent text-muted-foreground" : "hover:bg-primary"}`}
+          />
         </PaginationItem>
       </PaginationContent>
     </Pagination>

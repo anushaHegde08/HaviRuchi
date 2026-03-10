@@ -10,17 +10,7 @@ import {
 } from "../ui/card";
 import { Badge } from "../ui/badge";
 import { Clock, HeartIcon } from "lucide-react";
-
-export interface RecipeItem {
-  id: number;
-  title: string;
-  description: string;
-  image: string;
-  category: string;
-  timeNeeded: string;
-  difficulty: string;
-  isFavorite: boolean;
-}
+import { RecipeItem } from "@/types";
 
 interface RecipeCardProps {
   item: RecipeItem;
