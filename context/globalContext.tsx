@@ -4,6 +4,8 @@ import { createContext, useContext } from "react";
 export interface GlobalContextType {
   searchOpen: boolean;
   setSearchOpen: (open: boolean) => void;
+  filterOpen: boolean;
+  setFilterOpen: (open: boolean) => void;
 }
 
 export const GlobalContext = createContext<GlobalContextType | undefined>(

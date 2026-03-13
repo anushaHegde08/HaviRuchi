@@ -21,14 +21,38 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { categories } from "@/mockData/constatnts";
+import { CATEGORIES, DIFFICULTIES } from "@/mockData/constatnts";
 import { Typography } from "@/components/ui/typography";
 import { ArrowLeft, MinusCircle, PlusCircle } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
+import { useState } from "react";
+import { AddField } from "@/types";
+import AddFields from "@/components/add-recipes/AddFields";
 
 const AddRecipe = () => {
+  const [ingredients, setIngredients] = useState<AddField[]>([
+    { id: 1, value: "" },
+  ]);
+  const [instructions, setInstructions] = useState<AddField[]>([
+    { id: 1, value: "" },
+  ]);
+
+  const handleSubmit = () => {
+    // const recipeData = {
+    //   ingredients: ingredients.map((ingredient) => ingredient.value),
+    //   instructions: instructions.map((instruction) => instruction.value),
+    // };
+    // console.log(recipeData);
+    console.log("Submit button clicked");
+  };
+
+  const handleCancel = () => {
+    // Reset form or navigate away
+    console.log("Cancel button clicked");
+  };
+
   return (
-    <div className="flex items-center justify-center w-full">
+    <div className="flex items-center justify-center px-6 w-full">
       <form>
         <FieldGroup>
           <FieldSet>
@@ -71,7 +95,7 @@ const AddRecipe = () => {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectGroup>
-                      {categories.map((category) => (
+                      {CATEGORIES.map((category) => (
                         <SelectItem key={category} value={category}>
                           {category}
                         </SelectItem>
@@ -84,24 +108,34 @@ const AddRecipe = () => {
                 <FieldLabel htmlFor="difficulty">Difficulty Level</FieldLabel>
                 <Tabs defaultValue="easy">
                   <TabsList className="bg-primary/10">
-                    <TabsTrigger value="easy">Easy</TabsTrigger>
-                    <TabsTrigger value="medium">Medium</TabsTrigger>
-                    <TabsTrigger value="hard">Hard</TabsTrigger>
+                    {DIFFICULTIES.map((level) => (
+                      <TabsTrigger key={level} value={level}>
+                        {level}
+                      </TabsTrigger>
+                    ))}
                   </TabsList>
                 </Tabs>
               </Field>
               <Field className="flex flex-row gap-4">
                 <Field>
                   <FieldLabel htmlFor="time">Cook Time</FieldLabel>
-                  <Field className="flex flex-row">
+                  <Field className="flex flex-row items-center">
                     <Input
                       id="time"
                       type="number"
                       placeholder="Time"
-                      min={1}
+                      min={15}
+                      max={55}
+                      step={5}
                       required
                     />
-                    <Select defaultValue="">
+                    <Typography
+                      variant="body"
+                      className="ml-2 text-muted-foreground"
+                    >
+                      Minutes
+                    </Typography>
+                    {/* <Select defaultValue="">
                       <SelectTrigger id="units">
                         <SelectValue placeholder="Units" />
                       </SelectTrigger>
@@ -115,7 +149,7 @@ const AddRecipe = () => {
                           </SelectItem>
                         </SelectGroup>
                       </SelectContent>
-                    </Select>
+                    </Select> */}
                   </Field>
                 </Field>
                 <Field>
@@ -128,83 +162,33 @@ const AddRecipe = () => {
                   />
                 </Field>
               </Field>
-              <Field>
+              {/* <Field>
                 <FieldLabel htmlFor="img-url">Image URL</FieldLabel>
                 <Input id="img-url" type="url" placeholder="Paste image link" />
+              </Field> */}
+              <Field>
+                <FieldLabel htmlFor="picture">Image</FieldLabel>
+                <Input
+                  id="picture"
+                  type="file"
+                  className="h-auto file:text-foreground/75 text-muted-foreground"
+                />
+                <FieldDescription className="text-xs">
+                  Select a picture to upload.
+                </FieldDescription>
               </Field>
-
-              <Field className="flex flex-row gap-4">
-                <Field>
-                  <FieldLabel
-                    htmlFor="ingredients"
-                    className="flex items-center"
-                  >
-                    Ingredients
-                    <Button
-                      variant="ghost"
-                      className="bg-transparent hover:bg-transparent ml-auto"
-                    >
-                      <PlusCircle /> Add Ingredient
-                    </Button>
-                  </FieldLabel>
-                  <div className="flex flex-row items-center gap-2">
-                    <Input
-                      id="ingredients"
-                      placeholder="e.g., Grated coconut"
-                      className="flex-[2]"
-                      required
-                    />
-                    <Input
-                      id="quantity"
-                      placeholder="2 cups"
-                      className="flex-[1]"
-                      required
-                    />
-                    <Button
-                      variant="ghost"
-                      className="hover:bg-transparent shrink-0 p-0"
-                    >
-                      <MinusCircle />
-                    </Button>
-                  </div>
-                </Field>
-              </Field>
-              <Field className="flex flex-row gap-4">
-                <Field>
-                  <FieldLabel
-                    htmlFor="instructions"
-                    className="flex items-center"
-                  >
-                    Instructions
-                    <Button
-                      variant="ghost"
-                      className="bg-transparent hover:bg-transparent ml-auto"
-                    >
-                      <PlusCircle /> Add Instruction
-                    </Button>
-                  </FieldLabel>
-                  <div className="flex flex-row items-center gap-2">
-                    <Typography
-                      variant="caption"
-                      className="text-muted-foreground shrink-0"
-                    >
-                      Step 1:
-                    </Typography>
-                    <Input
-                      id="instructions"
-                      placeholder="Roast the red chilies with a teaspoon of oil..."
-                      className="flex-1"
-                      required
-                    />
-                    <Button
-                      variant="ghost"
-                      className="hover:bg-transparent shrink-0 p-0"
-                    >
-                      <MinusCircle />
-                    </Button>
-                  </div>
-                </Field>
-              </Field>
+              <AddFields
+                fields={ingredients}
+                onChange={setIngredients}
+                placeholder="e.g., 1 cup Grated coconut"
+                label="Ingredients"
+              />
+              <AddFields
+                fields={instructions}
+                onChange={setInstructions}
+                placeholder="e.g., Roast the red chilies with a teaspoon of oil..."
+                label="Instructions"
+              />
             </FieldGroup>
           </FieldSet>
           <Separator />
@@ -212,11 +196,12 @@ const AddRecipe = () => {
             <Button
               variant="outline"
               type="button"
+              onClick={handleCancel}
               className="w-1/2 border-primary text-primary"
             >
               Cancel
             </Button>
-            <Button type="submit" className="w-1/2">
+            <Button type="submit" onClick={handleSubmit} className="w-1/2">
               Submit
             </Button>
           </Field>

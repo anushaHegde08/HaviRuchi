@@ -25,11 +25,11 @@ export default function ScreensLayout({
     <html lang="en">
       <body className={`${inter.variable} font-sans antialiased`}>
         <RootProvider>
-          <div className="mx-6 md:mx-8">
+          <div>
             <div className="sticky top-0 z-50">
               <Navbar />
             </div>
-            <SearchOverlay />
+            {/* <SearchOverlay /> */}
             <main>{children}</main>
           </div>
         </RootProvider>

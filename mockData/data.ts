@@ -8,6 +8,7 @@ export const discoverMockData = [
     category: "Breakfast",
     timeNeeded: "1 hour",
     difficulty: "Hard",
+    servings: 4,
     isFavorite: false,
   },
   {
@@ -19,6 +20,7 @@ export const discoverMockData = [
     category: "Lunch",
     timeNeeded: "1 hour",
     difficulty: "Medium",
+    servings: 4,
     isFavorite: false,
   },
   {
@@ -30,6 +32,7 @@ export const discoverMockData = [
     category: "Dinner",
     timeNeeded: "30 mins",
     difficulty: "Easy",
+    servings: 4,
     isFavorite: true,
   },
   {
@@ -41,6 +44,7 @@ export const discoverMockData = [
     category: "Snack",
     timeNeeded: "20 mins",
     difficulty: "Easy",
+    servings: 4,
     isFavorite: false,
   },
   {
@@ -52,6 +56,7 @@ export const discoverMockData = [
     category: "Lunch",
     timeNeeded: "45 mins",
     difficulty: "Medium",
+    servings: 4,
     isFavorite: true,
   },
   {
@@ -63,6 +68,7 @@ export const discoverMockData = [
     category: "Dinner",
     timeNeeded: "30 mins",
     difficulty: "Easy",
+    servings: 4,
     isFavorite: false,
   },
 ];

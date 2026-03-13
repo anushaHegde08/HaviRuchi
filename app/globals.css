@@ -27,6 +27,8 @@
   --destructive: 8 83% 62% / 0.9; /* #EF6B51 90% */
   --destructive-foreground: 0 0% 100%;
 
+  --light: 235 21% 21% /0.5;
+
   --border: 231 26% 21% / 0.15;
   --input: 231 26% 21% / 0.12;
   --ring: 0 0% 100%;

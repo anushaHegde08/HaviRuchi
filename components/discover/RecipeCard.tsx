@@ -38,6 +38,7 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ item }) => {
             {item.timeNeeded}
           </Badge>
           <Badge tone="hard">{item.difficulty}</Badge>
+          <Badge tone="servings">{item.servings} servings</Badge>
         </CardContent>
         {/* <CardAction className="flex justify-start">
                 <Button>View Recipe</Button>

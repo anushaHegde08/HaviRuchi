@@ -6,5 +6,11 @@ export interface RecipeItem {
   category: string;
   timeNeeded: string;
   difficulty: string;
+  servings: number;
   isFavorite: boolean;
+}
+
+export interface AddField {
+  id: number;
+  value: string;
 }

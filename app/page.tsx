@@ -8,11 +8,6 @@ import Link from "next/link";
 
 export default function Home() {
   const pathname = usePathname();
-
-  const handleGetstartedClick = () => {
-    // Implement your logic for the "Get Started" button click here
-    console.log("Get Started button clicked!");
-  };
   return (
     <main
       className="flex min-h-screen bg-cover bg-center bg-no-repeat flex-col items-center justify-center gap-6 p-4 sm:p-8 md:p-12 lg:p-24"
@@ -28,10 +23,7 @@ export default function Home() {
           Timeless Flavors from the Heart of Havyaka Homes
         </Typography>
         <Link href="/screens/discover">
-          <Button
-            className="mt-4 px-6 sm:px-8 py-2 sm:py-3 text-sm sm:text-base"
-            onClick={handleGetstartedClick}
-          >
+          <Button className="mt-4 px-6 sm:px-8 py-2 sm:py-3 text-sm sm:text-base">
             Get Started
           </Button>
         </Link>
