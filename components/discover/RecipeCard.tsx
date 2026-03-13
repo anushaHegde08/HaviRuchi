@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import {
   Card,
@@ -11,6 +12,7 @@ import {
 import { Badge } from "../ui/badge";
 import { Clock, HeartIcon } from "lucide-react";
 import { RecipeItem } from "@/types";
+import { toast } from "sonner";
 
 interface RecipeCardProps {
   item: RecipeItem;
@@ -44,7 +46,13 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ item }) => {
                 <Button>View Recipe</Button>
               </CardAction> */}
       </div>
-      <CardAction>
+      <CardAction
+        onClick={() =>
+          toast.success("Recipe successfully added to your Favorites", {
+            position: "top-right",
+          })
+        }
+      >
         <HeartIcon
           className={item.isFavorite ? "text-red-500 fill-red-500" : ""}
         />

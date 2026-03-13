@@ -5,6 +5,7 @@ import { Inter } from "next/font/google";
 import { Navbar } from "@/components/navbar/Navbar";
 import "../../app/globals.css";
 import SearchOverlay from "./search-overlay/page";
+import { Toaster } from "sonner";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -31,6 +32,13 @@ export default function ScreensLayout({
             </div>
             {/* <SearchOverlay /> */}
             <main>{children}</main>
+            <Toaster
+              toastOptions={{
+                classNames: {
+                  icon: "text-primary", // icon color
+                },
+              }}
+            />
           </div>
         </RootProvider>
       </body>
