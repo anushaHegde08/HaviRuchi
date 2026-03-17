@@ -1,9 +1,11 @@
-const favoriteRecipesLength = (favoriteRecipes: any) => {
+import { RecipeItem } from "@/types";
+
+const favoriteRecipesLength = (favoriteRecipes: RecipeItem[]) => {
   return favoriteRecipes.filter((item: any) => item.isFavorite).length;
 };
 
-const totalPages = (Recipes: any, itemsPerPage: number) => {
-  return Math.ceil(Recipes.length / itemsPerPage);
+const calculateTotalPages = (recipes: RecipeItem[], itemsPerPage: number) => {
+  return Math.ceil(recipes.length / itemsPerPage);
 };
 
-export { favoriteRecipesLength, totalPages };
+export { favoriteRecipesLength, calculateTotalPages as totalPages };

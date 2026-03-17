@@ -1,0 +1,47 @@
+"use client";
+import Image from "next/image";
+import Link from "next/link";
+import { ArrowLeft, Heart } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+
+interface RecipeImageProps {
+  image: string;
+  title: string;
+  favorite: boolean;
+  onFavoriteToggle: () => void;
+}
+
+export const RecipeImage = ({
+  image,
+  title,
+  favorite,
+  onFavoriteToggle,
+}: RecipeImageProps) => (
+  <div className="relative w-full">
+    <div className="absolute top-4 left-4 right-4 flex justify-between z-10">
+      <Link href="/screens/discover">
+        <Button
+          size="icon"
+          variant="ghost"
+          className="bg-white/80 backdrop-blur-sm hover:bg-white rounded-full"
+        >
+          <ArrowLeft className="h-5 w-5" />
+        </Button>
+      </Link>
+      <Button
+        size="icon"
+        variant="ghost"
+        onClick={onFavoriteToggle}
+        className="bg-white/80 backdrop-blur-sm hover:bg-white rounded-full"
+      >
+        <Heart
+          className={cn("h-5 w-5", favorite ? "fill-primary text-primary" : "")}
+        />
+      </Button>
+    </div>
+    <div className="relative w-full h-64 md:h-96 md:rounded-2xl overflow-hidden">
+      <Image src={image} alt={title} fill className="object-cover" />
+    </div>
+  </div>
+);

@@ -1,7 +1,6 @@
 import {
   Pagination,
   PaginationContent,
-  PaginationEllipsis,
   PaginationItem,
   PaginationLink,
   PaginationNext,
@@ -11,9 +10,11 @@ import {
 const PaginationComponent = ({
   totalPages,
   currentPage,
+  onPageChange,
 }: {
   totalPages: number;
   currentPage: number;
+  onPageChange(pageNumber: number): void;
 }) => {
   return (
     <Pagination>
@@ -25,7 +26,7 @@ const PaginationComponent = ({
           />
         </PaginationItem>
         {Array.from({ length: totalPages }, (_, i) => (
-          <PaginationItem key={i + 1}>
+          <PaginationItem key={i + 1} onClick={() => onPageChange(i)}>
             <PaginationLink href="#" isActive={i + 1 === currentPage}>
               {i + 1}
             </PaginationLink>

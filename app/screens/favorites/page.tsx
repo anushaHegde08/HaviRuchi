@@ -21,6 +21,7 @@ const Favorites = () => {
             item.isFavorite && <RecipeCard key={item.id} item={item} />,
         )}
       </div>
+      test
       <PaginationComponent
         totalPages={totalPages(discoverMockData, ITEMS_PER_PAGE)}
         currentPage={1}

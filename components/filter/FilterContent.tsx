@@ -29,6 +29,7 @@ import { CATEGORIES, DIFFICULTIES, TIME_LABELS } from "@/mockData/constatnts";
 const FilterContent = () => {
   const { filterOpen, setFilterOpen } = useGlobalContext();
   const [cookTime, setCookTime] = React.useState([0]);
+  // const isMobile = useIsMobile();
   // if (!filterOpen) return null;
   return (
     <>
@@ -41,8 +42,9 @@ const FilterContent = () => {
       <div className="flex flex-wrap gap-2">
         {/* {DRAWER_SIDES.map((side) => ( */}
         <Drawer
-        // key={side}
-        // direction={"top"}
+          direction={true ? "right" : "top"}
+          // key={side}
+          // direction={"top"}
         >
           <DrawerTrigger asChild>
             <Button

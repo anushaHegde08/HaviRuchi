@@ -22,7 +22,7 @@ export default function Home() {
         <Typography variant="h3" className="px-4 sm:px-6 md:px-8">
           Timeless Flavors from the Heart of Havyaka Homes
         </Typography>
-        <Link href="/screens/discover">
+        <Link href="/auth/sign-up">
           <Button className="mt-4 px-6 sm:px-8 py-2 sm:py-3 text-sm sm:text-base">
             Get Started
           </Button>

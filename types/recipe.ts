@@ -8,6 +8,8 @@ export interface RecipeItem {
   difficulty: string;
   servings: number;
   isFavorite: boolean;
+  ingredients: string[];
+  instructions: string[];
 }
 
 export interface AddField {

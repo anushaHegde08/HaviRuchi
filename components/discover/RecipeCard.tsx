@@ -13,6 +13,7 @@ import { Badge } from "../ui/badge";
 import { Clock, HeartIcon } from "lucide-react";
 import { RecipeItem } from "@/types";
 import { toast } from "sonner";
+import { RecipeBadges } from "../recipe/RecipeBadges";
 
 interface RecipeCardProps {
   item: RecipeItem;
@@ -34,13 +35,14 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ item }) => {
           </CardDescription>
         </CardHeader>
         <CardContent className="flex justify-between">
-          <Badge tone="category">{item.category}</Badge>
+          <RecipeBadges recipe={item} />
+          {/* <Badge tone="category">{item.category}</Badge>
           <Badge tone="time">
             <Clock className="stroke-1 size-5" />
             {item.timeNeeded}
           </Badge>
           <Badge tone="hard">{item.difficulty}</Badge>
-          <Badge tone="servings">{item.servings} servings</Badge>
+          <Badge tone="servings">{item.servings} servings</Badge> */}
         </CardContent>
         {/* <CardAction className="flex justify-start">
                 <Button>View Recipe</Button>
