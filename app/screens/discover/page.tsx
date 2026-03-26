@@ -1,16 +1,11 @@
 "use client";
 import PaginationComponent from "@/components/discover/PaginationComponent";
 import RecipeCard from "@/components/discover/RecipeCard";
-import { useGlobalContext } from "@/context";
 import { discoverMockData } from "@/mockData/data";
 import { CATEGORIES, ITEMS_PER_PAGE } from "@/mockData/constatnts";
 import { Badge } from "@/components/ui/badge";
 import SearchBar from "@/components/discover/SearchBar";
 import { RecipeItem } from "@/types";
-import { Typography } from "@/components/ui/typography";
-import { Button } from "@/components/ui/button";
-import { FilterIcon } from "lucide-react";
-import FilterContent from "@/components/filter/FilterContent";
 import { FilterTrigger } from "@/components/filter/FilterTrigger";
 import { totalPages } from "@/utilities/helperFunction";
 import { useEffect, useState } from "react";
@@ -43,7 +38,6 @@ const Discover = () => {
               </Badge>
             ),
           )}
-          {/* <FilterContent /> */}
           <FilterTrigger />
         </div>
         <div className="flex-[1]">
@@ -55,7 +49,7 @@ const Discover = () => {
           <RecipeCard key={item.id} item={item} />
         ))}
       </div>
-      Test
+
       <PaginationComponent
         totalPages={totalPages(discoverMockData, ITEMS_PER_PAGE)}
         currentPage={currentPage}

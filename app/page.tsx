@@ -15,17 +15,15 @@ export default function Home() {
         backgroundImage: "url('/images/Havyaka-Uta.png')",
       }}
     >
-      <Card className="rounded-full aspect-square w-80 sm:w-96 lg:w-[28rem] bg-[#D9D9D9]/50 border-none flex flex-col items-center justify-center gap-4 text-center">
-        <Typography variant="h2" color="primary">
-          Welcome to Havi Ruchi
+      <Card className="rounded-full aspect-square w-80 sm:w-96 lg:w-[28rem] bg-[#D9D9D9]/60 border-none flex flex-col items-center justify-center gap-6 sm:gap-8 text-center">
+        <Typography variant="h2" weight="bold" color="primary">
+          Welcome to <br /> Havi Ruchi
         </Typography>
-        <Typography variant="h3" className="px-4 sm:px-6 md:px-8">
-          Timeless Flavors from the Heart of Havyaka Homes
+        <Typography variant="h3" weight="semibold">
+          Timeless Flavors from the <br /> Heart of Havyaka Homes
         </Typography>
         <Link href="/auth/sign-up">
-          <Button className="mt-4 px-6 sm:px-8 py-2 sm:py-3 text-sm sm:text-base">
-            Get Started
-          </Button>
+          <Button size="lg">Get Started</Button>
         </Link>
       </Card>
     </main>

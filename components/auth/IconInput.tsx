@@ -6,6 +6,8 @@ interface IconInputProps {
   type?: string;
   placeholder?: string;
   icon: React.ReactNode;
+  value: string;
+  onChange: (value: string) => void;
   inputProps?: Omit<
     DetailedHTMLProps<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>,
     "ref"
@@ -17,6 +19,8 @@ export const IconInput = ({
   type = "text",
   placeholder,
   icon,
+  value,
+  onChange,
   inputProps,
 }: IconInputProps) => (
   <div className="relative">
@@ -27,6 +31,8 @@ export const IconInput = ({
       id={id}
       type={type}
       placeholder={placeholder}
+      value={value}
+      onChange={(e) => onChange?.(e.target.value)}
       className="pl-9 rounded-xl h-12"
       {...inputProps}
     />

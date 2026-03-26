@@ -3,35 +3,17 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import {
-  Filter,
-  Heading,
-  Heart,
-  Home,
-  Menu,
-  PlusCircle,
-  Search,
-  UserCircle,
-  X,
-} from "lucide-react";
-import { useGlobalContext } from "@/context";
+import { Heart, Home, Menu, PlusCircle, UserCircle, X } from "lucide-react";
 import { Button } from "../ui/button";
 import { useState } from "react";
-import FilterContent from "../filter/FilterContent";
 
 interface NavItem {
   name: string;
   icon: React.ReactNode;
   href: string;
-  // handleClick?: () => void;
 }
 
 const navItems: NavItem[] = [
-  // {
-  //   name: "Search",
-  //   icon: <Search className="h-5 w-5" />,
-  //   handleClick: () => setSearchOpen(!searchOpen),
-  // },
   {
     name: "Home",
     icon: <Home className="h-5 w-5" />,
@@ -84,9 +66,7 @@ const NavLinks = ({
 };
 
 export function Navbar() {
-  // const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
-  // const { searchOpen, setSearchOpen } = useGlobalContext();
 
   return (
     <>
@@ -95,9 +75,6 @@ export function Navbar() {
           <Link href="/" className="text-2xl font-bold text-primary">
             Haviruchi
           </Link>
-          <div className="md:hidden">
-            <FilterContent />
-          </div>
           <nav className="hidden lg:flex items-center gap-8">
             <NavLinks className="flex items-center gap-1 text-sm font-medium" />
           </nav>
@@ -110,20 +87,6 @@ export function Navbar() {
             {menuOpen ? <X /> : <Menu />}
           </Button>
         </div>
-
-        {/* <Button
-          key={item.name}
-          variant="ghost"
-          onClick={item.handleClick}
-          className={cn(
-            "text-sm font-medium transition-colors hover:bg-transparent hover:text-primary",
-            searchOpen ? "text-primary" : "text-secondary",
-          )}
-        >
-          <div className="flex items-center gap-1">
-            {item.icon} {item.name}
-          </div>
-        </Button> */}
         {menuOpen && (
           <div className="hidden md:flex lg:hidden flex-col border-b shadow-md bg-background absolute left-0 right-0 px-6 py-4 gap-4">
             <NavLinks
@@ -138,7 +101,6 @@ export function Navbar() {
           <NavLinks className="flex flex-col items-center gap-1 text-xs font-medium" />
         </div>
       </nav>
-      {/* <div className="md:hidden h-16" /> */}
     </>
   );
 }

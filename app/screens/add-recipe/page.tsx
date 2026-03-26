@@ -74,7 +74,7 @@ const AddRecipe = () => {
                 <FieldLabel htmlFor="description">
                   Description{" "}
                   <Typography
-                    variant="small"
+                    variant="xsmall"
                     className="ml-auto text-muted-foreground"
                   >
                     0/120

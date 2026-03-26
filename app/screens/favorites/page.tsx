@@ -7,6 +7,9 @@ import { RecipeItem } from "@/types";
 import { favoriteRecipesLength, totalPages } from "@/utilities/helperFunction";
 
 const Favorites = () => {
+  const handlePageChange = () => {
+    console.log("handle on change");
+  };
   return (
     <div className="flex flex-col gap-4 px-6">
       <Typography variant="h3" color="primary" weight="semibold">
@@ -25,6 +28,7 @@ const Favorites = () => {
       <PaginationComponent
         totalPages={totalPages(discoverMockData, ITEMS_PER_PAGE)}
         currentPage={1}
+        onPageChange={handlePageChange}
       />
     </div>
   );

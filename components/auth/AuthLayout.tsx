@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Utensils } from "lucide-react";
+import { Typography } from "../ui/typography";
 
 interface AuthLayoutProps {
   title: string;
@@ -22,18 +23,24 @@ export const AuthLayout = ({
 }: AuthLayoutProps) => (
   <div className="min-h-screen flex bg-background px-6">
     {/* Left panel — desktop only */}
-    <div className="hidden md:flex md:w-1/2 bg-gradient-to-b from-primary/80 to-primary/30 flex-col items-center justify-center gap-8 p-10">
-      <span className="text-white font-bold text-xl">HaviRuchi</span>
-      <div className="flex flex-col">
-        <h2 className="text-white text-4xl text-center font-bold leading-tight">
+    <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-b from-primary/80 to-primary/30 flex-col items-center justify-center">
+      <div className="flex flex-col gap-4">
+        <Typography weight="bold" color="foreground" variant="h2">
+          HaviRuchi
+        </Typography>
+        <Typography weight="bold" color="foreground" variant="h2">
           Discover & Save
           <br />
           Authentic Recipes
-        </h2>
+        </Typography>
       </div>
-      {/* <p className="text-white/60 text-sm">
-        © 2023 HaviRuchi. Celebrating Havyaka Heritage.
-      </p> */}
+      <Typography
+        variant="caption"
+        color="foreground"
+        className="fixed bottom-10"
+      >
+        © 2026 HaviRuchi. Celebrating Havyaka Heritage.
+      </Typography>
     </div>
 
     {/* Right panel — form */}
@@ -47,16 +54,20 @@ export const AuthLayout = ({
         )}
 
         {/* Header */}
-        <div className="flex flex-col gap-1 text-center md:text-left">
-          <h1 className="text-2xl font-bold text-primary">{title}</h1>
-          <p className="text-sm text-muted-foreground">{subtitle}</p>
+        <div className="flex flex-col gap-2 text-center md:text-left">
+          <Typography variant="large" weight="bold" color="primary">
+            {title}
+          </Typography>
+          <Typography variant="small" color="muted" position="start">
+            {subtitle}
+          </Typography>
         </div>
 
         {/* Form fields */}
         <div className="flex flex-col gap-4">{children}</div>
 
         {/* Footer */}
-        <p className="text-center text-sm text-muted-foreground">
+        <Typography variant="small" color="muted">
           {footerText}{" "}
           <Link
             href={footerLinkHref}
@@ -64,7 +75,7 @@ export const AuthLayout = ({
           >
             {footerLinkText}
           </Link>
-        </p>
+        </Typography>
       </div>
     </div>
   </div>

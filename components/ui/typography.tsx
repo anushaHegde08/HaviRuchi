@@ -4,12 +4,13 @@ import { cn } from "@/lib/utils";
 const typographyVariants = cva("text-[text-secondary-foreground]", {
   variants: {
     variant: {
-      h1: "text-4xl md:text-5xl lg:text-6xl font-bold",
-      h2: "text-3xl sm:text-4xl lg:text-5xl font-semibold",
-      h3: "text-base sm:text-lg lg:text-2xl font-semibold",
+      h2: "text-3xl sm:text-4xl md:text-4xl lg:text-5xl",
+      h3: "text-base sm:text-lg lg:text-2xl",
       body: "text-sm md:text-base lg:text-lg",
       caption: "text-xs md:text-sm text-[text-secondary-foreground]/70",
-      small: "text-xs",
+      large: "text-2xl",
+      small: "text-sm",
+      xsmall: "text-xs",
     },
     weight: {
       normal: "font-normal",
@@ -18,15 +19,21 @@ const typographyVariants = cva("text-[text-secondary-foreground]", {
       bold: "font-bold",
     },
     color: {
-      primary: "text-[#FF6464]",
+      primary: "text-primary",
+      foreground: "text-primary-foreground",
       text: "text-[text-secondary-foreground]",
-      muted: "text-[text-secondary-foreground]/70",
+      muted: "text-muted-foreground",
+    },
+    position: {
+      default: "text-center",
+      start: "text-start",
     },
   },
   defaultVariants: {
     variant: "body",
     weight: "normal",
     color: "text",
+    position: "default",
   },
 });
 
@@ -41,10 +48,14 @@ const Typography = ({
   variant,
   weight,
   color,
+  position,
 }: TypographyProps) => {
   return (
     <p
-      className={cn(typographyVariants({ variant, weight, color }), className)}
+      className={cn(
+        typographyVariants({ variant, weight, color, position }),
+        className,
+      )}
     >
       {children}
     </p>
