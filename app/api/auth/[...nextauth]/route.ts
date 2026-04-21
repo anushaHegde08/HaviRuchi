@@ -96,11 +96,11 @@ const handler = NextAuth({
   },
 
   pages: {
-    signIn: "/screens/sign-in", // your custom sign in page
+    signIn: "/screens/sign-in", //  custom sign in page
   },
 
   session: {
-    strategy: "jwt", // store session in JWT token, not DB
+    strategy: "jwt", // store session in JWT token
   },
 
   secret: process.env.NEXTAUTH_SECRET,

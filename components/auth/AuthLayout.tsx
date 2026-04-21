@@ -8,6 +8,7 @@ interface AuthLayoutProps {
   footerText: string;
   footerLinkText: string;
   footerLinkHref: string;
+  buttonLoading?: boolean;
   showLogo?: boolean;
   children: React.ReactNode;
 }
@@ -18,6 +19,7 @@ export const AuthLayout = ({
   footerText,
   footerLinkText,
   footerLinkHref,
+  buttonLoading = false,
   showLogo = false,
   children,
 }: AuthLayoutProps) => (
@@ -70,8 +72,11 @@ export const AuthLayout = ({
         <Typography variant="small" color="muted">
           {footerText}{" "}
           <Link
-            href={footerLinkHref}
-            className="text-primary font-medium hover:underline"
+            href={buttonLoading ? "#" : footerLinkHref}
+            onClick={(e) => {
+              if (buttonLoading) e.preventDefault();
+            }}
+            className={`text-primary font-medium hover:underline ${buttonLoading ? "opacity-50 cursor-not-allowed pointer-events-none" : ""}`}
           >
             {footerLinkText}
           </Link>

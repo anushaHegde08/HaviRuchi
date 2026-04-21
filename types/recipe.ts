@@ -4,7 +4,7 @@ export interface RecipeItem {
   description: string;
   image: string;
   category: string;
-  timeNeeded: string;
+  timeNeeded: number;
   difficulty: string;
   servings: number;
   isFavorite: boolean;

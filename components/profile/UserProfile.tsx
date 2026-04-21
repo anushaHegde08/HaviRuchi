@@ -13,6 +13,7 @@ import {
   Mail,
   Phone,
 } from "lucide-react";
+import { signOut } from "next-auth/react";
 
 const contactInfo = [
   {
@@ -125,7 +126,10 @@ const UserProfile = () => {
         </div>
 
         {/* ── Logout ── */}
-        <Button className="w-full rounded-xl h-12 gap-2">
+        <Button
+          onClick={() => signOut({ callbackUrl: "/screens/sign-in" })}
+          className="w-full rounded-xl h-12 gap-2"
+        >
           <LogOut className="h-4 w-4" />
           Logout
         </Button>

@@ -22,7 +22,7 @@ export default function Home() {
         <Typography variant="h3" weight="semibold">
           Timeless Flavors from the <br /> Heart of Havyaka Homes
         </Typography>
-        <Link href="/auth/sign-up">
+        <Link href="/screens/sign-up">
           <Button size="lg">Get Started</Button>
         </Link>
       </Card>

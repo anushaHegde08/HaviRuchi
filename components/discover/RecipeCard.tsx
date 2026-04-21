@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import {
   Card,
   CardAction,
@@ -17,9 +17,10 @@ import { RecipeBadges } from "../recipe/RecipeBadges";
 
 interface RecipeCardProps {
   item: RecipeItem;
+  onToggleFavorite: (id: number) => void;
 }
 
-const RecipeCard: React.FC<RecipeCardProps> = ({ item }) => {
+const RecipeCard: React.FC<RecipeCardProps> = ({ item, onToggleFavorite }) => {
   return (
     <Card className="flex">
       <img
@@ -36,24 +37,26 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ item }) => {
         </CardHeader>
         <CardContent className="flex justify-between">
           <RecipeBadges recipe={item} />
-          {/* <Badge tone="category">{item.category}</Badge>
-          <Badge tone="time">
-            <Clock className="stroke-1 size-5" />
-            {item.timeNeeded}
-          </Badge>
-          <Badge tone="hard">{item.difficulty}</Badge>
-          <Badge tone="servings">{item.servings} servings</Badge> */}
         </CardContent>
-        {/* <CardAction className="flex justify-start">
-                <Button>View Recipe</Button>
-              </CardAction> */}
       </div>
       <CardAction
-        onClick={() =>
-          toast.success("Recipe successfully added to your Favorites", {
-            position: "top-right",
-          })
-        }
+        onClick={() => {
+          console.log(item.isFavorite);
+
+          const updatedFavorite = !item.isFavorite;
+          console.log(updatedFavorite);
+
+          onToggleFavorite(item.id);
+          if (updatedFavorite) {
+            toast.success("Recipe successfully added to your Favorites", {
+              position: "top-right",
+            });
+          } else {
+            toast.error("Recipe successfully removed from your Favorites", {
+              position: "top-right",
+            });
+          }
+        }}
       >
         <HeartIcon
           className={item.isFavorite ? "text-red-500 fill-red-500" : ""}

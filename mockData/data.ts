@@ -38,7 +38,7 @@ export const discoverMockData = [
     id: 2,
     title: "Bisi Bele Bath",
     description:
-      "Crispy dosa filled with flavorful potato masala, served with coconut chutney and sambar — a timeless South Indian favorite.",
+      "Tangy rice tempered with mustard seeds, peanuts, and turmeric, finished with a bright squeeze of lemon — a quick South Indian classic.",
     image: "/images/image1.jpg",
     category: "Lunch",
     timeNeeded: 60,
@@ -82,7 +82,7 @@ export const discoverMockData = [
     id: 4,
     title: "Huli",
     description:
-      "Crispy dosa filled with flavorful potato masala, served with coconut chutney and sambar — a timeless South Indian favorite.",
+      "A savory semolina porridge tempered with mustard seeds, curry leaves, and vegetables — a quick and comforting South Indian breakfast.",
     image: "/images/image1.jpg",
     category: "Snack",
     timeNeeded: 20,
@@ -104,7 +104,7 @@ export const discoverMockData = [
     id: 5,
     title: "Saaru",
     description:
-      "Crispy dosa filled with flavorful potato masala, served with coconut chutney and sambar — a timeless South Indian favorite.",
+      "Fragrant basmati rice layered with spiced chicken, caramelized onions, and saffron — a royal feast in every bite.",
     image: "/images/image1.jpg",
     category: "Lunch",
     timeNeeded: 45,

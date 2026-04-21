@@ -12,7 +12,19 @@ import { useEffect, useState } from "react";
 
 const Discover = () => {
   const [currentPage, setCurrentPage] = useState(0);
-  const [itemsToRender, setItemsToRender] = useState<RecipeItem[]>([]);
+  const [itemsToRender, setItemsToRender] =
+    useState<RecipeItem[]>(discoverMockData);
+
+  const toggleFavorite = (id: number) => {
+    console.log(id);
+
+    setItemsToRender((prev) =>
+      prev.map((item) =>
+        item.id === id ? { ...item, isFavorite: !item.isFavorite } : item,
+      ),
+    );
+    console.log(itemsToRender);
+  };
 
   useEffect(() => {
     let startIndex = currentPage * ITEMS_PER_PAGE;
@@ -23,6 +35,7 @@ const Discover = () => {
     console.log(startIndex, itemsToRender);
     setItemsToRender(itemsToRender);
   }, [currentPage]);
+
   return (
     <div className="flex flex-col gap-4 px-6 py-4">
       <div className="flex items-center">
@@ -46,7 +59,11 @@ const Discover = () => {
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-6">
         {itemsToRender.map((item: RecipeItem) => (
-          <RecipeCard key={item.id} item={item} />
+          <RecipeCard
+            key={item.id}
+            item={item}
+            onToggleFavorite={toggleFavorite}
+          />
         ))}
       </div>
 

@@ -1,10 +1,7 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import RootProvider from "@/providers/rootProvider";
 import { Inter } from "next/font/google";
 import { Navbar } from "@/components/navbar/Navbar";
-import "../../app/globals.css";
-import SearchOverlay from "./search-overlay/page";
 import { Toaster } from "sonner";
 
 const inter = Inter({
