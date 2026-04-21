@@ -11,9 +11,11 @@ import {
   Heart,
   LogOut,
   Mail,
+  Pencil,
   Phone,
 } from "lucide-react";
 import { signOut } from "next-auth/react";
+import { useRef, useState } from "react";
 
 const contactInfo = [
   {
@@ -41,20 +43,47 @@ const activityItems = [
   },
 ];
 
-const UserProfile = () => {
+const UserProfile = ({ existingImage }: { existingImage?: string }) => {
+  const [preview, setPreview] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // show preview immediately
+    const reader = new FileReader();
+    reader.onload = () => setPreview(reader.result as string);
+    reader.readAsDataURL(file);
+  };
+  const currentImage = preview || existingImage;
+
   return (
     <div className="min-h-screen bg-background px-4 py-6 md:py-12">
       <div className="flex flex-col gap-6 w-full md:max-w-2xl md:mx-auto">
-        {/* ── Avatar + Name ── */}
-        {/* mobile: horizontal card | desktop: centered column */}
         <Card className="p-4 flex items-center gap-4 md:flex-col md:items-center md:py-8 md:gap-3">
           <div className="relative shrink-0">
             <Avatar className="w-16 h-16 md:w-28 md:h-28">
               <AvatarImage src="/images/profile.png" alt="Ganesh Bhat" />
               <AvatarFallback>GB</AvatarFallback>
             </Avatar>
-            <div className="absolute bottom-0 right-0 md:bottom-1 md:right-1 bg-primary rounded-full p-1.5 cursor-pointer hover:bg-primary/90 transition-colors">
-              <Camera className="h-3 w-3 md:h-5 md:w-5 text-white" />
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              // capture="environment"
+              className="hidden"
+              onChange={handleFileChange}
+            />
+            <div
+              onClick={() => fileInputRef.current?.click()}
+              className="absolute bottom-0 right-0 md:bottom-1 md:right-1 bg-primary rounded-full p-1.5 cursor-pointer hover:bg-primary/90 transition-colors"
+            >
+              {currentImage ? (
+                <Pencil className="h-3 w-3 md:h-5 md:w-5 text-white" />
+              ) : (
+                <Camera className="h-3 w-3 md:h-5 md:w-5 text-white" />
+              )}
             </div>
           </div>
           <div className="flex flex-col md:items-center">
@@ -65,7 +94,6 @@ const UserProfile = () => {
           </div>
         </Card>
 
-        {/* ── Contact Information ── */}
         <div className="flex flex-col gap-2">
           <span className="text-xs font-semibold uppercase text-muted-foreground tracking-widest">
             Contact Information
@@ -97,7 +125,6 @@ const UserProfile = () => {
           </Card>
         </div>
 
-        {/* ── My Activity ── */}
         <div className="flex flex-col gap-2">
           <span className="text-xs font-semibold uppercase text-muted-foreground tracking-widest">
             My Activity
@@ -125,7 +152,6 @@ const UserProfile = () => {
           </div>
         </div>
 
-        {/* ── Logout ── */}
         <Button
           onClick={() => signOut({ callbackUrl: "/screens/sign-in" })}
           className="w-full rounded-xl h-12 gap-2"

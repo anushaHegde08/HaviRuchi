@@ -12,10 +12,15 @@ export const RecipeIngredients = ({
 
   return (
     <div className="flex flex-col gap-3">
-      <h2 className="text-xl font-bold text-primary">Ingredients</h2>
+      <h2 className="text-xl lg:text-2xl font-bold text-primary">
+        Ingredients
+      </h2>
       <ol className="flex flex-col gap-2 list-decimal list-inside">
         {visible.map((item, i) => (
-          <li key={i} className="text-sm leading-relaxed">
+          <li
+            key={i}
+            className="text-sm md:text-base lg:text-lg leading-relaxed"
+          >
             {item}
           </li>
         ))}
@@ -23,7 +28,7 @@ export const RecipeIngredients = ({
       {ingredients.length > PREVIEW_COUNT && (
         <button
           onClick={() => setShowAll(!showAll)}
-          className="text-sm text-primary hover:underline text-left w-fit"
+          className="text-sm md:text-base lg:text-lg text-primary hover:underline text-left w-fit"
         >
           {showAll ? "show less" : "more"}
         </button>

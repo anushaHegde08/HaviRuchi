@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ArrowLeft, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 interface RecipeImageProps {
   image: string;
@@ -32,7 +33,19 @@ export const RecipeImage = ({
       <Button
         size="icon"
         variant="ghost"
-        onClick={onFavoriteToggle}
+        onClick={() => {
+          const updatedFavorite = !favorite;
+          onFavoriteToggle();
+          if (updatedFavorite) {
+            toast.success("Recipe successfully added to your Favorites", {
+              position: "top-right",
+            });
+          } else {
+            toast.error("Recipe successfully removed from your Favorites", {
+              position: "top-right",
+            });
+          }
+        }}
         className="bg-white/80 backdrop-blur-sm hover:bg-white rounded-full"
       >
         <Heart

@@ -18,11 +18,22 @@ import { RecipeBadges } from "../recipe/RecipeBadges";
 interface RecipeCardProps {
   item: RecipeItem;
   onToggleFavorite: (id: number) => void;
+  onClickRecipeCard: (id: number) => void;
 }
 
-const RecipeCard: React.FC<RecipeCardProps> = ({ item, onToggleFavorite }) => {
+const RecipeCard: React.FC<RecipeCardProps> = ({
+  item,
+  onToggleFavorite,
+  onClickRecipeCard,
+}) => {
   return (
-    <Card className="flex">
+    <Card
+      className="flex"
+      onClick={() => {
+        onClickRecipeCard(item.id);
+        console.log(item);
+      }}
+    >
       <img
         src="/images/image1.png"
         alt={item.title}
@@ -30,8 +41,8 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ item, onToggleFavorite }) => {
       />
       <div className="flex-[3]">
         <CardHeader>
-          <CardTitle>{item.title}</CardTitle>
-          <CardDescription className="text-secondary/70">
+          <CardTitle className="md:text-lg">{item.title}</CardTitle>
+          <CardDescription className="md:text-lg text-secondary/70">
             {item.description}
           </CardDescription>
         </CardHeader>
@@ -41,11 +52,7 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ item, onToggleFavorite }) => {
       </div>
       <CardAction
         onClick={() => {
-          console.log(item.isFavorite);
-
           const updatedFavorite = !item.isFavorite;
-          console.log(updatedFavorite);
-
           onToggleFavorite(item.id);
           if (updatedFavorite) {
             toast.success("Recipe successfully added to your Favorites", {

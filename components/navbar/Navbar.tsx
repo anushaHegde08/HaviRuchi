@@ -90,7 +90,7 @@ export function Navbar() {
         {menuOpen && (
           <div className="hidden md:flex lg:hidden flex-col border-b shadow-md bg-background absolute left-0 right-0 px-6 py-4 gap-4">
             <NavLinks
-              className="flex items-center gap-2 text-sm font-medium"
+              className="flex items-center gap-2 text-base font-medium"
               onLinkClick={() => setMenuOpen(false)}
             />
           </div>

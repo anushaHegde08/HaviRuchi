@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { use, useState } from "react";
 import { RecipeItem } from "@/types";
 import { RecipeBadges } from "@/components/recipe/RecipeBadges";
 import { RecipeIngredients } from "@/components/recipe/RecipeIngredients";
@@ -7,9 +7,22 @@ import { RecipeInstructions } from "@/components/recipe/RecipeInstructions";
 import { discoverMockData } from "@/mockData/data";
 import { RecipeImage } from "@/components/recipe/RecipeImage";
 
-export default function RecipeDetailPage() {
-  const recipe: RecipeItem = discoverMockData[0];
-  const [favorite, setFavorite] = useState(recipe.isFavorite);
+export default function RecipeDetailPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = use(params);
+  console.log("params id:", id);
+  console.log("Number(id):", Number(id));
+  console.log(
+    "found:",
+    discoverMockData.find((r) => r.id === Number(id)),
+  );
+  const recipe = discoverMockData.find((r) => r.id === Number(id));
+  // const recipe: RecipeItem = discoverMockData[0];
+  const [favorite, setFavorite] = useState(recipe?.isFavorite ?? false);
+  if (!recipe) return <p>Recipe not found</p>;
 
   return (
     <div className="min-h-screen bg-background px-6 mb-16">
