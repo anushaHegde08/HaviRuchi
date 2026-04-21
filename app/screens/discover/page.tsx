@@ -9,11 +9,13 @@ import { RecipeItem } from "@/types";
 import { FilterTrigger } from "@/components/filter/FilterTrigger";
 import { totalPages } from "@/utilities/helperFunction";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 const Discover = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const [itemsToRender, setItemsToRender] =
     useState<RecipeItem[]>(discoverMockData);
+  const router = useRouter();
 
   const toggleFavorite = (id: number) => {
     console.log(id);
@@ -38,7 +40,7 @@ const Discover = () => {
 
   return (
     <div className="flex flex-col gap-4 px-6 py-4">
-      <div className="flex items-center">
+      <div className="flex items-center gap-4 md:gap-0">
         <div className="hidden md:flex flex-[2] items-center gap-2">
           {CATEGORIES.map((category, index) =>
             index >= 5 ? null : (
@@ -53,16 +55,22 @@ const Discover = () => {
           )}
           <FilterTrigger />
         </div>
-        <div className="flex-[1]">
+        <div className=" flex-[1]">
           <SearchBar />
         </div>
+        <div className="md:hidden">
+          <FilterTrigger />
+        </div>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-2 gap-6">
         {itemsToRender.map((item: RecipeItem) => (
           <RecipeCard
             key={item.id}
             item={item}
             onToggleFavorite={toggleFavorite}
+            onClickRecipeCard={(id: number) =>
+              router.push("/screens/recipe/" + id)
+            }
           />
         ))}
       </div>
