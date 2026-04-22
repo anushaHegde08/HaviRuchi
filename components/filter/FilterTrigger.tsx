@@ -1,5 +1,5 @@
 "use client";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { FilterIcon, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,30 +12,41 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { FilterBody } from "./FilterBody";
-import { FilterState } from "@/types/filter";
+import { defaultFilters, FilterState } from "@/types/filter";
 
-const defaultFilters: FilterState = {
-  categories: [],
-  difficulties: [],
-  maxTime: 45,
-};
-
-enum DrawerMode {
-  DESKTOP = "desktop",
-  MOBILE = "mobile",
+interface FilterTriggerProps {
+  filters: FilterState;
+  onApply: (filters: FilterState) => void;
+  onClear: () => void;
 }
 
-export const FilterTrigger = () => {
-  const [filters, setFilters] = useState<FilterState>(defaultFilters);
+export const FilterTrigger = ({
+  filters,
+  onApply,
+  onClear,
+}: FilterTriggerProps) => {
+  const [localFilters, setLocalFilters] = useState<FilterState>(filters);
+  const [open, setOpen] = useState(false);
 
-  const closeFilter = useCallback((mode: DrawerMode) => {}, []);
+  const handleApply = () => {
+    onApply(localFilters);
+    setOpen(false);
+  };
 
-  const handleClear = () => setFilters(defaultFilters);
+  const handleClear = () => {
+    onClear();
+    setLocalFilters(defaultFilters);
+    setOpen(false);
+  };
+
+  useEffect(() => {
+    setLocalFilters(filters);
+  }, [filters]);
 
   return (
     <>
       <div className="block">
-        <Sheet>
+        <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger asChild>
             <Button
               variant="ghost"
@@ -45,65 +56,31 @@ export const FilterTrigger = () => {
             </Button>
           </SheetTrigger>
           <SheetContent side="top" className="data-[side=top]:max-h-[50vh]">
-            <SheetHeader>
+            <SheetHeader className="text-left">
               <SheetTitle className="text-primary text-xl font-bold">
                 Filter
               </SheetTitle>
             </SheetHeader>
-            <FilterBody
-              filters={filters}
-              onChange={setFilters}
-              // onApply={() => closeFilter(DrawerMode.DESKTOP)}
-              // onClear={handleClear}
-            />
+            <FilterBody filters={localFilters} onChange={setLocalFilters} />
             <SheetFooter>
               <div className="flex gap-3 pt-2">
-                <SheetClose asChild>
-                  <Button
-                    variant="outline"
-                    className="flex-1 rounded-xl border-primary text-primary hover:bg-primary/5"
-                  >
-                    Clear Filters
-                  </Button>
-                </SheetClose>
-                <Button className="flex-1 rounded-xl">Apply Filters</Button>
+                {/* <SheetClose asChild> */}
+                <Button
+                  variant="outline"
+                  onClick={handleClear}
+                  className="flex-1 rounded-xl border-primary text-primary hover:bg-primary/5"
+                >
+                  Clear Filters
+                </Button>
+                {/* </SheetClose> */}
+                <Button className="flex-1 rounded-xl" onClick={handleApply}>
+                  Apply Filters
+                </Button>
               </div>
             </SheetFooter>
           </SheetContent>
         </Sheet>
       </div>
-
-      {/* Desktop only — Popover */}
-      {/* <div className="hidden sm:block">
-        <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
-          <PopoverTrigger asChild>
-            <TriggerButton />
-          </PopoverTrigger>
-          <PopoverContent
-            className="w-80 p-6 overflow-y-auto max-h-[80vh]"
-            align="start"
-            sideOffset={8}
-          >
-            <div className="flex items-center justify-between pb-4">
-              <p className="text-primary text-xl font-bold">Filter</p>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setPopoverOpen(false)}
-                className="hover:bg-transparent"
-              >
-                <X className="h-5 w-5" />
-              </Button>
-            </div>
-            <FilterBody
-              filters={filters}
-              onChange={setFilters}
-              onApply={() => closeFilter(DrawerMode.MOBILE)}
-              onClear={handleClear}
-            />
-          </PopoverContent>
-        </Popover>
-      </div> */}
     </>
   );
 };
