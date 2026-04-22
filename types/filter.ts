@@ -3,3 +3,9 @@ export interface FilterState {
   difficulties: string[];
   maxTime: number;
 }
+
+export const defaultFilters: FilterState = {
+  categories: [],
+  difficulties: [],
+  maxTime: 75,
+};

@@ -28,16 +28,16 @@ export const FilterCheckboxGroup = ({
         {title}
       </p>
       {items.map((item) => (
-        <div key={item} className="flex items-center justify-between">
-          <label htmlFor={item} className="text-sm cursor-pointer flex-1">
-            {item}
-          </label>
+        <div key={item} className="flex gap-4">
           <Checkbox
             id={item}
             checked={selected.includes(item)}
             onCheckedChange={() => toggle(item)}
             className="h-5 w-5 border-[1px] data-[state=checked]:bg-primary data-[state=checked]:border-primary"
           />
+          <label htmlFor={item} className="text-sm cursor-pointer">
+            {item}
+          </label>
         </div>
       ))}
     </div>

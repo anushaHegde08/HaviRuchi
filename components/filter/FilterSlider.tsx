@@ -1,3 +1,4 @@
+import { HTMLProps } from "react";
 import { Slider } from "@/components/ui/slider";
 
 const TIME_LABELS = ["15M", "30M", "45M", "1H", "1H+"];
@@ -5,10 +6,15 @@ const TIME_LABELS = ["15M", "30M", "45M", "1H", "1H+"];
 interface FilterSliderProps {
   value: number;
   onChange: (value: number) => void;
+  className?: HTMLProps<HTMLElement>["className"];
 }
 
-export const FilterSlider = ({ value, onChange }: FilterSliderProps) => (
-  <div className="flex flex-col gap-3">
+export const FilterSlider = ({
+  value,
+  onChange,
+  className,
+}: FilterSliderProps) => (
+  <div className={`flex flex-col gap-3 ${className}`}>
     <div className="flex items-center justify-between">
       <p className="text-sm font-semibold text-primary tracking-widest uppercase">
         Max Time

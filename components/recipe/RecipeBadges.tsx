@@ -11,12 +11,12 @@ const getBadges = (recipe: RecipeItem) => [
   {
     label: recipe.difficulty,
     color:
-      "text-orange-500  border-orange-200  bg-orange-50/5 hover:bg-orange-500/20",
+      "text-orange-500 border-orange-200 bg-orange-50/5 hover:bg-orange-500/20",
     icon: <ForkKnife className="h-3 md:h-4 lg:h-5 w-3 md:w-4 lg:w-5" />,
   },
   {
     label: `${recipe.servings} Servings`,
-    color: "text-pink-500   border-pink-200 bg-pink-50/5 hover:bg-pink-500/20",
+    color: "text-pink-500 border-pink-200 bg-pink-50/5 hover:bg-pink-500/20",
     icon: <Users className="h-3 md:h-4 lg:h-5 w-3 md:w-4 lg:w-5" />,
   },
   {
