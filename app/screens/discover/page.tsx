@@ -17,6 +17,10 @@ const Discover = () => {
   const [allRecipes, setAllRecipes] = useState<RecipeItem[]>(discoverMockData);
   const [searchQuery, setSearchQuery] = useState("");
 
+  const MOBILE_LOAD_COUNT = 4;
+  const [mobileVisibleCount, setMobileVisibleCount] =
+    useState(MOBILE_LOAD_COUNT);
+
   const router = useRouter();
 
   const filteredRecipes = allRecipes.filter((recipe) => {
@@ -58,9 +62,17 @@ const Discover = () => {
     );
   };
 
+  const mobileItems = filteredRecipes.slice(0, mobileVisibleCount);
+
+  const handleLoadMore = () => {
+    setMobileVisibleCount((prev) => prev + MOBILE_LOAD_COUNT);
+  };
+
   // reset to page 0 when filters change
   useEffect(() => {
     setCurrentPage(0);
+    // reset mobile count when filters/search change
+    setMobileVisibleCount(MOBILE_LOAD_COUNT);
   }, [filters, searchQuery]);
 
   return (
@@ -95,7 +107,25 @@ const Discover = () => {
           />
         </div>
       </div>
-      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 gap-6 md:hidden">
+        {mobileItems.length > 0 ? (
+          mobileItems.map((item: RecipeItem) => (
+            <RecipeCard
+              key={item.id}
+              item={item}
+              onToggleFavorite={toggleFavorite}
+              onClickRecipeCard={(id: number) =>
+                router.push("/screens/recipe/" + id)
+              }
+            />
+          ))
+        ) : (
+          <p className="text-muted-foreground text-center py-12">
+            No recipes found.
+          </p>
+        )}
+      </div>
+      <div className="hidden md:grid md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-2 gap-6">
         {itemsToRender.length > 0 ? (
           itemsToRender.map((item: RecipeItem) => (
             <RecipeCard
@@ -118,6 +148,9 @@ const Discover = () => {
           totalPages={totalPages(filteredRecipes, ITEMS_PER_PAGE)}
           currentPage={currentPage}
           onPageChange={(pageNumber) => setCurrentPage(pageNumber)}
+          allFilteredRecipes={filteredRecipes}
+          visibleItems={mobileItems}
+          onLoadMore={handleLoadMore}
         />
       ) : null}
     </div>
