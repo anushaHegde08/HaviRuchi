@@ -29,10 +29,15 @@ const Favorites = () => {
 
   return (
     <div className="flex flex-col gap-4 px-6">
-      <Typography variant="h3" color="primary" weight="semibold">
+      <Typography
+        variant="h3"
+        color="primary"
+        weight="semibold"
+        className="text-start"
+      >
         Favorite Recipes
       </Typography>
-      <Typography variant="body" color="text" className="italic">
+      <Typography variant="body" color="text" className="italic text-start">
         You have {favoriteRecipes.length} Favorite Recipes
       </Typography>
       {favoriteRecipes.length === 0 ? (
