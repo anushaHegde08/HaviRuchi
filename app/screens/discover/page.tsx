@@ -2,7 +2,11 @@
 import PaginationComponent from "@/components/discover/PaginationComponent";
 import RecipeCard from "@/components/discover/RecipeCard";
 import { discoverMockData } from "@/mockData/data";
-import { CATEGORIES, ITEMS_PER_PAGE } from "@/mockData/constatnts";
+import {
+  CATEGORIES,
+  ITEMS_PER_PAGE,
+  MOBILE_LOAD_COUNT,
+} from "@/mockData/constatnts";
 import { Badge } from "@/components/ui/badge";
 import SearchBar from "@/components/discover/SearchBar";
 import { defaultFilters, FilterState, RecipeItem } from "@/types";
@@ -10,15 +14,17 @@ import { FilterTrigger } from "@/components/filter/FilterTrigger";
 import { totalPages } from "@/utilities/helperFunction";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useRecipes } from "@/hooks/useRecipes";
 
 const Discover = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const [filters, setFilters] = useState<FilterState>(defaultFilters);
-  const [allRecipes, setAllRecipes] = useState<RecipeItem[]>(discoverMockData);
+  // const [allRecipes, setAllRecipes] = useState<RecipeItem[]>(discoverMockData);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
 
-  const MOBILE_LOAD_COUNT = 4;
+  const { allRecipes, toggleFavorite, onClickRecipeCard } = useRecipes();
+
   const [mobileVisibleCount, setMobileVisibleCount] =
     useState(MOBILE_LOAD_COUNT);
 
@@ -86,13 +92,13 @@ const Discover = () => {
     startIndex + ITEMS_PER_PAGE,
   );
 
-  const toggleFavorite = (id: number) => {
-    setAllRecipes((prev) =>
-      prev.map((item) =>
-        item.id === id ? { ...item, isFavorite: !item.isFavorite } : item,
-      ),
-    );
-  };
+  // const toggleFavorite = (id: number) => {
+  //   setAllRecipes((prev) =>
+  //     prev.map((item) =>
+  //       item.id === id ? { ...item, isFavorite: !item.isFavorite } : item,
+  //     ),
+  //   );
+  // };
 
   const mobileItems = filteredRecipes.slice(0, mobileVisibleCount);
 
@@ -147,9 +153,7 @@ const Discover = () => {
               key={item.id}
               item={item}
               onToggleFavorite={toggleFavorite}
-              onClickRecipeCard={(id: number) =>
-                router.push("/screens/recipe/" + id)
-              }
+              onClickRecipeCard={onClickRecipeCard}
             />
           ))
         ) : (
@@ -165,9 +169,7 @@ const Discover = () => {
               key={item.id}
               item={item}
               onToggleFavorite={toggleFavorite}
-              onClickRecipeCard={(id: number) =>
-                router.push("/screens/recipe/" + id)
-              }
+              onClickRecipeCard={onClickRecipeCard}
             />
           ))
         ) : (
@@ -182,7 +184,7 @@ const Discover = () => {
           currentPage={currentPage}
           onPageChange={(pageNumber) => setCurrentPage(pageNumber)}
           allFilteredRecipes={filteredRecipes}
-          visibleItems={mobileItems}
+          visibleItems={mobileVisibleCount}
           onLoadMore={handleLoadMore}
         />
       ) : null}
