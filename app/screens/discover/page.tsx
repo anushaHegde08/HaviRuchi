@@ -16,12 +16,34 @@ const Discover = () => {
   const [filters, setFilters] = useState<FilterState>(defaultFilters);
   const [allRecipes, setAllRecipes] = useState<RecipeItem[]>(discoverMockData);
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("All");
 
   const MOBILE_LOAD_COUNT = 4;
   const [mobileVisibleCount, setMobileVisibleCount] =
     useState(MOBILE_LOAD_COUNT);
 
   const router = useRouter();
+
+  // handle badge click
+  const handleCategoryClick = (category: string) => {
+    setSelectedCategory(category);
+    console.log(category, selectedCategory);
+
+    // clear filter categories when badge is clicked
+    setFilters((prev) => ({ ...prev, categories: [] }));
+  };
+
+  // handle filter apply — clear selected badge
+  const handleApplyFilter = (newFilters: FilterState) => {
+    setFilters(newFilters);
+    setSelectedCategory("All");
+  };
+
+  // handle filter clear
+  const handleClearFilter = () => {
+    setFilters(defaultFilters);
+    setSelectedCategory("All");
+  };
 
   const filteredRecipes = allRecipes.filter((recipe) => {
     // search across title, description, category
@@ -31,7 +53,11 @@ const Discover = () => {
       recipe.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
       recipe.category.toLowerCase().includes(searchQuery.toLowerCase());
 
-    // category filter
+    // badge category filter
+    const badgeCategoryMatch =
+      selectedCategory === "All" || recipe.category === selectedCategory;
+
+    // filter panel category filter
     const categoryMatch =
       filters.categories.length === 0 ||
       filters.categories.includes(recipe.category);
@@ -44,7 +70,13 @@ const Discover = () => {
     // time filter
     const timeMatch = recipe.timeNeeded <= filters.maxTime;
 
-    return searchMatch && categoryMatch && difficultyMatch && timeMatch;
+    return (
+      searchMatch &&
+      badgeCategoryMatch &&
+      categoryMatch &&
+      difficultyMatch &&
+      timeMatch
+    );
   });
 
   // paginate filtered results
@@ -73,7 +105,7 @@ const Discover = () => {
     setCurrentPage(0);
     // reset mobile count when filters/search change
     setMobileVisibleCount(MOBILE_LOAD_COUNT);
-  }, [filters, searchQuery]);
+  }, [filters, searchQuery, selectedCategory]);
 
   return (
     <div className="flex flex-col gap-4 px-6 py-4">
@@ -83,8 +115,9 @@ const Discover = () => {
             index >= 5 ? null : (
               <Badge
                 key={index}
-                tone={category === "All" ? "selected" : "unselected"}
-                className="text-sm"
+                tone={category === selectedCategory ? "selected" : "unselected"}
+                className="text-sm cursor-pointer"
+                onClick={() => handleCategoryClick(category)}
               >
                 {category}
               </Badge>
@@ -92,8 +125,8 @@ const Discover = () => {
           )}
           <FilterTrigger
             filters={filters}
-            onApply={setFilters}
-            onClear={() => setFilters(defaultFilters)}
+            onApply={handleApplyFilter}
+            onClear={handleClearFilter}
           />
         </div>
         <div className=" flex-[1]">
@@ -102,8 +135,8 @@ const Discover = () => {
         <div className="md:hidden">
           <FilterTrigger
             filters={filters}
-            onApply={setFilters}
-            onClear={() => setFilters(defaultFilters)}
+            onApply={handleApplyFilter}
+            onClear={handleClearFilter}
           />
         </div>
       </div>
