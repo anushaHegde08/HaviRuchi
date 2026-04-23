@@ -41,8 +41,8 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
       />
       <div className="flex-[3]">
         <CardHeader>
-          <CardTitle className="md:text-lg">{item.title}</CardTitle>
-          <CardDescription className="md:text-lg text-secondary/70">
+          <CardTitle className="md:text-lg lg:text-xl">{item.title}</CardTitle>
+          <CardDescription className="md:text-lg lg:text-xl text-secondary/70">
             {item.description}
           </CardDescription>
         </CardHeader>
