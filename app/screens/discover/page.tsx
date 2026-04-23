@@ -15,21 +15,32 @@ const Discover = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const [filters, setFilters] = useState<FilterState>(defaultFilters);
   const [allRecipes, setAllRecipes] = useState<RecipeItem[]>(discoverMockData);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const router = useRouter();
 
   const filteredRecipes = allRecipes.filter((recipe) => {
+    // search across title, description, category
+    const searchMatch =
+      searchQuery === "" ||
+      recipe.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      recipe.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      recipe.category.toLowerCase().includes(searchQuery.toLowerCase());
+
+    // category filter
     const categoryMatch =
       filters.categories.length === 0 ||
       filters.categories.includes(recipe.category);
 
+    // difficulty filter
     const difficultyMatch =
       filters.difficulties.length === 0 ||
       filters.difficulties.includes(recipe.difficulty);
 
+    // time filter
     const timeMatch = recipe.timeNeeded <= filters.maxTime;
 
-    return categoryMatch && difficultyMatch && timeMatch;
+    return searchMatch && categoryMatch && difficultyMatch && timeMatch;
   });
 
   // paginate filtered results
@@ -50,7 +61,7 @@ const Discover = () => {
   // reset to page 0 when filters change
   useEffect(() => {
     setCurrentPage(0);
-  }, [filters]);
+  }, [filters, searchQuery]);
 
   return (
     <div className="flex flex-col gap-4 px-6 py-4">
@@ -74,7 +85,7 @@ const Discover = () => {
           />
         </div>
         <div className=" flex-[1]">
-          <SearchBar />
+          <SearchBar value={searchQuery} onChange={setSearchQuery} />
         </div>
         <div className="md:hidden">
           <FilterTrigger
