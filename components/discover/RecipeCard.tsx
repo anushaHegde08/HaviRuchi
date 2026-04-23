@@ -27,19 +27,18 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
   onClickRecipeCard,
 }) => {
   return (
-    <Card
-      className="flex"
-      onClick={() => {
-        onClickRecipeCard(item.id);
-        console.log(item);
-      }}
-    >
+    <Card className="flex">
       <img
         src="/images/image1.png"
         alt={item.title}
         className="flex-[1] object-cover overflow-auto rounded-s-xl"
       />
-      <div className="flex-[3]">
+      <div
+        className="flex-[3]"
+        onClick={() => {
+          onClickRecipeCard(item.id);
+        }}
+      >
         <CardHeader>
           <CardTitle className="md:text-lg lg:text-xl">{item.title}</CardTitle>
           <CardDescription className="md:text-lg lg:text-xl text-secondary/70">
