@@ -15,7 +15,7 @@ interface PaginationComponentProps {
   currentPage: number;
   onPageChange: (pageNumber: number) => void;
   allFilteredRecipes: RecipeItem[];
-  visibleItems: RecipeItem[];
+  visibleItems: number;
   onLoadMore: () => void;
 }
 
@@ -33,14 +33,11 @@ const PaginationComponent = ({
   const handleObserver = useCallback(
     (entries: IntersectionObserverEntry[]) => {
       const [entry] = entries;
-      if (
-        entry.isIntersecting &&
-        visibleItems.length < allFilteredRecipes.length
-      ) {
+      if (entry.isIntersecting && visibleItems < allFilteredRecipes.length) {
         onLoadMore();
       }
     },
-    [visibleItems.length, allFilteredRecipes.length, onLoadMore],
+    [visibleItems, allFilteredRecipes.length, onLoadMore],
   );
 
   useEffect(() => {
@@ -104,7 +101,7 @@ const PaginationComponent = ({
 
       {/* Mobile infinite scroll — hidden on desktop */}
       <div ref={observerRef} className="md:hidden py-4 text-center">
-        {visibleItems.length < allFilteredRecipes.length ? (
+        {visibleItems < allFilteredRecipes.length ? (
           <p className="text-sm text-muted-foreground">Loading more...</p>
         ) : (
           <p className="text-sm text-muted-foreground">No more recipes</p>

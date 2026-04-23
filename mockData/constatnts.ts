@@ -13,6 +13,8 @@ const TIME_LABELS = ["15M", "30M", "45M", "1H", "1H+"];
 
 const ITEMS_PER_PAGE = 6;
 
+const MOBILE_LOAD_COUNT = 4;
+
 const RULES = [
   { label: "Atleast 6 characters", test: (p: string) => p.length >= 6 },
   { label: "Contains a number", test: (p: string) => /\d/.test(p) },
@@ -29,6 +31,7 @@ export {
   DIFFICULTIES,
   TIME_LABELS,
   ITEMS_PER_PAGE,
+  MOBILE_LOAD_COUNT,
   RULES,
   PREVIEW_COUNT,
 };

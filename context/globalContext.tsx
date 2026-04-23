@@ -1,4 +1,5 @@
 "use client";
+import { RecipeItem } from "@/types";
 import { createContext, useContext } from "react";
 
 export interface GlobalContextType {
@@ -6,6 +7,8 @@ export interface GlobalContextType {
   setSearchOpen: (open: boolean) => void;
   filterOpen: boolean;
   setFilterOpen: (open: boolean) => void;
+  allRecipes: RecipeItem[];
+  toggleFavorite: (id: number) => void;
 }
 
 export const GlobalContext = createContext<GlobalContextType | undefined>(
