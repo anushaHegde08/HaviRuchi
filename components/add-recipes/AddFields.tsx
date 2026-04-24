@@ -10,6 +10,7 @@ interface DynamicFieldsProps {
   onChange: (fields: AddField[]) => void;
   placeholder: string;
   label: string;
+  showMeasurement?: boolean;
 }
 
 const AddFields = ({
@@ -17,9 +18,10 @@ const AddFields = ({
   onChange,
   placeholder,
   label,
+  showMeasurement = false,
 }: DynamicFieldsProps) => {
   const add = () => {
-    onChange([...fields, { id: Date.now(), value: "" }]);
+    onChange([...fields, { id: Date.now(), value: "", measurement: "" }]);
   };
 
   const remove = (id: number) => {
@@ -30,6 +32,12 @@ const AddFields = ({
   const update = (id: number, value: string) => {
     onChange(
       fields.map((item) => (item.id === id ? { ...item, value } : item)),
+    );
+  };
+
+  const updateMeasurement = (id: number, measurement: string) => {
+    onChange(
+      fields.map((item) => (item.id === id ? { ...item, measurement } : item)),
     );
   };
 
@@ -60,11 +68,21 @@ const AddFields = ({
               onChange={(e) => update(field.id, e.target.value)}
               className="flex-1"
             />
+            {/* Measurement — only for ingredients */}
+            {showMeasurement && (
+              <Input
+                placeholder="e.g., 1 cup"
+                value={field.measurement ?? ""}
+                onChange={(e) => updateMeasurement(field.id, e.target.value)}
+                className="w-28 shrink-0"
+              />
+            )}
             <Button
               variant="ghost"
               className="hover:bg-transparent shrink-0 p-0"
               onClick={() => remove(field.id)}
               disabled={fields.length === 1}
+              type="button"
             >
               <MinusCircle className="h-5 w-5" />
             </Button>
