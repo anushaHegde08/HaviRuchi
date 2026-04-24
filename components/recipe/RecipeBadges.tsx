@@ -1,6 +1,7 @@
 import { Clock, ForkKnife, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { RecipeItem } from "@/types";
+import { formatTime } from "@/utilities/helperFunction";
 
 const getBadges = (recipe: RecipeItem) => [
   {
@@ -20,7 +21,7 @@ const getBadges = (recipe: RecipeItem) => [
     icon: <Users className="h-3 md:h-4 lg:h-5 w-3 md:w-4 lg:w-5" />,
   },
   {
-    label: `${recipe.timeNeeded} Mins`,
+    label: formatTime(recipe.timeNeeded),
     color: "text-blue-500 border-blue-200 bg-blue-50/5 hover:bg-blue-500/20",
     icon: <Clock className="h-3 md:h-4 lg:h-5 w-3 md:w-4 lg:w-5" />,
   },

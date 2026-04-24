@@ -6,7 +6,7 @@ export const discoverMockData = [
       "Crispy dosa filled with flavorful potato masala, served with coconut chutney and sambar — a timeless South Indian favorite.",
     image: "/images/recipe.png",
     category: "Breakfast",
-    timeNeeded: 60,
+    timeNeeded: 65,
     difficulty: "Hard",
     servings: 4,
     isFavorite: false,

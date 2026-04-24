@@ -15,4 +15,5 @@ export interface RecipeItem {
 export interface AddField {
   id: number;
   value: string;
+  measurement?: string;
 }
