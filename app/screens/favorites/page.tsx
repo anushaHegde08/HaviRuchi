@@ -6,7 +6,7 @@ import { useRecipes } from "@/hooks/useRecipes";
 import { ITEMS_PER_PAGE, MOBILE_LOAD_COUNT } from "@/mockData/constatnts";
 import { discoverMockData } from "@/mockData/data";
 import { RecipeItem } from "@/types";
-import { totalPages } from "@/utilities/helperFunction";
+import { totalPages } from "@/lib/utilities/helperFunction";
 import { useEffect, useState } from "react";
 
 const Favorites = () => {

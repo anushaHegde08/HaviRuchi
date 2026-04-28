@@ -11,7 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import SearchBar from "@/components/discover/SearchBar";
 import { defaultFilters, FilterState, RecipeItem } from "@/types";
 import { FilterTrigger } from "@/components/filter/FilterTrigger";
-import { totalPages } from "@/utilities/helperFunction";
+import { totalPages } from "@/lib/utilities/helperFunction";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useRecipes } from "@/hooks/useRecipes";

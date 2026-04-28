@@ -14,22 +14,22 @@ import {
   SelectContent,
   SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { CATEGORIES, DIFFICULTIES } from "@/mockData/constatnts";
 import { Typography } from "@/components/ui/typography";
-import { ArrowLeft, MinusCircle, PlusCircle } from "lucide-react";
-import { Separator } from "@/components/ui/separator";
+import { ArrowLeft } from "lucide-react";
 import { useState } from "react";
 import { AddField } from "@/types";
 import AddFields from "@/components/add-recipes/AddFields";
 import { useRouter } from "next/navigation";
 import { Card } from "@/components/ui/card";
+import { toast } from "sonner";
+import { capitalizeFirst } from "@/lib/utilities/helperFunction";
 
 const AddRecipe = () => {
   const router = useRouter();
@@ -43,6 +43,23 @@ const AddRecipe = () => {
 
   const [hours, setHours] = useState(0);
   const [minutes, setMinutes] = useState(10);
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [category, setCategory] = useState("");
+  const [difficulty, setDifficulty] = useState("Easy");
+  const [servings, setServings] = useState<number | "">("");
+  const [loading, setLoading] = useState(false);
+
+  const [errors, setErrors] = useState({
+    title: "",
+    description: "",
+    category: "",
+    time: "",
+    servings: "",
+    ingredients: "",
+    instructions: "",
+    general: "",
+  });
 
   const handleHoursChange = (value: number) => {
     setHours(value);
@@ -58,13 +75,87 @@ const AddRecipe = () => {
     setMinutes(value);
   };
 
-  const handleSubmit = () => {
-    // const recipeData = {
-    //   ingredients: ingredients.map((ingredient) => ingredient.value),
-    //   instructions: instructions.map((instruction) => instruction.value),
-    // };
-    // console.log(recipeData);
-    console.log("Submit button clicked");
+  const clearErrors = () =>
+    setErrors({
+      title: "",
+      description: "",
+      category: "",
+      time: "",
+      servings: "",
+      ingredients: "",
+      instructions: "",
+      general: "",
+    });
+
+  const validate = () => {
+    clearErrors();
+    let hasError = false;
+    const newErrors = { ...errors };
+
+    if (!title.trim()) {
+      newErrors.title = "Title is required";
+      hasError = true;
+    }
+    if (!description.trim()) {
+      newErrors.description = "Description is required";
+      hasError = true;
+    }
+    if (!category) {
+      newErrors.category = "Please select a category";
+      hasError = true;
+    }
+    if (hours === 0 && minutes < 10) {
+      newErrors.time = "Minimum cook time is 10 minutes";
+      hasError = true;
+    }
+    if (!servings || servings < 1) {
+      newErrors.servings = "Servings must be at least 1";
+      hasError = true;
+    }
+    if (ingredients.some((i) => !i.value.trim() || !i.measurement?.trim())) {
+      newErrors.ingredients = "All ingredient fields must be filled";
+      hasError = true;
+    }
+    if (instructions.some((i) => !i.value.trim())) {
+      newErrors.instructions = "All instruction fields must be filled";
+      hasError = true;
+    }
+
+    setErrors(newErrors);
+    return !hasError;
+  };
+
+  const handleSubmit = async () => {
+    if (!validate()) return;
+    try {
+      setLoading(true);
+      const totalMinutes = hours * 60 + minutes;
+      const response = await fetch("/api/recipes", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title,
+          description,
+          category,
+          difficulty,
+          timeNeeded: totalMinutes,
+          servings: Number(servings),
+          ingredients,
+          instructions,
+        }),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        setErrors((prev) => ({ ...prev, general: data.error }));
+        return;
+      }
+      toast.success("Recipe added successfully!");
+      router.push("/screens/discover");
+    } catch (error) {
+      toast.error("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleCancel = () => {
@@ -85,19 +176,29 @@ const AddRecipe = () => {
                 <FieldDescription>
                   All the fields are required.
                 </FieldDescription>
+
                 {/* Two column grid on desktop */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* ── Left Column ── */}
                   <div className="flex flex-col gap-4">
-                    {/* <FieldGroup> */}
                     <Field>
                       <FieldLabel htmlFor="title">Recipe Title</FieldLabel>
                       <Input
                         id="title"
                         type="text"
                         placeholder="e.g., Pineapple Gojju"
-                        required
+                        value={title}
+                        onChange={(e) => {
+                          setTitle(capitalizeFirst(e.target.value));
+                          if (errors.title)
+                            setErrors((prev) => ({ ...prev, title: "" })); // ← clear on type
+                        }}
                       />
+                      {errors.title && (
+                        <p className="text-xs text-destructive">
+                          {errors.title}
+                        </p>
+                      )}
                     </Field>
                     <Field>
                       <FieldLabel htmlFor="description">
@@ -106,7 +207,7 @@ const AddRecipe = () => {
                           variant="xsmall"
                           className="ml-auto text-muted-foreground"
                         >
-                          0/120
+                          {description.length}/120
                         </Typography>
                       </FieldLabel>
                       <Textarea
@@ -114,7 +215,18 @@ const AddRecipe = () => {
                         placeholder="Describe your traditional dish..."
                         rows={4}
                         maxLength={120}
+                        value={description}
+                        onChange={(e) => {
+                          setDescription(capitalizeFirst(e.target.value));
+                          if (errors.description)
+                            setErrors((prev) => ({ ...prev, description: "" }));
+                        }}
                       />
+                      {errors.description && (
+                        <p className="text-xs text-destructive">
+                          {errors.description}
+                        </p>
+                      )}
                     </Field>
                     <Field>
                       <FieldLabel htmlFor="picture">Image</FieldLabel>
@@ -129,30 +241,45 @@ const AddRecipe = () => {
                       </FieldDescription>
                     </Field>
                   </div>
+
                   {/* ── Right Column ── */}
                   <div className="flex flex-col gap-4">
                     <Field>
                       <FieldLabel htmlFor="category">Category</FieldLabel>
-                      <Select defaultValue="">
+                      <Select
+                        value={category}
+                        onValueChange={(val) => {
+                          setCategory(val);
+                          if (errors.category)
+                            setErrors((prev) => ({ ...prev, category: "" }));
+                        }}
+                      >
                         <SelectTrigger id="category">
                           <SelectValue placeholder="Select Category" />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectGroup>
-                            {CATEGORIES.map((category) => (
-                              <SelectItem key={category} value={category}>
-                                {category}
-                              </SelectItem>
-                            ))}
+                            {CATEGORIES.filter((c) => c !== "All").map(
+                              (category) => (
+                                <SelectItem key={category} value={category}>
+                                  {category}
+                                </SelectItem>
+                              ),
+                            )}
                           </SelectGroup>
                         </SelectContent>
                       </Select>
+                      {errors.category && (
+                        <p className="text-xs text-destructive">
+                          {errors.category}
+                        </p>
+                      )}
                     </Field>
                     <Field>
                       <FieldLabel htmlFor="difficulty">
                         Difficulty Level
                       </FieldLabel>
-                      <Tabs defaultValue="easy">
+                      <Tabs value={difficulty} onValueChange={setDifficulty}>
                         <TabsList className="bg-primary/2 border w-full">
                           {DIFFICULTIES.map((level) => (
                             <TabsTrigger
@@ -186,7 +313,7 @@ const AddRecipe = () => {
                           </span>
                           <Input
                             type="number"
-                            min={0}
+                            min={hours === 0 ? 10 : 0}
                             max={55}
                             step={5}
                             value={minutes}
@@ -198,6 +325,11 @@ const AddRecipe = () => {
                           <span className="text-muted-foreground shrink-0">
                             <Typography variant="body">Minutes</Typography>
                           </span>
+                          {errors.time && (
+                            <p className="text-xs text-destructive">
+                              {errors.time}
+                            </p>
+                          )}
                         </FieldGroup>
                       </Field>
                     </Field>
@@ -207,8 +339,19 @@ const AddRecipe = () => {
                         id="servings"
                         type="number"
                         placeholder="Number of servings"
-                        required
+                        min={1}
+                        value={servings}
+                        onChange={(e) => {
+                          setServings(Number(e.target.value));
+                          if (errors.servings)
+                            setErrors((prev) => ({ ...prev, servings: "" }));
+                        }}
                       />
+                      {errors.servings && (
+                        <p className="text-xs text-destructive">
+                          {errors.servings}
+                        </p>
+                      )}
                     </Field>
                   </div>
                 </div>
@@ -220,20 +363,38 @@ const AddRecipe = () => {
                     placeholder="e.g.,Grated coconut"
                     label="Ingredients"
                     showMeasurement={true}
+                    onClearError={() =>
+                      setErrors((prev) => ({ ...prev, ingredients: "" }))
+                    }
                   />
-
+                  {errors.ingredients && (
+                    <p className="text-xs text-destructive">
+                      {errors.ingredients}
+                    </p>
+                  )}
                   <AddFields
                     fields={instructions}
                     onChange={setInstructions}
                     placeholder="e.g., Roast the red chilies with a teaspoon of oil..."
                     label="Instructions"
+                    onClearError={() =>
+                      setErrors((prev) => ({ ...prev, instructions: "" }))
+                    }
                   />
+                  {errors.instructions && (
+                    <p className="text-xs text-destructive">
+                      {errors.instructions}
+                    </p>
+                  )}
                 </div>
-
-                {/* </FieldGroup> */}
               </FieldSet>
-              <Separator className="my-6" />
-              {/* <Field orientation="horizontal" className="gap-4 pb-4"> */}
+              {errors.general && (
+                <p className="text-xs text-destructive text-center mt-2">
+                  {errors.general}
+                </p>
+              )}
+
+              <FieldSeparator className="my-4" />
               <div className="flex gap-4">
                 <Button
                   variant="outline"
@@ -243,11 +404,15 @@ const AddRecipe = () => {
                 >
                   Cancel
                 </Button>
-                <Button type="submit" onClick={handleSubmit} className="flex-1">
-                  Submit
+                <Button
+                  type="button"
+                  onClick={handleSubmit}
+                  disabled={loading}
+                  className="flex-1"
+                >
+                  {loading ? "Adding Recipe..." : "Submit"}
                 </Button>
               </div>
-              {/* </Field> */}
             </FieldGroup>
           </form>
         </Card>

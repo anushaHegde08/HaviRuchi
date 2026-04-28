@@ -1,6 +1,6 @@
 import { HTMLProps } from "react";
 import { Slider } from "@/components/ui/slider";
-import { formatTime } from "@/utilities/helperFunction";
+import { formatTime } from "@/lib/utilities/helperFunction";
 
 const TIME_LABELS = ["15M", "30M", "45M", "1H", "1H+"];
 
