@@ -1,7 +1,7 @@
 import { Clock, ForkKnife, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { RecipeItem } from "@/types";
-import { formatTime } from "@/utilities/helperFunction";
+import { formatTime } from "@/lib/utilities/helperFunction";
 
 const getBadges = (recipe: RecipeItem) => [
   {

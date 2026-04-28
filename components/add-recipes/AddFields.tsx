@@ -4,6 +4,7 @@ import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { MinusCircle, PlusCircle } from "lucide-react";
 import { Field, FieldLabel } from "../ui/field";
+import { capitalizeFirst } from "@/lib/utilities/helperFunction";
 
 interface DynamicFieldsProps {
   fields: AddField[];
@@ -11,6 +12,7 @@ interface DynamicFieldsProps {
   placeholder: string;
   label: string;
   showMeasurement?: boolean;
+  onClearError?: () => void;
 }
 
 const AddFields = ({
@@ -19,6 +21,7 @@ const AddFields = ({
   placeholder,
   label,
   showMeasurement = false,
+  onClearError,
 }: DynamicFieldsProps) => {
   const add = () => {
     onChange([...fields, { id: Date.now(), value: "", measurement: "" }]);
@@ -31,8 +34,11 @@ const AddFields = ({
 
   const update = (id: number, value: string) => {
     onChange(
-      fields.map((item) => (item.id === id ? { ...item, value } : item)),
+      fields.map((item) =>
+        item.id === id ? { ...item, value: capitalizeFirst(value) } : item,
+      ),
     );
+    onClearError?.();
   };
 
   const updateMeasurement = (id: number, measurement: string) => {
@@ -50,6 +56,7 @@ const AddFields = ({
             variant="ghost"
             className="bg-transparent hover:bg-transparent ml-auto"
             onClick={add}
+            type="button"
           >
             <PlusCircle /> Add {label}
           </Button>

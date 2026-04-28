@@ -13,3 +13,8 @@ export const formatTime = (totalMinutes: number) => {
   if (mins === 0) return `${hours} ${hourLabel}`;
   return `${hours}H ${mins}M`;
 };
+
+export const capitalizeFirst = (value: string) => {
+  if (!value) return value;
+  return value.charAt(0).toUpperCase() + value.slice(1);
+};
