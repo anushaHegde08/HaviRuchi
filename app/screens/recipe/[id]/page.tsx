@@ -6,6 +6,7 @@ import { RecipeIngredients } from "@/components/recipe/RecipeIngredients";
 import { RecipeInstructions } from "@/components/recipe/RecipeInstructions";
 import { discoverMockData } from "@/mockData/data";
 import { RecipeImage } from "@/components/recipe/RecipeImage";
+import { useRecipes } from "@/hooks/useRecipes";
 
 export default function RecipeDetailPage({
   params,
@@ -19,7 +20,8 @@ export default function RecipeDetailPage({
     "found:",
     discoverMockData.find((r) => r.id === Number(id)),
   );
-  const recipe = discoverMockData.find((r) => r.id === Number(id));
+  const { allRecipes } = useRecipes();
+  const recipe = allRecipes.find((r) => r.id === id);
   // const recipe: RecipeItem = discoverMockData[0];
   const [favorite, setFavorite] = useState(recipe?.isFavorite ?? false);
   if (!recipe) return <p>Recipe not found</p>;

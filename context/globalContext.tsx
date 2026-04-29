@@ -8,7 +8,8 @@ export interface GlobalContextType {
   filterOpen: boolean;
   setFilterOpen: (open: boolean) => void;
   allRecipes: RecipeItem[];
-  toggleFavorite: (id: number) => void;
+  setAllRecipes: (recipes: RecipeItem[]) => void;
+  toggleFavorite: (id: string) => void;
 }
 
 export const GlobalContext = createContext<GlobalContextType | undefined>(

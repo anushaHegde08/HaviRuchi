@@ -1,7 +1,6 @@
 "use client";
 import PaginationComponent from "@/components/discover/PaginationComponent";
 import RecipeCard from "@/components/discover/RecipeCard";
-import { discoverMockData } from "@/mockData/data";
 import {
   CATEGORIES,
   ITEMS_PER_PAGE,
@@ -15,15 +14,26 @@ import { totalPages } from "@/lib/utilities/helperFunction";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useRecipes } from "@/hooks/useRecipes";
+import { useGlobalContext } from "@/context";
 
 const Discover = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const [filters, setFilters] = useState<FilterState>(defaultFilters);
-  // const [allRecipes, setAllRecipes] = useState<RecipeItem[]>(discoverMockData);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
+  // const [allRecipes, setAllRecipes] = useState<RecipeItem[]>([])
+  // const [loading, setLoading] = useState(false);
+  // const [error, setError] = useState<string | null>(null);
 
-  const { allRecipes, toggleFavorite, onClickRecipeCard } = useRecipes();
+  console.log("discover searchQuery:", searchQuery);
+  console.log("discover filters:", filters);
+  console.log("discover selectedCategory:", selectedCategory);
+
+  // const { allRecipes, setAllRecipes, toggleFavorite } = useGlobalContext();
+  const { allRecipes, toggleFavorite, onClickRecipeCard, loading, error } =
+    useRecipes();
+
+  console.log("allRecipes in discover:", allRecipes.length, allRecipes);
 
   const [mobileVisibleCount, setMobileVisibleCount] =
     useState(MOBILE_LOAD_COUNT);
@@ -33,8 +43,6 @@ const Discover = () => {
   // handle badge click
   const handleCategoryClick = (category: string) => {
     setSelectedCategory(category);
-    console.log(category, selectedCategory);
-
     // clear filter categories when badge is clicked
     setFilters((prev) => ({ ...prev, categories: [] }));
   };
@@ -85,20 +93,13 @@ const Discover = () => {
     );
   });
 
+  // const filteredRecipes = allRecipes;
   // paginate filtered results
   const startIndex = currentPage * ITEMS_PER_PAGE;
   const itemsToRender = filteredRecipes.slice(
     startIndex,
     startIndex + ITEMS_PER_PAGE,
   );
-
-  // const toggleFavorite = (id: number) => {
-  //   setAllRecipes((prev) =>
-  //     prev.map((item) =>
-  //       item.id === id ? { ...item, isFavorite: !item.isFavorite } : item,
-  //     ),
-  //   );
-  // };
 
   const mobileItems = filteredRecipes.slice(0, mobileVisibleCount);
 
@@ -146,48 +147,68 @@ const Discover = () => {
           />
         </div>
       </div>
-      <div className="grid grid-cols-1 gap-6 md:hidden">
-        {mobileItems.length > 0 ? (
-          mobileItems.map((item: RecipeItem) => (
-            <RecipeCard
-              key={item.id}
-              item={item}
-              onToggleFavorite={toggleFavorite}
-              onClickRecipeCard={onClickRecipeCard}
-            />
-          ))
-        ) : (
-          <p className="text-muted-foreground text-center py-12">
-            No recipes found.
-          </p>
-        )}
-      </div>
-      <div className="hidden md:grid md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-2 gap-6">
-        {itemsToRender.length > 0 ? (
-          itemsToRender.map((item: RecipeItem) => (
-            <RecipeCard
-              key={item.id}
-              item={item}
-              onToggleFavorite={toggleFavorite}
-              onClickRecipeCard={onClickRecipeCard}
-            />
-          ))
-        ) : (
-          <p className="text-muted-foreground col-span-2 text-center py-12">
-            No recipes found for the selected filters.
-          </p>
-        )}
-      </div>
-      {itemsToRender.length > 0 ? (
-        <PaginationComponent
-          totalPages={totalPages(filteredRecipes, ITEMS_PER_PAGE)}
-          currentPage={currentPage}
-          onPageChange={(pageNumber) => setCurrentPage(pageNumber)}
-          allFilteredRecipes={filteredRecipes}
-          visibleItems={mobileVisibleCount}
-          onLoadMore={handleLoadMore}
-        />
-      ) : null}
+      {/* loading state */}
+      {loading && (
+        <div className="text-center py-12 text-muted-foreground">
+          Loading recipes...
+        </div>
+      )}
+
+      {/* error state */}
+      {error && (
+        <div className="text-center py-12 text-destructive">{error}</div>
+      )}
+
+      {/* Mobile grid */}
+      {!loading && !error && (
+        <div className="grid grid-cols-1 gap-6 md:hidden">
+          {mobileItems.length > 0 ? (
+            mobileItems.map((item: RecipeItem) => (
+              <RecipeCard
+                key={item.id}
+                item={item}
+                onToggleFavorite={toggleFavorite}
+                onClickRecipeCard={onClickRecipeCard}
+              />
+            ))
+          ) : (
+            <p className="text-muted-foreground text-center py-12">
+              No recipes found.
+            </p>
+          )}
+        </div>
+      )}
+
+      {/* Desktop grid */}
+      {!loading && !error && (
+        <div className="hidden md:grid md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-2 gap-6">
+          {itemsToRender.length > 0 ? (
+            itemsToRender.map((item: RecipeItem) => (
+              <RecipeCard
+                key={item.id}
+                item={item}
+                onToggleFavorite={toggleFavorite}
+                onClickRecipeCard={onClickRecipeCard}
+              />
+            ))
+          ) : (
+            <p className="text-muted-foreground col-span-2 text-center py-12">
+              No recipes found for the selected filters.
+            </p>
+          )}
+        </div>
+      )}
+
+      {/* {itemsToRender.length > 0 ? ( */}
+      <PaginationComponent
+        totalPages={totalPages(filteredRecipes, ITEMS_PER_PAGE)}
+        currentPage={currentPage}
+        onPageChange={(pageNumber) => setCurrentPage(pageNumber)}
+        allFilteredRecipes={filteredRecipes}
+        visibleItems={mobileVisibleCount}
+        onLoadMore={handleLoadMore}
+      />
+      {/* ) : null} */}
     </div>
   );
 };
