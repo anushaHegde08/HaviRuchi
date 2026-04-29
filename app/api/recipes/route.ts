@@ -6,6 +6,8 @@ import Recipe from "@/models/Recipe";
 import { z } from "zod";
 import User from "@/models/User";
 
+export const dynamic = "force-dynamic";
+
 const AddRecipeSchema = z.object({
   title: z.string().min(1, "Title is required"),
   description: z.string().min(1, "Description is required"),
@@ -105,10 +107,51 @@ export async function POST(req: Request) {
 export async function GET(req: Request) {
   try {
     await connectDB();
+    // get query params from URL
+    const { searchParams } = new URL(req.url);
+    const search = searchParams.get("search") || "";
+    const categories = searchParams.getAll("category");
+    const difficulties = searchParams.getAll("difficulty");
+    const maxTime = searchParams.get("maxTime");
+
+    // build MongoDB query dynamically
+    // const query: any = {};
+    const andConditions: any[] = [];
+
+    // search across title, description, category
+    if (search) {
+      andConditions.push({
+        $or: [
+          { title: { $regex: search, $options: "i" } }, // case insensitive
+          { description: { $regex: search, $options: "i" } },
+          { category: { $regex: search, $options: "i" } },
+        ],
+      });
+    }
+
+    // filter by categories
+    if (categories.length > 0) {
+      andConditions.push({ category: { $in: categories } });
+    }
+
+    // filter by difficulties
+    if (difficulties.length > 0) {
+      andConditions.push({ difficulty: { $in: difficulties } });
+    }
+
+    // filter by max time
+    if (maxTime) {
+      andConditions.push({ timeNeeded: { $lte: Number(maxTime) } });
+    }
+
+    const query = andConditions.length > 0 ? { $and: andConditions } : {};
+    console.log("MongoDB query:", JSON.stringify(query));
 
     const recipes = await Recipe.find()
       .populate("createdBy", "name email") // ← get user details
       .sort({ createdAt: -1 }); // ← newest first
+
+    console.log("recipes found:", recipes.length);
 
     return NextResponse.json(recipes);
   } catch (error) {

@@ -17,8 +17,8 @@ import { RecipeBadges } from "../recipe/RecipeBadges";
 
 interface RecipeCardProps {
   item: RecipeItem;
-  onToggleFavorite: (id: number) => void;
-  onClickRecipeCard: (id: number) => void;
+  onToggleFavorite: (id: string) => void;
+  onClickRecipeCard: (id: string) => void;
 }
 
 const RecipeCard: React.FC<RecipeCardProps> = ({
@@ -29,7 +29,7 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
   return (
     <Card className="flex">
       <img
-        src="/images/image1.png"
+        src={item.image}
         alt={item.title}
         className="flex-[1] object-cover overflow-auto rounded-s-xl"
       />
