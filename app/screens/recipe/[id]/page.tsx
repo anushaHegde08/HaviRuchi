@@ -30,7 +30,11 @@ export default function RecipeDetailPage({
     <div className="min-h-screen bg-background px-6 mb-16">
       <div className="max-w-4xl mx-auto">
         <RecipeImage
-          image={recipe.image}
+          image={
+            recipe.image && recipe.image !== ""
+              ? recipe.image
+              : "/images/placeholder.png"
+          }
           title={recipe.title}
           favorite={favorite}
           onFavoriteToggle={() => setFavorite(!favorite)}

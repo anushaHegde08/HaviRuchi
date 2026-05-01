@@ -17,9 +17,11 @@ import {
   X,
 } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useRecipes } from "@/hooks/useRecipes";
+import { uploadImage } from "@/lib/uploadImage";
+import { toast } from "sonner";
 
 const UserProfile = ({ existingImage }: { existingImage?: string }) => {
   const { data: session } = useSession();
@@ -33,7 +35,36 @@ const UserProfile = ({ existingImage }: { existingImage?: string }) => {
   const [phoneInput, setPhoneInput] = useState("");
   const [imageError, setImageError] = useState(false);
 
-  const currentImage = preview || session?.user?.image || undefined;
+  const [profileData, setProfileData] = useState({
+    image: "",
+    phone: "",
+  });
+  const [profileLoading, setProfileLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        console.log("fetching profile...");
+
+        const response = await fetch("/api/users/profile");
+        console.log("profile response status:", response.status);
+
+        const data = await response.json();
+        if (response.ok) {
+          setProfileData({ image: data.image || "", phone: data.phone || "" });
+          setPhone(data.phone || "");
+        }
+      } catch (error) {
+        console.error("Failed to fetch profile");
+      } finally {
+        setProfileLoading(false);
+      }
+    };
+    fetchProfile();
+  }, []);
+
+  const currentImage =
+    profileData.image || preview || session?.user?.image || undefined;
 
   const initials =
     session?.user?.name
@@ -42,20 +73,65 @@ const UserProfile = ({ existingImage }: { existingImage?: string }) => {
       .join("")
       .toUpperCase() ?? "U";
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     setImageError(false);
+    // validate size
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("File size must be less than 5MB");
+      return;
+    }
+    // validate type
+    const allowedTypes = ["image/jpeg", "image/png", "image/webp", "image/jpg"];
+    if (!allowedTypes.includes(file.type)) {
+      toast.error("Only JPEG, PNG and WebP images are allowed");
+      return;
+    }
+    const url = await uploadImage(file, "profiles");
+
     const reader = new FileReader();
     reader.onload = () => setPreview(reader.result as string);
     reader.readAsDataURL(file);
+
+    try {
+      // upload to Cloudinary
+      const url = await uploadImage(file, "profiles");
+      console.log("Profile image uploaded:", url);
+      await fetch("/api/users/profile", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ image: url }),
+      });
+      setProfileData((prev) => ({ ...prev, image: url }));
+      setPreview(null);
+      toast.success("Profile photo updated!");
+    } catch (error: any) {
+      toast.error(error.message || "Upload failed");
+    }
   };
 
-  const handleSavePhone = () => {
+  useEffect(() => {
+    console.log("profileData:", profileData);
+    console.log("currentImage:", currentImage);
+  }, [profileData]);
+
+  const handleSavePhone = async () => {
     if (!phoneInput.trim()) return;
-    setPhone(phoneInput);
-    setEditingPhone(false);
-    // TODO: save to DB when set up
+    try {
+      await fetch("/api/users/profile", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone: phoneInput }),
+      });
+
+      setPhone(phoneInput);
+      setProfileData((prev) => ({ ...prev, phone: phoneInput }));
+      setEditingPhone(false);
+      toast.success("Phone number saved!");
+    } catch (error) {
+      toast.error("Failed to save phone number");
+    }
   };
 
   const handleCancelPhone = () => {
