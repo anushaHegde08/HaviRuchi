@@ -29,7 +29,11 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
   return (
     <Card className="flex">
       <img
-        src={item.image}
+        src={
+          item.image && item.image !== ""
+            ? item.image
+            : "/images/placeholder.png"
+        }
         alt={item.title}
         className="flex-[1] object-cover overflow-auto rounded-s-xl"
       />

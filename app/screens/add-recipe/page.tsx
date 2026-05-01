@@ -30,6 +30,8 @@ import { useRouter } from "next/navigation";
 import { Card } from "@/components/ui/card";
 import { toast } from "sonner";
 import { capitalizeFirst } from "@/lib/utilities/helperFunction";
+import { uploadImage } from "@/lib/uploadImage";
+import Image from "next/image";
 
 const AddRecipe = () => {
   const router = useRouter();
@@ -50,9 +52,14 @@ const AddRecipe = () => {
   const [servings, setServings] = useState<number | "">("");
   const [loading, setLoading] = useState(false);
 
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [imageError, setImageError] = useState("");
+
   const [errors, setErrors] = useState({
     title: "",
     description: "",
+    imageFile: "",
     category: "",
     time: "",
     servings: "",
@@ -60,6 +67,28 @@ const AddRecipe = () => {
     instructions: "",
     general: "",
   });
+
+  const handleSelectImage = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // validate size
+    if (file.size > 5 * 1024 * 1024) {
+      setImageError("File size must be less than 5MB");
+      return;
+    }
+
+    // validate type
+    const allowedTypes = ["image/jpeg", "image/png", "image/webp", "image/jpg"];
+    if (!allowedTypes.includes(file.type)) {
+      setImageError("Only JPEG, PNG and WebP images are allowed");
+      return;
+    }
+
+    setImageError("");
+    setImageFile(file);
+    setImagePreview(URL.createObjectURL(file)); // show preview instantly
+  };
 
   const handleHoursChange = (value: number) => {
     setHours(value);
@@ -79,6 +108,7 @@ const AddRecipe = () => {
     setErrors({
       title: "",
       description: "",
+      imageFile: "",
       category: "",
       time: "",
       servings: "",
@@ -98,6 +128,10 @@ const AddRecipe = () => {
     }
     if (!description.trim()) {
       newErrors.description = "Description is required";
+      hasError = true;
+    }
+    if (!imageFile) {
+      newErrors.imageFile = "Please select an image";
       hasError = true;
     }
     if (!category) {
@@ -120,7 +154,6 @@ const AddRecipe = () => {
       newErrors.instructions = "All instruction fields must be filled";
       hasError = true;
     }
-
     setErrors(newErrors);
     return !hasError;
   };
@@ -129,7 +162,14 @@ const AddRecipe = () => {
     if (!validate()) return;
     try {
       setLoading(true);
+
+      let imageUrl = "";
+      if (imageFile) {
+        imageUrl = await uploadImage(imageFile, "recipes");
+      }
+
       const totalMinutes = hours * 60 + minutes;
+
       const response = await fetch("/api/recipes", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -142,13 +182,17 @@ const AddRecipe = () => {
           servings: Number(servings),
           ingredients,
           instructions,
+          image: imageUrl,
         }),
       });
+
       const data = await response.json();
+
       if (!response.ok) {
         setErrors((prev) => ({ ...prev, general: data.error }));
         return;
       }
+
       toast.success("Recipe added successfully!");
       router.push("/screens/discover");
     } catch (error) {
@@ -229,16 +273,35 @@ const AddRecipe = () => {
                       )}
                     </Field>
                     <Field>
-                      <FieldLabel htmlFor="picture">Image</FieldLabel>
+                      <FieldLabel htmlFor="picture">Recipe Image</FieldLabel>
+                      {imagePreview && (
+                        <div className="relative w-full h-48 rounded-xl overflow-hidden">
+                          <Image
+                            src={imagePreview}
+                            alt="Recipe preview"
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
+                      )}
                       <Input
                         id="picture"
                         type="file"
-                        accept="image/*"
+                        accept="image/jpeg,image/png,image/webp,image/jpg"
                         className="h-auto file:text-foreground/75 text-muted-foreground"
+                        onChange={handleSelectImage}
                       />
                       <FieldDescription className="text-xs">
-                        Select a picture to upload.
+                        Select a picture to upload(Max 5MB, JPEG/PNG/WebP).
                       </FieldDescription>
+                      {imageError && (
+                        <p className="text-xs text-destructive">{imageError}</p>
+                      )}
+                      {errors.imageFile && (
+                        <p className="text-xs text-destructive">
+                          {errors.imageFile}
+                        </p>
+                      )}
                     </Field>
                   </div>
 

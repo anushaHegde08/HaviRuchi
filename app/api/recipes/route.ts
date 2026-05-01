@@ -11,6 +11,7 @@ export const dynamic = "force-dynamic";
 const AddRecipeSchema = z.object({
   title: z.string().min(1, "Title is required"),
   description: z.string().min(1, "Description is required"),
+  image: z.string().optional(),
   category: z.string().min(1, "Category is required"),
   difficulty: z.enum(["Easy", "Medium", "Hard"] as const, {
     message: "Please select a difficulty level",
@@ -81,6 +82,7 @@ export async function POST(req: Request) {
     const recipe = await Recipe.create({
       title,
       description,
+      image: result.data.image || "",
       category,
       difficulty,
       timeNeeded,
