@@ -41,6 +41,17 @@ const UserProfile = ({ existingImage }: { existingImage?: string }) => {
   });
   const [profileLoading, setProfileLoading] = useState(true);
 
+  const [myRecipesCount, setMyRecipesCount] = useState(0);
+
+  useEffect(() => {
+    const fetchMyRecipesCount = async () => {
+      const response = await fetch("/api/recipes/my-recipes");
+      const data = await response.json();
+      if (Array.isArray(data)) setMyRecipesCount(data.length);
+    };
+    fetchMyRecipesCount();
+  }, []);
+
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -143,8 +154,8 @@ const UserProfile = ({ existingImage }: { existingImage?: string }) => {
     {
       icon: <BookOpen className="h-5 w-5 text-primary" />,
       label: "My Recipes",
-      description: "24 recipes added",
-      onClick: null,
+      description: `${myRecipesCount} recipes added`,
+      onClick: () => router.push("/screens/my-recipes"),
     },
     {
       icon: <Heart className="h-5 w-5 text-primary" />,

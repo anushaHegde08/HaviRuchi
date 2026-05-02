@@ -19,5 +19,6 @@ export const config = {
     "/screens/add-recipe/:path*",
     "/screens/favorites/:path*",
     "/screens/profile/:path*",
+    "/screens/my-recipes/:path*",
   ],
 };
