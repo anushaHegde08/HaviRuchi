@@ -30,8 +30,13 @@ const Discover = () => {
   console.log("discover selectedCategory:", selectedCategory);
 
   // const { allRecipes, setAllRecipes, toggleFavorite } = useGlobalContext();
-  const { allRecipes, toggleFavorite, onClickRecipeCard, loading, error } =
-    useRecipes();
+  const {
+    allRecipes,
+    handleToggleFavorite,
+    onClickRecipeCard,
+    loading,
+    error,
+  } = useRecipes();
 
   console.log("allRecipes in discover:", allRecipes.length, allRecipes);
 
@@ -167,7 +172,7 @@ const Discover = () => {
               <RecipeCard
                 key={item.id}
                 item={item}
-                onToggleFavorite={toggleFavorite}
+                onToggleFavorite={handleToggleFavorite}
                 onClickRecipeCard={onClickRecipeCard}
               />
             ))
@@ -187,7 +192,7 @@ const Discover = () => {
               <RecipeCard
                 key={item.id}
                 item={item}
-                onToggleFavorite={toggleFavorite}
+                onToggleFavorite={handleToggleFavorite}
                 onClickRecipeCard={onClickRecipeCard}
               />
             ))

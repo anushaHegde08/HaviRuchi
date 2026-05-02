@@ -5,8 +5,9 @@ export interface IUser extends Document {
   email: string;
   password?: string;
   image?: string;
-  provider: "credentials" | "google";
   phone?: string;
+  provider: "credentials" | "google";
+  favorites: mongoose.Types.ObjectId[];
   createdAt: Date;
 }
 
@@ -22,6 +23,12 @@ const UserSchema = new Schema<IUser>(
       enum: ["credentials", "google"],
       default: "credentials",
     },
+    favorites: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Recipe",
+      },
+    ],
   },
   { timestamps: true },
 );

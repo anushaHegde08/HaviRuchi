@@ -10,7 +10,8 @@ import { totalPages } from "@/lib/utilities/helperFunction";
 import { useEffect, useState } from "react";
 
 const Favorites = () => {
-  const { favoriteRecipes, toggleFavorite, onClickRecipeCard } = useRecipes();
+  const { favoriteRecipes, handleToggleFavorite, onClickRecipeCard } =
+    useRecipes();
   const [currentPage, setCurrentPage] = useState(0);
   const [mobileVisibleCount, setMobileVisibleCount] =
     useState(MOBILE_LOAD_COUNT);
@@ -51,7 +52,7 @@ const Favorites = () => {
               <RecipeCard
                 key={item.id}
                 item={item}
-                onToggleFavorite={toggleFavorite}
+                onToggleFavorite={handleToggleFavorite}
                 onClickRecipeCard={onClickRecipeCard}
               />
             ))}
@@ -61,7 +62,7 @@ const Favorites = () => {
               <RecipeCard
                 key={item.id}
                 item={item}
-                onToggleFavorite={toggleFavorite}
+                onToggleFavorite={handleToggleFavorite}
                 onClickRecipeCard={onClickRecipeCard}
               />
             ))}
