@@ -7,6 +7,10 @@ import { RecipeInstructions } from "@/components/recipe/RecipeInstructions";
 import { discoverMockData } from "@/mockData/data";
 import { RecipeImage } from "@/components/recipe/RecipeImage";
 import { useRecipes } from "@/hooks/useRecipes";
+import { useSession } from "next-auth/react";
+import RecipeActions from "@/components/recipe/RecipeActions";
+import { useIsOwner } from "@/hooks/useIsOwner";
+import { useGlobalContext } from "@/context";
 
 export default function RecipeDetailPage({
   params,
@@ -14,17 +18,17 @@ export default function RecipeDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = use(params);
-  console.log("params id:", id);
-  console.log("Number(id):", Number(id));
-  console.log(
-    "found:",
-    discoverMockData.find((r) => r.id === Number(id)),
-  );
-  const { allRecipes } = useRecipes();
+  const { data: session } = useSession();
+
+  const { allRecipes, handleToggleFavorite } = useRecipes();
+  const { toggleFavorite } = useGlobalContext();
   const recipe = allRecipes.find((r) => r.id === id);
   // const recipe: RecipeItem = discoverMockData[0];
   const [favorite, setFavorite] = useState(recipe?.isFavorite ?? false);
-  if (!recipe) return <p>Recipe not found</p>;
+
+  if (!recipe) return <p className="text-center py-12">Recipe not found</p>;
+
+  const isOwner = useIsOwner(recipe);
 
   return (
     <div className="min-h-screen bg-background px-6 mb-16">
@@ -37,14 +41,23 @@ export default function RecipeDetailPage({
           }
           title={recipe.title}
           favorite={favorite}
-          onFavoriteToggle={() => setFavorite(!favorite)}
+          recipeId={recipe.id as string}
+          onToggleFavorite={handleToggleFavorite}
         />
 
         <div className="px-4 md:px-0 py-6 flex flex-col gap-6">
           <div className="flex flex-col gap-3">
-            <h1 className="text-2xl md:text-3xl font-bold text-primary">
-              {recipe.title}
-            </h1>
+            <div className="flex gap-4 items-center justify-between">
+              <h1 className="text-2xl md:text-3xl font-bold text-primary">
+                {recipe.title}
+              </h1>
+              <RecipeActions
+                recipeId={recipe.id as string}
+                isOwner={isOwner}
+                variant="detail"
+                className="flex-row"
+              />
+            </div>
             <RecipeBadges recipe={recipe} />
           </div>
           <hr />

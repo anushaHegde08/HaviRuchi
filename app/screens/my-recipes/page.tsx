@@ -67,6 +67,10 @@ const MyRecipes = () => {
   // mobile infinite scroll
   const mobileItems = myRecipes.slice(0, mobileVisibleCount);
 
+  const handleDelete = (id: string) => {
+    setMyRecipes((prev) => prev.filter((r) => r.id !== id)); // ← remove instantly
+  };
+
   if (loading)
     return (
       <p className="text-center py-12 text-muted-foreground">Loading...</p>
@@ -100,6 +104,7 @@ const MyRecipes = () => {
                 item={item}
                 onToggleFavorite={toggleFavorite}
                 onClickRecipeCard={(id) => router.push("/screens/recipe/" + id)}
+                onDelete={() => handleDelete(item.id as string)}
               />
             ))}
           </div>
@@ -112,6 +117,7 @@ const MyRecipes = () => {
                 item={item}
                 onToggleFavorite={toggleFavorite}
                 onClickRecipeCard={(id) => router.push("/screens/recipe/" + id)}
+                onDelete={() => handleDelete(item.id as string)}
               />
             ))}
           </div>

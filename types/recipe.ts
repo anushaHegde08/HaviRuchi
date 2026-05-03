@@ -10,6 +10,11 @@ export interface RecipeItem {
   isFavorite: boolean;
   ingredients: string[];
   instructions: string[];
+  createdBy?: {
+    _id: string;
+    name: string;
+    email: string;
+  };
 }
 
 export interface AddField {
