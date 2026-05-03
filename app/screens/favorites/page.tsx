@@ -8,13 +8,20 @@ import { discoverMockData } from "@/mockData/data";
 import { RecipeItem } from "@/types";
 import { totalPages } from "@/lib/utilities/helperFunction";
 import { useEffect, useState } from "react";
+import { useIsOwner } from "@/hooks/useIsOwner";
+import { useSession } from "next-auth/react";
 
 const Favorites = () => {
-  const { favoriteRecipes, handleToggleFavorite, onClickRecipeCard } =
-    useRecipes();
+  const {
+    favoriteRecipes,
+    setAllRecipes,
+    handleToggleFavorite,
+    onClickRecipeCard,
+  } = useRecipes();
   const [currentPage, setCurrentPage] = useState(0);
   const [mobileVisibleCount, setMobileVisibleCount] =
     useState(MOBILE_LOAD_COUNT);
+  const { data: session } = useSession();
 
   useEffect(() => {
     setCurrentPage(0);
@@ -27,6 +34,10 @@ const Favorites = () => {
     startIndex + ITEMS_PER_PAGE,
   );
   const mobileItems = favoriteRecipes.slice(0, mobileVisibleCount);
+
+  const handleDelete = (id: string) => {
+    setAllRecipes(favoriteRecipes.filter((r) => r.id !== id));
+  };
 
   return (
     <div className="flex flex-col gap-4 px-6">
@@ -54,6 +65,7 @@ const Favorites = () => {
                 item={item}
                 onToggleFavorite={handleToggleFavorite}
                 onClickRecipeCard={onClickRecipeCard}
+                onDelete={() => handleDelete(item.id as string)}
               />
             ))}
           </div>
@@ -64,6 +76,7 @@ const Favorites = () => {
                 item={item}
                 onToggleFavorite={handleToggleFavorite}
                 onClickRecipeCard={onClickRecipeCard}
+                onDelete={() => handleDelete(item.id as string)}
               />
             ))}
           </div>

@@ -21,13 +21,10 @@ export const useRecipes = () => {
         ]);
         const recipesData = await recipesRes.json();
         const favoritesData = await favoritesRes.json();
-        console.log("recipesData:", recipesData.length);
-        console.log("favoritesData:", favoritesData);
-        console.log("favoritesData type:", typeof favoritesData);
+
         // get favorite IDs
         const favoriteIds = Array.isArray(favoritesData)
           ? favoritesData.map((f: any) => {
-              console.log("favorite item:", f);
               return f._id || f;
             })
           : [];
@@ -52,10 +49,6 @@ export const useRecipes = () => {
           isFavorite: favoriteIds.includes(r._id),
           createdBy: r.createdBy,
         }));
-        console.log(
-          "mapped with favorites:",
-          mapped.map((r) => ({ id: r.id, isFavorite: r.isFavorite })),
-        );
 
         setAllRecipes(mapped);
       } catch (error) {
@@ -72,7 +65,6 @@ export const useRecipes = () => {
 
   // toggle favorite — updates DB and local state
   const handleToggleFavorite = async (id: string) => {
-    console.log("handleToggleFavorite called with id:", id);
     // optimistic update — update UI immediately
     toggleFavorite(id);
 
@@ -97,6 +89,7 @@ export const useRecipes = () => {
 
   return {
     allRecipes,
+    setAllRecipes,
     favoriteRecipes,
     handleToggleFavorite,
     onClickRecipeCard,

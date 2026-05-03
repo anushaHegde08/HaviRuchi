@@ -11,14 +11,16 @@ interface RecipeImageProps {
   image: string;
   title: string;
   favorite: boolean;
-  onFavoriteToggle: () => void;
+  recipeId: string;
+  onToggleFavorite: (id: string) => void;
 }
 
 export const RecipeImage = ({
   image,
   title,
   favorite,
-  onFavoriteToggle,
+  recipeId,
+  onToggleFavorite,
 }: RecipeImageProps) => {
   const router = useRouter();
   return (
@@ -37,7 +39,7 @@ export const RecipeImage = ({
           variant="ghost"
           onClick={() => {
             const updatedFavorite = !favorite;
-            onFavoriteToggle();
+            onToggleFavorite(recipeId);
             if (updatedFavorite) {
               toast.success("Recipe successfully added to your Favorites", {
                 position: "top-right",
@@ -53,7 +55,7 @@ export const RecipeImage = ({
           <Heart
             className={cn(
               "h-5 w-5",
-              favorite ? "fill-primary text-primary" : "",
+              favorite ? "text-red-500 fill-red-500 bg-red-500" : "",
             )}
           />
         </Button>

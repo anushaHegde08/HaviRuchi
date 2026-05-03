@@ -14,31 +14,25 @@ import { totalPages } from "@/lib/utilities/helperFunction";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useRecipes } from "@/hooks/useRecipes";
-import { useGlobalContext } from "@/context";
+import { useIsOwner } from "@/hooks/useIsOwner";
+import { useSession } from "next-auth/react";
 
 const Discover = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const [filters, setFilters] = useState<FilterState>(defaultFilters);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
-  // const [allRecipes, setAllRecipes] = useState<RecipeItem[]>([])
-  // const [loading, setLoading] = useState(false);
-  // const [error, setError] = useState<string | null>(null);
 
-  console.log("discover searchQuery:", searchQuery);
-  console.log("discover filters:", filters);
-  console.log("discover selectedCategory:", selectedCategory);
+  const { data: session } = useSession();
 
-  // const { allRecipes, setAllRecipes, toggleFavorite } = useGlobalContext();
   const {
     allRecipes,
+    setAllRecipes,
     handleToggleFavorite,
     onClickRecipeCard,
     loading,
     error,
   } = useRecipes();
-
-  console.log("allRecipes in discover:", allRecipes.length, allRecipes);
 
   const [mobileVisibleCount, setMobileVisibleCount] =
     useState(MOBILE_LOAD_COUNT);
@@ -112,6 +106,10 @@ const Discover = () => {
     setMobileVisibleCount((prev) => prev + MOBILE_LOAD_COUNT);
   };
 
+  const handleDelete = (id: string) => {
+    // remove from local state instantly — no refresh needed
+    setAllRecipes(allRecipes.filter((r) => r.id !== id));
+  };
   // reset to page 0 when filters change
   useEffect(() => {
     setCurrentPage(0);
@@ -174,6 +172,7 @@ const Discover = () => {
                 item={item}
                 onToggleFavorite={handleToggleFavorite}
                 onClickRecipeCard={onClickRecipeCard}
+                onDelete={() => handleDelete(item.id as string)}
               />
             ))
           ) : (
@@ -194,6 +193,7 @@ const Discover = () => {
                 item={item}
                 onToggleFavorite={handleToggleFavorite}
                 onClickRecipeCard={onClickRecipeCard}
+                onDelete={() => handleDelete(item.id as string)}
               />
             ))
           ) : (
