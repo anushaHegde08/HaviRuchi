@@ -16,6 +16,7 @@ import { toast } from "sonner";
 import { RecipeBadges } from "../recipe/RecipeBadges";
 import RecipeActions from "../recipe/RecipeActions";
 import { useIsOwner } from "@/hooks/useIsOwner";
+import { cn } from "@/lib/utils";
 
 interface RecipeCardProps {
   item: RecipeItem;
@@ -32,22 +33,12 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
 }) => {
   const isOwner = useIsOwner(item);
 
-  const handleFaoriteClick = () => {
-    const updatedFavorite = !item.isFavorite;
+  const handleFavoriteClick = () => {
     onToggleFavorite(item.id);
-    if (updatedFavorite) {
-      toast.success("Recipe successfully added to your Favorites", {
-        position: "top-right",
-      });
-    } else {
-      toast.error("Recipe successfully removed from your Favorites", {
-        position: "top-right",
-      });
-    }
   };
 
   return (
-    <Card className="flex">
+    <Card className="flex transition-all duration-200 hover:scale-[1.02] hover:shadow-lg">
       <img
         src={
           item.image && item.image !== ""
@@ -56,6 +47,9 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
         }
         alt={item.title}
         className="flex-[1] object-cover overflow-auto rounded-s-xl"
+        onError={(e) => {
+          e.currentTarget.src = "/images/placeholder.jpg";
+        }}
       />
       <div
         className="flex-[3]"
@@ -63,7 +57,7 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
           onClickRecipeCard(item.id);
         }}
       >
-        <CardHeader>
+        <CardHeader className="cursor-pointer">
           <CardTitle className="md:text-lg lg:text-xl">{item.title}</CardTitle>
           <CardDescription className="md:text-lg lg:text-xl text-secondary/70">
             {item.description}
@@ -78,8 +72,11 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
         onClick={(e) => e.stopPropagation()}
       >
         <HeartIcon
-          onClick={handleFaoriteClick}
-          className={item.isFavorite ? "text-red-500 fill-red-500" : ""}
+          onClick={handleFavoriteClick}
+          className={cn(
+            "cursor-pointer hover:scale-110 transition-transform",
+            item.isFavorite ? "text-red-500 fill-red-500" : "",
+          )}
         />
         {isOwner && (
           <RecipeActions

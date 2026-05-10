@@ -3,11 +3,12 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useGlobalContext } from "@/context";
 import { RecipeItem } from "@/types";
+import { toast } from "sonner";
 
 export const useRecipes = () => {
   const router = useRouter();
   const { allRecipes, setAllRecipes, toggleFavorite } = useGlobalContext();
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -28,7 +29,6 @@ export const useRecipes = () => {
               return f._id || f;
             })
           : [];
-        console.log("favoriteIds:", favoriteIds);
 
         // if (!recipesRes.ok) {
         //   setError(recipesData.error);
@@ -39,7 +39,7 @@ export const useRecipes = () => {
           id: r._id,
           title: r.title,
           description: r.description,
-          image: r.image || "/images/image1.jpg",
+          image: r.image || "/images/placeholder.jpg",
           category: r.category,
           difficulty: r.difficulty,
           timeNeeded: r.timeNeeded,
@@ -65,21 +65,31 @@ export const useRecipes = () => {
 
   // toggle favorite — updates DB and local state
   const handleToggleFavorite = async (id: string) => {
+    const recipe = allRecipes.find((r) => r.id === id);
+    const wasFavorited = recipe?.isFavorite ?? false;
+
     // optimistic update — update UI immediately
     toggleFavorite(id);
 
     try {
-      const response = await fetch("/api/users/favorites", {
+      await fetch("/api/users/favorites", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ recipeId: id }),
       });
-      const data = await response.json();
-      console.log("toggle response:", data);
+      wasFavorited
+        ? toast.error("Recipe removed from favorites", {
+            position: "top-right",
+          })
+        : toast.success("Recipe added to favorites", {
+            position: "top-right",
+          });
     } catch (error) {
       // revert if API call fails
       toggleFavorite(id);
-      console.error("Failed to toggle favorite");
+      toast.error("Failed to toggle favorite", {
+        position: "top-right",
+      });
     }
   };
 
@@ -94,6 +104,7 @@ export const useRecipes = () => {
     handleToggleFavorite,
     onClickRecipeCard,
     loading,
+    setLoading,
     error,
   };
 };

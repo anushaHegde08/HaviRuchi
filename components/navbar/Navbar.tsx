@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import { Heart, Home, Menu, PlusCircle, UserCircle, X } from "lucide-react";
 import { Button } from "../ui/button";
 import { useState } from "react";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 interface NavItem {
   name: string;
@@ -78,23 +79,27 @@ export function Navbar() {
           <nav className="hidden lg:flex items-center gap-8">
             <NavLinks className="flex items-center gap-1 text-sm font-medium" />
           </nav>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="hidden md:flex lg:hidden"
-            onClick={() => setMenuOpen(!menuOpen)}
-          >
-            {menuOpen ? <X /> : <Menu />}
-          </Button>
-        </div>
-        {menuOpen && (
-          <div className="hidden md:flex lg:hidden flex-col border-b shadow-md bg-background absolute left-0 right-0 px-6 py-4 gap-4">
-            <NavLinks
-              className="flex items-center gap-2 text-base font-medium"
-              onLinkClick={() => setMenuOpen(false)}
-            />
+
+          {/* Hamburger — tablet only (md to lg) */}
+          <div className="hidden md:block lg:hidden">
+            <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon">
+                  <Menu className="h-5 w-5" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="right" className="w-64 pt-12">
+                {/* <SheetContent side="top" className="data-[side=top]:max-h-[50vh]"> */}
+                <nav className="flex flex-col gap-6 px-4">
+                  <NavLinks
+                    className="flex items-center gap-3 text-base font-medium"
+                    onLinkClick={() => setMenuOpen(false)}
+                  />
+                </nav>
+              </SheetContent>
+            </Sheet>
           </div>
-        )}
+        </div>
       </header>
       <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-background border-t">
         <div className="flex items-center justify-around h-16">

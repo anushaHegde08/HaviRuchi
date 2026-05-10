@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import RecipeForm, { RecipeFormData } from "@/components/recipe/RecipeForm";
 import { AddField } from "@/types";
+import { LoadingScreen } from "@/components/loading/LoadingScreen";
 
 export default function EditRecipePage({
   params,
@@ -12,11 +13,12 @@ export default function EditRecipePage({
 }) {
   const { id } = use(params);
   const router = useRouter();
-  const [loading, setLoading] = useState(false);
+  const [buttonLoading, setButtonLoading] = useState(false);
   const [fetching, setFetching] = useState(true);
   const [initialData, setInitialData] = useState<RecipeFormData | undefined>(
     undefined,
   );
+  const [hasChanges, setHasChanges] = useState(false);
 
   useEffect(() => {
     const fetchRecipe = async () => {
@@ -73,7 +75,7 @@ export default function EditRecipePage({
 
   const handleSubmit = async (data: RecipeFormData, totalMinutes: number) => {
     try {
-      setLoading(true);
+      setButtonLoading(true);
       const response = await fetch(`/api/recipes/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -96,22 +98,25 @@ export default function EditRecipePage({
       toast.success("Recipe updated successfully!");
       router.back();
     } finally {
-      setLoading(false);
+      setButtonLoading(false);
     }
   };
 
-  if (fetching)
-    return (
-      <p className="text-center py-12 text-muted-foreground">Loading...</p>
-    );
-
   return (
-    <RecipeForm
-      initialData={initialData}
-      onSubmit={handleSubmit}
-      loading={loading}
-      pageTitle="Edit Recipe"
-      submitLabel="Update Recipe"
-    />
+    <>
+      {fetching ? (
+        <LoadingScreen />
+      ) : (
+        <RecipeForm
+          initialData={initialData}
+          onSubmit={handleSubmit}
+          buttonLoading={buttonLoading}
+          pageTitle="Edit Recipe"
+          submitLabel="Update Recipe"
+          onFormChange={() => setHasChanges(true)}
+          submitDisabled={!hasChanges}
+        />
+      )}
+    </>
   );
 }

@@ -9,6 +9,9 @@ export interface IUser extends Document {
   provider: "credentials" | "google";
   favorites: mongoose.Types.ObjectId[];
   createdAt: Date;
+  isVerified: boolean;
+  emailVerifyToken: string;
+  emailVerifyTokenExpiry: Date;
 }
 
 const UserSchema = new Schema<IUser>(
@@ -29,6 +32,9 @@ const UserSchema = new Schema<IUser>(
         ref: "Recipe",
       },
     ],
+    isVerified: { type: Boolean, default: false },
+    emailVerifyToken: { type: String },
+    emailVerifyTokenExpiry: { type: Date },
   },
   { timestamps: true },
 );

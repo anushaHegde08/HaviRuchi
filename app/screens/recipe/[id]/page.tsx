@@ -10,7 +10,7 @@ import { useRecipes } from "@/hooks/useRecipes";
 import { useSession } from "next-auth/react";
 import RecipeActions from "@/components/recipe/RecipeActions";
 import { useIsOwner } from "@/hooks/useIsOwner";
-import { useGlobalContext } from "@/context";
+import { LoadingScreen } from "@/components/loading/LoadingScreen";
 
 export default function RecipeDetailPage({
   params,
@@ -20,52 +20,57 @@ export default function RecipeDetailPage({
   const { id } = use(params);
   const { data: session } = useSession();
 
-  const { allRecipes, handleToggleFavorite } = useRecipes();
-  const { toggleFavorite } = useGlobalContext();
+  const { allRecipes, handleToggleFavorite, loading } = useRecipes();
   const recipe = allRecipes.find((r) => r.id === id);
-  // const recipe: RecipeItem = discoverMockData[0];
   const [favorite, setFavorite] = useState(recipe?.isFavorite ?? false);
+  const isFavorited = allRecipes.find((r) => r.id === id)?.isFavorite ?? false;
 
   if (!recipe) return <p className="text-center py-12">Recipe not found</p>;
 
   const isOwner = useIsOwner(recipe);
 
   return (
-    <div className="min-h-screen bg-background px-6 mb-16">
-      <div className="max-w-4xl mx-auto">
-        <RecipeImage
-          image={
-            recipe.image && recipe.image !== ""
-              ? recipe.image
-              : "/images/placeholder.png"
-          }
-          title={recipe.title}
-          favorite={favorite}
-          recipeId={recipe.id as string}
-          onToggleFavorite={handleToggleFavorite}
-        />
+    <>
+      {loading ? (
+        <LoadingScreen />
+      ) : (
+        <div className="min-h-screen bg-background px-6 mb-16">
+          <div className="max-w-4xl mx-auto">
+            <RecipeImage
+              image={
+                recipe.image && recipe.image !== ""
+                  ? recipe.image
+                  : "/images/placeholder.png"
+              }
+              title={recipe.title}
+              favorite={isFavorited}
+              recipeId={recipe.id as string}
+              onToggleFavorite={handleToggleFavorite}
+            />
 
-        <div className="px-4 md:px-0 py-6 flex flex-col gap-6">
-          <div className="flex flex-col gap-3">
-            <div className="flex gap-4 items-center justify-between">
-              <h1 className="text-2xl md:text-3xl font-bold text-primary">
-                {recipe.title}
-              </h1>
-              <RecipeActions
-                recipeId={recipe.id as string}
-                isOwner={isOwner}
-                variant="detail"
-                className="flex-row"
-              />
+            <div className="px-4 md:px-0 py-6 flex flex-col gap-6">
+              <div className="flex flex-col gap-3">
+                <div className="flex gap-4 items-center justify-between">
+                  <h1 className="text-2xl md:text-3xl font-bold text-primary">
+                    {recipe.title}
+                  </h1>
+                  <RecipeActions
+                    recipeId={recipe.id as string}
+                    isOwner={isOwner}
+                    variant="detail"
+                    className="flex-row"
+                  />
+                </div>
+                <RecipeBadges recipe={recipe} />
+              </div>
+              <hr />
+              <RecipeIngredients ingredients={recipe.ingredients} />
+              <hr />
+              <RecipeInstructions instructions={recipe.instructions} />
             </div>
-            <RecipeBadges recipe={recipe} />
           </div>
-          <hr />
-          <RecipeIngredients ingredients={recipe.ingredients} />
-          <hr />
-          <RecipeInstructions instructions={recipe.instructions} />
         </div>
-      </div>
-    </div>
+      )}
+    </>
   );
 }

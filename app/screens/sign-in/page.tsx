@@ -169,7 +169,7 @@ export default function SignInPage() {
       </div>
 
       <Button
-        variant="ghost"
+        variant="outline"
         onClick={handleGoogleSignIn}
         className="w-full h-12 rounded-xl gap-2"
       >

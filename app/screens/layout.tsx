@@ -20,25 +20,21 @@ export default function ScreensLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${inter.variable} font-sans antialiased`}>
-        <RootProvider>
-          <div>
-            <div className="sticky top-0 z-50">
-              <Navbar />
-            </div>
-            {/* <SearchOverlay /> */}
-            <main>{children}</main>
-            <Toaster
-              toastOptions={{
-                classNames: {
-                  icon: "text-primary", // icon color
-                },
-              }}
-            />
-          </div>
-        </RootProvider>
-      </body>
-    </html>
+    <RootProvider>
+      <div>
+        <div className="sticky top-0 z-50">
+          <Navbar />
+        </div>
+        {/* <SearchOverlay /> */}
+        <main>{children}</main>
+        <Toaster
+          toastOptions={{
+            classNames: {
+              icon: "text-primary", // icon color
+            },
+          }}
+        />
+      </div>
+    </RootProvider>
   );
 }

@@ -12,7 +12,9 @@ export function GlobalProvider({ children }: { children: ReactNode }) {
   const toggleFavorite = (id: string) => {
     setAllRecipes((prev) =>
       prev.map((item) =>
-        item.id === id ? { ...item, isFavorite: !item.isFavorite } : item,
+        item.id.toString() === id.toString()
+          ? { ...item, isFavorite: !item.isFavorite }
+          : item,
       ),
     );
   };

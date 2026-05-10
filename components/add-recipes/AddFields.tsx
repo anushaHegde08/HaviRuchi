@@ -72,7 +72,9 @@ const AddFields = ({
             <Input
               placeholder={placeholder}
               value={field.value}
-              onChange={(e) => update(field.id, e.target.value)}
+              onChange={(e) => {
+                update(field.id, e.target.value);
+              }}
               className="flex-1"
             />
             {/* Measurement — only for ingredients */}
@@ -80,7 +82,9 @@ const AddFields = ({
               <Input
                 placeholder="e.g., 1 cup"
                 value={field.measurement ?? ""}
-                onChange={(e) => updateMeasurement(field.id, e.target.value)}
+                onChange={(e) => {
+                  updateMeasurement(field.id, e.target.value);
+                }}
                 className="w-28 shrink-0"
               />
             )}

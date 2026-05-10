@@ -71,7 +71,7 @@ const RecipeActions = ({
         variant="outline"
         size={variant === "card" ? "icon" : "default"}
         onClick={() => router.push(`/screens/edit-recipe/${recipeId}`)}
-        className="border-primary text-primary hover:bg-primary/5"
+        className="border-primary text-primary hover:bg-primary/5 hover:scale-110 transition-transform"
       >
         <Pencil className="h-4 w-4" />
         {variant === "detail" && <span className="ml-1">Edit</span>}
@@ -83,7 +83,7 @@ const RecipeActions = ({
           <Button
             variant="outline"
             size={variant === "card" ? "icon" : "default"}
-            className="border-destructive text-destructive hover:bg-destructive/5"
+            className="border-destructive text-destructive hover:bg-destructive/5 hover:scale-110 transition-transform"
           >
             <Trash2 className="h-4 w-4" />
             {variant === "detail" && <span className="ml-1">Delete</span>}
