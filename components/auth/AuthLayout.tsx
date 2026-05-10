@@ -23,7 +23,7 @@ export const AuthLayout = ({
   showLogo = false,
   children,
 }: AuthLayoutProps) => (
-  <div className="min-h-screen flex bg-background px-6">
+  <div className="min-h-screen flex bg-background px-6 mb-10">
     {/* Left panel — desktop only */}
     <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-b from-primary/80 to-primary/30 flex-col items-center justify-center">
       <div className="flex flex-col gap-4">

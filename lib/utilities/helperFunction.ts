@@ -15,6 +15,6 @@ export const formatTime = (totalMinutes: number) => {
 };
 
 export const capitalizeFirst = (value: string) => {
-  if (!value) return value;
+  if (!value) return "";
   return value.charAt(0).toUpperCase() + value.slice(1);
 };

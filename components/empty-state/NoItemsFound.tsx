@@ -20,7 +20,7 @@ export const NoItemsFound = ({
   const router = useRouter();
 
   return (
-    <div className="flex flex-col items-center justify-center py-16 gap-4 text-center">
+    <div className="flex flex-col items-center justify-center min-h-[60vh] py-16 gap-4 text-center">
       <div className="bg-primary/10 rounded-full p-6">{icon}</div>
       <div className="flex flex-col gap-1">
         <p className="text-lg font-semibold">{title}</p>

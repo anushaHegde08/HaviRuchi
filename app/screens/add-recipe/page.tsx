@@ -6,11 +6,11 @@ import RecipeForm, { RecipeFormData } from "@/components/recipe/RecipeForm";
 
 const AddRecipe = () => {
   const router = useRouter();
-  const [loading, setLoading] = useState(false);
+  const [buttonloading, setButtonLoading] = useState(false);
 
   const handleSubmit = async (data: RecipeFormData, totalMinutes: number) => {
     try {
-      setLoading(true);
+      setButtonLoading(true);
       const response = await fetch("/api/recipes", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -33,14 +33,14 @@ const AddRecipe = () => {
       toast.success("Recipe added successfully!");
       router.push("/screens/discover");
     } finally {
-      setLoading(false);
+      setButtonLoading(false);
     }
   };
 
   return (
     <RecipeForm
       onSubmit={handleSubmit}
-      loading={loading}
+      buttonLoading={buttonloading}
       pageTitle="Add New Recipe"
       submitLabel="Submit"
     />

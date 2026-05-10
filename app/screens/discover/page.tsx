@@ -16,6 +16,10 @@ import { useRouter } from "next/navigation";
 import { useRecipes } from "@/hooks/useRecipes";
 import { useIsOwner } from "@/hooks/useIsOwner";
 import { useSession } from "next-auth/react";
+import { LoadingScreen } from "@/components/loading/LoadingScreen";
+import { DatabaseSearch, Search } from "lucide-react";
+import { NoItemsFound } from "@/components/empty-state/NoItemsFound";
+import { RecipeGridSkeleton } from "@/components/loading/RecipeCardSkeleton";
 
 const Discover = () => {
   const [currentPage, setCurrentPage] = useState(0);
@@ -151,11 +155,7 @@ const Discover = () => {
         </div>
       </div>
       {/* loading state */}
-      {loading && (
-        <div className="text-center py-12 text-muted-foreground">
-          Loading recipes...
-        </div>
-      )}
+      {loading && <RecipeGridSkeleton count={ITEMS_PER_PAGE} />}
 
       {/* error state */}
       {error && (
@@ -176,9 +176,11 @@ const Discover = () => {
               />
             ))
           ) : (
-            <p className="text-muted-foreground text-center py-12">
-              No recipes found.
-            </p>
+            <NoItemsFound
+              icon={<DatabaseSearch className="h-8 w-8 text-primary" />}
+              title="No recipes found"
+              description="Try adjusting your search or filters"
+            />
           )}
         </div>
       )}
@@ -197,23 +199,27 @@ const Discover = () => {
               />
             ))
           ) : (
-            <p className="text-muted-foreground col-span-2 text-center py-12">
-              No recipes found for the selected filters.
-            </p>
+            <div className="col-span-2">
+              <NoItemsFound
+                icon={<DatabaseSearch className="h-8 w-8 text-primary" />}
+                title="No recipes found"
+                description="Try adjusting your search or filters"
+              />
+            </div>
           )}
         </div>
       )}
 
-      {/* {itemsToRender.length > 0 ? ( */}
-      <PaginationComponent
-        totalPages={totalPages(filteredRecipes, ITEMS_PER_PAGE)}
-        currentPage={currentPage}
-        onPageChange={(pageNumber) => setCurrentPage(pageNumber)}
-        allFilteredRecipes={filteredRecipes}
-        visibleItems={mobileVisibleCount}
-        onLoadMore={handleLoadMore}
-      />
-      {/* ) : null} */}
+      {itemsToRender.length > 0 && !loading ? (
+        <PaginationComponent
+          totalPages={totalPages(filteredRecipes, ITEMS_PER_PAGE)}
+          currentPage={currentPage}
+          onPageChange={(pageNumber) => setCurrentPage(pageNumber)}
+          allFilteredRecipes={filteredRecipes}
+          visibleItems={mobileVisibleCount}
+          onLoadMore={handleLoadMore}
+        />
+      ) : null}
     </div>
   );
 };

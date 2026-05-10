@@ -38,30 +38,28 @@ export const RecipeImage = ({
           size="icon"
           variant="ghost"
           onClick={() => {
-            const updatedFavorite = !favorite;
             onToggleFavorite(recipeId);
-            if (updatedFavorite) {
-              toast.success("Recipe successfully added to your Favorites", {
-                position: "top-right",
-              });
-            } else {
-              toast.error("Recipe successfully removed from your Favorites", {
-                position: "top-right",
-              });
-            }
           }}
           className="bg-white/80 backdrop-blur-sm hover:bg-white rounded-full"
         >
           <Heart
             className={cn(
               "h-5 w-5",
-              favorite ? "text-red-500 fill-red-500 bg-red-500" : "",
+              favorite ? "text-red-500 fill-red-500" : "",
             )}
           />
         </Button>
       </div>
       <div className="relative w-full h-64 md:h-96 md:rounded-2xl overflow-hidden">
-        <Image src={image} alt={title} fill className="object-cover" />
+        <Image
+          src={image || "/images/placeholder.jpg"}
+          alt={title}
+          fill
+          className="object-cover"
+          onError={(e) => {
+            e.currentTarget.src = "/images/placeholder.jpg";
+          }}
+        />
       </div>
     </div>
   );

@@ -31,6 +31,8 @@ import AddFields from "@/components/add-recipes/AddFields";
 import { uploadImage } from "@/lib/uploadImage";
 import { capitalizeFirst } from "@/lib/utilities/helperFunction";
 import Image from "next/image";
+import { cn } from "@/lib/utils";
+import ButtonLoadingSpinner from "../loading/ButtonLoadingSpinner";
 
 export interface RecipeFormData {
   title: string;
@@ -48,9 +50,11 @@ export interface RecipeFormData {
 interface RecipeFormProps {
   initialData?: RecipeFormData; // empty = add, filled = edit
   onSubmit: (data: RecipeFormData, totalMinutes: number) => Promise<void>;
-  loading: boolean;
+  buttonLoading: boolean;
   pageTitle: string; // "Add New Recipe" or "Edit Recipe"
   submitLabel: string; // "Submit" or "Update Recipe"
+  onFormChange?: () => void;
+  submitDisabled?: boolean;
 }
 
 const defaultData: RecipeFormData = {
@@ -69,9 +73,11 @@ const defaultData: RecipeFormData = {
 const RecipeForm = ({
   initialData = defaultData,
   onSubmit,
-  loading,
+  buttonLoading,
   pageTitle,
   submitLabel,
+  onFormChange,
+  submitDisabled,
 }: RecipeFormProps) => {
   const router = useRouter();
 
@@ -122,11 +128,13 @@ const RecipeForm = ({
   const handleHoursChange = (value: number) => {
     setHours(value);
     if (value === 0 && minutes < 10) setMinutes(10);
+    onFormChange?.();
   };
 
   const handleMinutesChange = (value: number) => {
     if (hours === 0 && value < 10) return;
     setMinutes(value);
+    onFormChange?.();
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -147,6 +155,7 @@ const RecipeForm = ({
     setImageError("");
     setImageFile(file);
     setImagePreview(URL.createObjectURL(file));
+    onFormChange?.();
   };
 
   const validate = () => {
@@ -227,7 +236,12 @@ const RecipeForm = ({
   };
 
   return (
-    <div className="min-h-screen bg-background px-4 py-6 md:py-12">
+    <div
+      className={cn(
+        `${buttonLoading ? "pointer-events-none opacity-50" : ""}`,
+        "min-h-screen bg-background px-4 py-6 md:py-12",
+      )}
+    >
       <div className="w-full max-w-4xl mx-auto">
         <Card className="p-6 mb-14 md:mb-0 md:p-10">
           <form onSubmit={(e) => e.preventDefault()}>
@@ -254,6 +268,7 @@ const RecipeForm = ({
                         value={title}
                         onChange={(e) => {
                           setTitle(capitalizeFirst(e.target.value));
+                          onFormChange?.();
                           if (errors.title)
                             setErrors((prev) => ({ ...prev, title: "" }));
                         }}
@@ -281,8 +296,10 @@ const RecipeForm = ({
                         rows={4}
                         maxLength={120}
                         value={description}
+                        className="text-sm"
                         onChange={(e) => {
                           setDescription(capitalizeFirst(e.target.value));
+                          onFormChange?.();
                           if (errors.description)
                             setErrors((prev) => ({ ...prev, description: "" }));
                         }}
@@ -313,7 +330,7 @@ const RecipeForm = ({
                         onChange={handleImageChange}
                       />
                       <FieldDescription className="text-xs">
-                        Select a picture to upload(Max 5MB, JPEG/PNG/WebP).
+                        (Max 5MB, JPEG/PNG/WebP/JPG).
                       </FieldDescription>
                       {imageError && (
                         <p className="text-xs text-destructive">{imageError}</p>
@@ -334,6 +351,7 @@ const RecipeForm = ({
                         value={category}
                         onValueChange={(val) => {
                           setCategory(val);
+                          onFormChange?.();
                           if (errors.category)
                             setErrors((prev) => ({ ...prev, category: "" }));
                         }}
@@ -362,7 +380,13 @@ const RecipeForm = ({
 
                     <Field>
                       <FieldLabel>Difficulty Level</FieldLabel>
-                      <Tabs value={difficulty} onValueChange={setDifficulty}>
+                      <Tabs
+                        value={difficulty}
+                        onValueChange={(val) => {
+                          setDifficulty(val);
+                          onFormChange?.();
+                        }}
+                      >
                         <TabsList className="bg-primary/2 border w-full">
                           {DIFFICULTIES.map((level) => (
                             <TabsTrigger
@@ -425,6 +449,7 @@ const RecipeForm = ({
                         value={servings}
                         onChange={(e) => {
                           setServings(Number(e.target.value));
+                          onFormChange?.();
                           if (errors.servings)
                             setErrors((prev) => ({ ...prev, servings: "" }));
                         }}
@@ -442,7 +467,10 @@ const RecipeForm = ({
                 <div className="flex flex-col gap-4 mt-6">
                   <AddFields
                     fields={ingredients}
-                    onChange={setIngredients}
+                    onChange={(fields) => {
+                      setIngredients(fields);
+                      onFormChange?.();
+                    }}
                     placeholder="e.g., Grated coconut"
                     label="Ingredients"
                     showMeasurement={true}
@@ -458,7 +486,10 @@ const RecipeForm = ({
 
                   <AddFields
                     fields={instructions}
-                    onChange={setInstructions}
+                    onChange={(fields) => {
+                      setInstructions(fields);
+                      onFormChange?.();
+                    }}
                     placeholder="e.g., Roast the red chilies..."
                     label="Instructions"
                     onClearError={() =>
@@ -493,10 +524,14 @@ const RecipeForm = ({
                 <Button
                   type="button"
                   onClick={handleSubmit}
-                  disabled={loading}
+                  disabled={buttonLoading || submitDisabled}
                   className="flex-1"
                 >
-                  {loading ? "Saving..." : submitLabel}
+                  {buttonLoading ? (
+                    <ButtonLoadingSpinner loadingText="Saving..." />
+                  ) : (
+                    submitLabel
+                  )}
                 </Button>
               </div>
             </FieldGroup>

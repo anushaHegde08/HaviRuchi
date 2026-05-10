@@ -7,7 +7,7 @@ import { z } from "zod";
 // validation schema
 const SignUpSchema = z.object({
   name: z.string().min(1, "Name is required"),
-  email: z.email("Invalid email"),
+  email: z.email("Please enter a valid email address"),
   password: z.string().min(6, "Password must be at least 6 characters"),
 });
 

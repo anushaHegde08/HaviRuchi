@@ -10,6 +10,10 @@ import { totalPages } from "@/lib/utilities/helperFunction";
 import { useEffect, useState } from "react";
 import { useIsOwner } from "@/hooks/useIsOwner";
 import { useSession } from "next-auth/react";
+import { LoadingScreen } from "@/components/loading/LoadingScreen";
+import { Heart } from "lucide-react";
+import { NoItemsFound } from "@/components/empty-state/NoItemsFound";
+import { RecipeGridSkeleton } from "@/components/loading/RecipeCardSkeleton";
 
 const Favorites = () => {
   const {
@@ -17,6 +21,7 @@ const Favorites = () => {
     setAllRecipes,
     handleToggleFavorite,
     onClickRecipeCard,
+    loading,
   } = useRecipes();
   const [currentPage, setCurrentPage] = useState(0);
   const [mobileVisibleCount, setMobileVisibleCount] =
@@ -40,59 +45,69 @@ const Favorites = () => {
   };
 
   return (
-    <div className="flex flex-col gap-4 px-6">
-      <Typography
-        variant="h3"
-        color="primary"
-        weight="semibold"
-        className="text-start"
-      >
-        Favorite Recipes
-      </Typography>
-      <Typography variant="body" color="text" className="italic text-start">
-        You have {favoriteRecipes.length} Favorite Recipes
-      </Typography>
-      {favoriteRecipes.length === 0 ? (
-        <p className="text-muted-foreground text-center py-12">
-          No favorite recipes yet. Start adding some!
-        </p>
+    <>
+      {loading ? (
+        <RecipeGridSkeleton count={ITEMS_PER_PAGE} />
       ) : (
-        <>
-          <div className="grid grid-cols-1 gap-6 md:hidden">
-            {mobileItems.map((item: RecipeItem) => (
-              <RecipeCard
-                key={item.id}
-                item={item}
-                onToggleFavorite={handleToggleFavorite}
-                onClickRecipeCard={onClickRecipeCard}
-                onDelete={() => handleDelete(item.id as string)}
+        <div className="flex flex-col gap-4 px-6">
+          <Typography
+            variant="h3"
+            color="primary"
+            weight="semibold"
+            className="text-start"
+          >
+            Favorite Recipes
+          </Typography>
+          <Typography variant="body" color="text" className="italic text-start">
+            You have {favoriteRecipes.length} Favorite Recipes
+          </Typography>
+          {favoriteRecipes.length === 0 && !loading ? (
+            <NoItemsFound
+              icon={<Heart className="h-8 w-8 text-primary" />}
+              title="No favorites yet"
+              description="No favorite recipes yet. Start adding some!"
+              actionLabel="Discover Recipes"
+              actionHref="/screens/discover"
+            />
+          ) : (
+            <>
+              <div className="grid grid-cols-1 gap-6 md:hidden">
+                {mobileItems.map((item: RecipeItem) => (
+                  <RecipeCard
+                    key={item.id}
+                    item={item}
+                    onToggleFavorite={handleToggleFavorite}
+                    onClickRecipeCard={onClickRecipeCard}
+                    onDelete={() => handleDelete(item.id as string)}
+                  />
+                ))}
+              </div>
+              <div className="hidden md:grid md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-2 gap-6">
+                {itemsToRender.map((item: RecipeItem) => (
+                  <RecipeCard
+                    key={item.id}
+                    item={item}
+                    onToggleFavorite={handleToggleFavorite}
+                    onClickRecipeCard={onClickRecipeCard}
+                    onDelete={() => handleDelete(item.id as string)}
+                  />
+                ))}
+              </div>
+              <PaginationComponent
+                totalPages={totalPages(favoriteRecipes, ITEMS_PER_PAGE)}
+                currentPage={currentPage}
+                onPageChange={setCurrentPage}
+                allFilteredRecipes={favoriteRecipes}
+                visibleItems={mobileVisibleCount}
+                onLoadMore={() =>
+                  setMobileVisibleCount((prev) => prev + MOBILE_LOAD_COUNT)
+                }
               />
-            ))}
-          </div>
-          <div className="hidden md:grid md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-2 gap-6">
-            {itemsToRender.map((item: RecipeItem) => (
-              <RecipeCard
-                key={item.id}
-                item={item}
-                onToggleFavorite={handleToggleFavorite}
-                onClickRecipeCard={onClickRecipeCard}
-                onDelete={() => handleDelete(item.id as string)}
-              />
-            ))}
-          </div>
-          <PaginationComponent
-            totalPages={totalPages(favoriteRecipes, ITEMS_PER_PAGE)}
-            currentPage={currentPage}
-            onPageChange={setCurrentPage}
-            allFilteredRecipes={favoriteRecipes}
-            visibleItems={mobileVisibleCount}
-            onLoadMore={() =>
-              setMobileVisibleCount((prev) => prev + MOBILE_LOAD_COUNT)
-            }
-          />
-        </>
+            </>
+          )}
+        </div>
       )}
-    </div>
+    </>
   );
 };
 
