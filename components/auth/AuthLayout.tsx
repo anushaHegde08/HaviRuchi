@@ -60,7 +60,7 @@ export const AuthLayout = ({
           <Typography variant="large" weight="bold" color="primary">
             {title}
           </Typography>
-          <Typography variant="small" color="muted" position="start">
+          <Typography variant="small" color="muted">
             {subtitle}
           </Typography>
         </div>
