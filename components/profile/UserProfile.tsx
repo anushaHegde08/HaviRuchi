@@ -16,6 +16,17 @@ import {
   Phone,
   X,
 } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { signOut, useSession } from "next-auth/react";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -150,6 +161,24 @@ const UserProfile = ({ existingImage }: { existingImage?: string }) => {
     setEditingPhone(false);
   };
 
+  const handleDeleteAccount = async () => {
+    try {
+      const response = await fetch("/api/users/profile", {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        toast.error("Failed to delete account");
+        return;
+      }
+
+      toast.success("Account deleted successfully");
+      await signOut({ callbackUrl: "/screens/sign-up" });
+    } catch (error) {
+      toast.error("Something went wrong");
+    }
+  };
+
   const activityItems = [
     {
       icon: <BookOpen className="h-5 w-5 text-primary" />,
@@ -171,7 +200,7 @@ const UserProfile = ({ existingImage }: { existingImage?: string }) => {
         <LoadingScreen />
       ) : (
         <div className="min-h-screen bg-background px-4 py-6 md:py-12">
-          <div className="flex flex-col gap-6 w-full md:max-w-2xl md:mx-auto">
+          <div className="flex flex-col gap-6 w-full md:max-w-2xl md:mx-auto mb-10 md:mb-0">
             <Card className="p-4 flex items-center gap-4 md:flex-col md:items-center md:py-8 md:gap-3">
               <div className="relative shrink-0">
                 <Avatar className="w-16 h-16 md:w-28 md:h-28">
@@ -322,6 +351,34 @@ const UserProfile = ({ existingImage }: { existingImage?: string }) => {
               <LogOut className="h-4 w-4" />
               Logout
             </Button>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="w-full rounded-xl h-12 border-destructive text-destructive hover:bg-destructive/5"
+                >
+                  Delete Account
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Delete Account?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This will permanently delete your account, all your recipes
+                    and favorites. This action cannot be undone.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={handleDeleteAccount}
+                    className="bg-destructive hover:bg-destructive/90"
+                  >
+                    Delete Account
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </div>
         </div>
       )}

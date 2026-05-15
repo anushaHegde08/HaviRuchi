@@ -3,6 +3,8 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/authOptions";
 import connectDB from "@/lib/mongodb";
 import User from "@/models/User";
+import cloudinary from "@/lib/cloudinary";
+import Recipe from "@/models/Recipe";
 
 export const dynamic = "force-dynamic";
 
@@ -66,6 +68,60 @@ export async function PATCH(req: Request) {
     });
   } catch (error) {
     console.error("Update profile error:", error);
+    return NextResponse.json(
+      { error: "Something went wrong" },
+      { status: 500 },
+    );
+  }
+}
+
+export async function DELETE(req: Request) {
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.email) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    await connectDB();
+
+    const user = await User.findOne({ email: session.user.email });
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    // delete all recipes by user
+    await Recipe.deleteMany({ createdBy: user._id });
+
+    // remove user from others' favorites
+    await User.updateMany(
+      {
+        favorites: {
+          $in: await Recipe.find({ createdBy: user._id }).distinct("_id"),
+        },
+      },
+      {
+        $pull: {
+          favorites: {
+            $in: await Recipe.find({ createdBy: user._id }).distinct("_id"),
+          },
+        },
+      },
+    );
+
+    // delete profile image from Cloudinary if exists
+    if (user.image && user.image.includes("cloudinary")) {
+      const publicId = user.image.split("/").pop()?.split(".")[0];
+      if (publicId) {
+        await cloudinary.uploader.destroy(`haviruchi/profiles/${publicId}`);
+      }
+    }
+
+    // delete user
+    await User.findOneAndDelete({ email: session.user.email });
+
+    return NextResponse.json({ message: "Account deleted successfully" });
+  } catch (error) {
+    console.error("Delete profile error:", error);
     return NextResponse.json(
       { error: "Something went wrong" },
       { status: 500 },
