@@ -1,7 +1,7 @@
 import { Card } from "../ui/card";
 
 export const RecipeCardSkeleton = () => (
-  <Card className="flex  overflow-hidden animate-pulse">
+  <Card className="flex overflow-hidden animate-pulse">
     <div className="w-48 h-48 bg-muted" />
     <div className="p-4 flex flex-col gap-3">
       <div className="h-4 bg-muted rounded w-3/4" />
