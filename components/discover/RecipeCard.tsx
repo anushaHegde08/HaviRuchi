@@ -46,31 +46,31 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
             : "/images/placeholder.png"
         }
         alt={item.title}
-        className="col-span-2 h-[100%] object-cover overflow-auto rounded-s-xl"
+        className="col-span-2 h-[100px] md:h-[190px] object-cover overflow-auto rounded-s-xl"
         onError={(e) => {
           e.currentTarget.src = "/images/placeholder.jpg";
         }}
       />
       <div
-        className="col-span-4 p-1 flex flex-col justify-between "
+        className="col-span-4 py-1 flex flex-col justify-between cursor-pointer"
         onClick={() => onClickRecipeCard(item.id)}
       >
-        <div className="grid grid-cols-6 mb-1">
+        <div className="grid grid-cols-6">
           <div id="Details" className="col-span-5">
             <CardHeader className="p-0">
-              <CardTitle className="text-sm md:text-lg lg:text-xl pb-1">
+              <CardTitle className="text-sm md:text-2xl lg:text-2xl">
                 {item.title}
               </CardTitle>
             </CardHeader>
             <CardContent className="p-0">
-              <CardDescription className="text-xs md:text-lg lg:text-xl text-secondary/70 leading-1 line-clamp-3">
+              <CardDescription className="text-xs md:text-xl lg:text-xl text-secondary/70 leading-1 line-clamp-3 md:line-clamp-4">
                 {item.description}
               </CardDescription>
             </CardContent>
           </div>
           <div id="Actions" className="col-span-1">
             <CardAction
-              className="flex flex-col items-center justify-between border-t-0 p-0"
+              className="flex flex-col items-center gap-1 md:gap-2 border-t-0 p-0"
               onClick={(e) => e.stopPropagation()}
             >
               <HeartIcon
@@ -94,61 +94,6 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
         <RecipeBadges recipe={item} />
       </div>
     </Card>
-    // <Card className="flex transition-all duration-200 hover:scale-[1.02] hover:shadow-lg">
-    //   <img
-    //     src={
-    //       item.image && item.image !== ""
-    //         ? item.image
-    //         : "/images/placeholder.png"
-    //     }
-    //     alt={item.title}
-    //     className="object-cover overflow-auto rounded-s-xl w-[100px] h-[100px]"
-    //     onError={(e) => {
-    //       e.currentTarget.src = "/images/placeholder.jpg";
-    //     }}
-    //   />
-    //   <div
-    //     onClick={() => {
-    //       onClickRecipeCard(item.id);
-    //     }}
-    //   >
-    //     <CardHeader id="test" className="cursor-pointer flex flex-row p-2">
-    //       <div className="flex-grow">
-    //         <CardTitle className="text-sm md:text-lg lg:text-xl pb-1">
-    //           {item.title}
-    //         </CardTitle>
-    //         <CardDescription className="text-xs md:text-lg lg:text-xl text-secondary/70 leading-1 line-clamp-3">
-    //           {item.description}
-    //         </CardDescription>
-    //       </div>
-    //       <CardAction
-    //         className="flex flex-col items-center justify-between border-t-0 p-0"
-    //         onClick={(e) => e.stopPropagation()}
-    //       >
-    //         <HeartIcon
-    //           onClick={handleFavoriteClick}
-    //           className={cn(
-    //             "cursor-pointer hover:scale-110 transition-transform",
-    //             item.isFavorite ? "text-red-500 fill-red-500" : "",
-    //           )}
-    //         />
-    //         {isOwner && (
-    //           <CardContent>
-    //             <RecipeActions
-    //               recipeId={item.id}
-    //               isOwner={isOwner}
-    //               variant="card"
-    //               onDelete={onDelete}
-    //             />
-    //           </CardContent>
-    //         )}
-    //       </CardAction>
-    //     </CardHeader>
-    //     <CardContent className="flex justify-between px-2 py-0">
-    //       <RecipeBadges recipe={item} />
-    //     </CardContent>
-    //   </div>
-    // </Card>
   );
 };
 

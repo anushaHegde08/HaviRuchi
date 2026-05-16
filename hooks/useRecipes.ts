@@ -8,7 +8,7 @@ import { toast } from "sonner";
 export const useRecipes = () => {
   const router = useRouter();
   const { allRecipes, setAllRecipes, toggleFavorite } = useGlobalContext();
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -57,7 +57,7 @@ export const useRecipes = () => {
         setLoading(false);
       }
     };
-
+    if (allRecipes.length > 0) return;
     fetchRecipes();
   }, []);
 

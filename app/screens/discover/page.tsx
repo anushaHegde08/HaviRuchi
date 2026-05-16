@@ -187,7 +187,7 @@ const Discover = () => {
 
       {/* Desktop grid */}
       {!loading && !error && (
-        <div className="hidden md:grid md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-2 gap-6">
+        <div className="hidden md:grid md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
           {itemsToRender.length > 0 ? (
             itemsToRender.map((item: RecipeItem) => (
               <RecipeCard

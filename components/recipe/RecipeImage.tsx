@@ -50,7 +50,7 @@ export const RecipeImage = ({
           />
         </Button>
       </div>
-      <div className="relative w-full h-64 md:h-96 md:rounded-2xl overflow-hidden">
+      <div className="relative w-full h-64 md:h-96 rounded-md md:rounded-2xl overflow-hidden">
         <Image
           src={image || "/images/placeholder.jpg"}
           alt={title}

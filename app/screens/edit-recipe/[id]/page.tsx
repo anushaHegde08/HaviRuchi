@@ -76,19 +76,13 @@ export default function EditRecipePage({
   const handleSubmit = async (data: RecipeFormData, totalMinutes: number) => {
     try {
       setButtonLoading(true);
+      const { servings, ...rest } = data;
       const response = await fetch(`/api/recipes/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          title: data.title,
-          description: data.description,
-          image: data.image,
-          category: data.category,
-          difficulty: data.difficulty,
-          timeNeeded: totalMinutes,
-          servings: Number(data.servings),
-          ingredients: data.ingredients,
-          instructions: data.instructions,
+          ...rest,
+          servings: Number(servings),
         }),
       });
 

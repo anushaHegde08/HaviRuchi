@@ -34,7 +34,7 @@ export default function RecipeDetailPage({
       {loading ? (
         <LoadingScreen />
       ) : (
-        <div className="min-h-screen bg-background px-6 mb-16">
+        <div className="min-h-screen bg-background px-6 mb-16 mt-2 md:mt-4">
           <div className="max-w-4xl mx-auto">
             <RecipeImage
               image={
@@ -44,18 +44,18 @@ export default function RecipeDetailPage({
               }
               title={recipe.title}
               favorite={isFavorited}
-              recipeId={recipe.id as string}
+              recipeId={recipe.id}
               onToggleFavorite={handleToggleFavorite}
             />
 
             <div className="px-4 md:px-0 py-6 flex flex-col gap-6">
               <div className="flex flex-col gap-3">
-                <div className="flex gap-4 items-center justify-between">
+                <div className="flex flex-col md:flex-row gap-4 justify-between">
                   <h1 className="text-2xl md:text-3xl font-bold text-primary">
                     {recipe.title}
                   </h1>
                   <RecipeActions
-                    recipeId={recipe.id as string}
+                    recipeId={recipe.id}
                     isOwner={isOwner}
                     variant="detail"
                     className="flex-row"

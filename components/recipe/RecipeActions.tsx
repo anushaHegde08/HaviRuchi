@@ -65,7 +65,7 @@ const RecipeActions = ({
   };
 
   return (
-    <div className={`flex items-center gap-2 ${className}`}>
+    <div className={`flex items-center gap-1 md:gap-2 ${className}`}>
       {/* Edit button */}
       <Button
         variant="outline"
@@ -74,7 +74,7 @@ const RecipeActions = ({
           e.stopPropagation();
           router.push(`/screens/edit-recipe/${recipeId}`);
         }}
-        className="h-auto w-auto p-1 border-primary text-primary hover:bg-primary/5 hover:scale-110 transition-transform"
+        className="h-auto w-auto p-1 gap-0 md:gap-1 border-primary text-primary hover:bg-primary/5 hover:scale-110 transition-transform"
       >
         <Pencil />
         {variant === "detail" && <span className="ml-1">Edit</span>}
@@ -86,10 +86,10 @@ const RecipeActions = ({
           <Button
             variant="outline"
             size={variant === "card" ? "iconSmall" : "default"}
-            className="h-auto w-auto p-1 border-destructive text-destructive hover:bg-destructive/5 hover:scale-110 transition-transform"
+            className="h-auto w-auto p-1 gap-0 md:gap-1 border-destructive text-destructive hover:bg-destructive/5 hover:scale-110 transition-transform"
           >
             <Trash2 />
-            {variant === "detail" && <span className="ml-1">Delete</span>}
+            {variant === "detail" && <span>Delete</span>}
           </Button>
         </AlertDialogTrigger>
         <AlertDialogContent>
