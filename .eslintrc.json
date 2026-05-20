@@ -1,0 +1,45 @@
+{
+  "extends": [
+    "next/core-web-vitals",
+    "eslint:recommended",
+    "plugin:react/recommended",
+    "plugin:react-hooks/recommended",
+    "plugin:jsx-a11y/recommended"
+  ],
+  "plugins": ["react", "react-hooks", "import", "unused-imports"],
+  "rules": {
+    // React best practices
+    "react/react-in-jsx-scope": "off", 
+    "react/prop-types": "off",
+    "react/jsx-uses-react": "off",
+
+    // Hooks rules (IMPORTANT)
+    "react-hooks/rules-of-hooks": "error",
+    "react-hooks/exhaustive-deps": "warn",
+
+    // Clean code
+    "no-console": "warn",
+    "no-unused-vars": "warn",
+
+    // Import hygiene
+    "import/order": [
+      "warn",
+      {
+        "groups": ["builtin", "external", "internal", "parent", "sibling", "index"],
+        "newlines-between": "always"
+      }
+    ],
+
+    // Remove unused imports automatically (works with plugin)
+    "unused-imports/no-unused-imports": "error",
+    "unused-imports/no-unused-vars": [
+      "warn",
+      { "argsIgnorePattern": "^_" }
+    ]
+  },
+  "settings": {
+    "react": {
+      "version": "detect"
+    }
+  }
+}

@@ -1,16 +1,16 @@
 "use client";
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import RecipeCard from "@/components/discover/RecipeCard";
-import { Typography } from "@/components/ui/typography";
-import { RecipeItem } from "@/types";
-import { ITEMS_PER_PAGE, MOBILE_LOAD_COUNT } from "@/mockData/constatnts";
-import { totalPages } from "@/lib/utilities/helperFunction";
 import PaginationComponent from "@/components/discover/PaginationComponent";
-import { useRecipes } from "@/hooks/useRecipes";
+import RecipeCard from "@/components/discover/RecipeCard";
 import { NoItemsFound } from "@/components/empty-state/NoItemsFound";
-import { BookOpen } from "lucide-react";
 import { RecipeGridSkeleton } from "@/components/loading/RecipeCardSkeleton";
+import { Typography } from "@/components/ui/typography";
+import { useRecipes } from "@/hooks/useRecipes";
+import { totalPages } from "@/lib/utilities/helperFunction";
+import { ITEMS_PER_PAGE, MOBILE_LOAD_COUNT } from "@/mockData/constatnts";
+import { RecipeItem } from "@/types";
+import { BookOpen } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 const MyRecipes = () => {
   const router = useRouter();
@@ -35,8 +35,8 @@ const MyRecipes = () => {
           return;
         }
 
-        const mapped: RecipeItem[] = data.map((r: any) => ({
-          id: r._id,
+        const mapped: RecipeItem[] = data.map((r: RecipeItem) => ({
+          _id: r._id,
           title: r.title,
           description: r.description,
           image: r.image || "",
@@ -44,15 +44,13 @@ const MyRecipes = () => {
           difficulty: r.difficulty,
           timeNeeded: r.timeNeeded,
           servings: r.servings,
-          ingredients: r.ingredients,
-          instructions: r.instructions,
           isFavorite: r.isFavorite,
           createdBy: r.createdBy,
         }));
 
         setMyRecipes(mapped);
       } catch (error) {
-        console.error("Failed to fetch my recipes");
+        console.error("Failed to fetch my recipes", error);
       } finally {
         setLoading(false);
       }
@@ -72,7 +70,7 @@ const MyRecipes = () => {
   const mobileItems = myRecipes.slice(0, mobileVisibleCount);
 
   const handleDelete = (id: string) => {
-    setMyRecipes((prev) => prev.filter((r) => r.id !== id)); // ← remove instantly
+    setMyRecipes((prev) => prev.filter((r) => r._id !== id)); // ← remove instantly
   };
 
   // if (loading)
@@ -112,13 +110,13 @@ const MyRecipes = () => {
               <div className="grid grid-cols-1 gap-6 md:hidden">
                 {mobileItems.map((item: RecipeItem) => (
                   <RecipeCard
-                    key={item.id}
+                    key={item._id}
                     item={item}
                     onToggleFavorite={handleToggleFavorite}
                     onClickRecipeCard={(id) =>
                       router.push("/screens/recipe/" + id)
                     }
-                    onDelete={() => handleDelete(item.id as string)}
+                    onDelete={() => handleDelete(item._id as string)}
                   />
                 ))}
               </div>
@@ -127,13 +125,13 @@ const MyRecipes = () => {
               <div className="hidden md:grid md:grid-cols-2 gap-6">
                 {itemsToRender.map((item: RecipeItem) => (
                   <RecipeCard
-                    key={item.id}
+                    key={item._id}
                     item={item}
                     onToggleFavorite={handleToggleFavorite}
                     onClickRecipeCard={(id) =>
                       router.push("/screens/recipe/" + id)
                     }
-                    onDelete={() => handleDelete(item.id as string)}
+                    onDelete={() => handleDelete(item._id as string)}
                   />
                 ))}
               </div>

@@ -1,22 +1,19 @@
 "use client";
-import React, { useState } from "react";
+import { useIsOwner } from "@/hooks/useIsOwner";
+import { cn } from "@/lib/utils";
+import { RecipeItem } from "@/types";
+import { HeartIcon } from "lucide-react";
+import React from "react";
+import RecipeActions from "../recipe/RecipeActions";
+import { RecipeBadges } from "../recipe/RecipeBadges";
 import {
   Card,
   CardAction,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "../ui/card";
-import { Badge } from "../ui/badge";
-import { Clock, HeartIcon } from "lucide-react";
-import { RecipeItem } from "@/types";
-import { toast } from "sonner";
-import { RecipeBadges } from "../recipe/RecipeBadges";
-import RecipeActions from "../recipe/RecipeActions";
-import { useIsOwner } from "@/hooks/useIsOwner";
-import { cn } from "@/lib/utils";
 
 interface RecipeCardProps {
   item: RecipeItem;
@@ -34,7 +31,7 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
   const isOwner = useIsOwner(item);
 
   const handleFavoriteClick = () => {
-    onToggleFavorite(item.id);
+    onToggleFavorite(item._id);
   };
 
   return (
@@ -53,7 +50,7 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
       />
       <div
         className="col-span-4 py-1 flex flex-col justify-between cursor-pointer"
-        onClick={() => onClickRecipeCard(item.id)}
+        onClick={() => onClickRecipeCard(item._id)}
       >
         <div className="grid grid-cols-6">
           <div id="Details" className="col-span-5">
@@ -82,7 +79,7 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
               />
               {isOwner && (
                 <RecipeActions
-                  recipeId={item.id}
+                  recipeId={item._id}
                   isOwner={isOwner}
                   variant="card"
                   onDelete={onDelete}

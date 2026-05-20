@@ -30,7 +30,7 @@ export async function GET() {
     const Recipe = (await import("@/models/Recipe")).default;
     const favorites = await Recipe.find({
       _id: { $in: user.favorites },
-    });
+    }).select("-ingredients -instructions");
     return NextResponse.json(user.favorites);
   } catch (error) {
     console.error("Get favorites error:", error);

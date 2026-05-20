@@ -23,9 +23,11 @@ export async function GET() {
     }
 
     // find recipes created by this user
-    const recipes = await Recipe.find({ createdBy: user._id }).sort({
-      createdAt: -1,
-    }); // newest first
+    const recipes = await Recipe.find({ createdBy: user._id })
+      .select("-ingredients -instructions")
+      .sort({
+        createdAt: -1,
+      }); // newest first
 
     return NextResponse.json(recipes);
   } catch (error) {

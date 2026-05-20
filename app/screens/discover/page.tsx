@@ -1,33 +1,27 @@
 "use client";
 import PaginationComponent from "@/components/discover/PaginationComponent";
 import RecipeCard from "@/components/discover/RecipeCard";
+import SearchBar from "@/components/discover/SearchBar";
+import { NoItemsFound } from "@/components/empty-state/NoItemsFound";
+import { FilterTrigger } from "@/components/filter/FilterTrigger";
+import { RecipeGridSkeleton } from "@/components/loading/RecipeCardSkeleton";
+import { Badge } from "@/components/ui/badge";
+import { useRecipes } from "@/hooks/useRecipes";
+import { totalPages } from "@/lib/utilities/helperFunction";
 import {
   CATEGORIES,
   ITEMS_PER_PAGE,
   MOBILE_LOAD_COUNT,
 } from "@/mockData/constatnts";
-import { Badge } from "@/components/ui/badge";
-import SearchBar from "@/components/discover/SearchBar";
 import { defaultFilters, FilterState, RecipeItem } from "@/types";
-import { FilterTrigger } from "@/components/filter/FilterTrigger";
-import { totalPages } from "@/lib/utilities/helperFunction";
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { useRecipes } from "@/hooks/useRecipes";
-import { useIsOwner } from "@/hooks/useIsOwner";
-import { useSession } from "next-auth/react";
-import { LoadingScreen } from "@/components/loading/LoadingScreen";
-import { DatabaseSearch, Search } from "lucide-react";
-import { NoItemsFound } from "@/components/empty-state/NoItemsFound";
-import { RecipeGridSkeleton } from "@/components/loading/RecipeCardSkeleton";
+import { DatabaseSearch } from "lucide-react";
+import { useState } from "react";
 
 const Discover = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const [filters, setFilters] = useState<FilterState>(defaultFilters);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
-
-  const { data: session } = useSession();
 
   const {
     allRecipes,
@@ -41,25 +35,29 @@ const Discover = () => {
   const [mobileVisibleCount, setMobileVisibleCount] =
     useState(MOBILE_LOAD_COUNT);
 
-  const router = useRouter();
-
   // handle badge click
   const handleCategoryClick = (category: string) => {
     setSelectedCategory(category);
     // clear filter categories when badge is clicked
     setFilters((prev) => ({ ...prev, categories: [] }));
+    setCurrentPage(0);
+    setMobileVisibleCount(MOBILE_LOAD_COUNT);
   };
 
   // handle filter apply — clear selected badge
   const handleApplyFilter = (newFilters: FilterState) => {
     setFilters(newFilters);
     setSelectedCategory("All");
+    setCurrentPage(0);
+    setMobileVisibleCount(MOBILE_LOAD_COUNT);
   };
 
   // handle filter clear
   const handleClearFilter = () => {
     setFilters(defaultFilters);
     setSelectedCategory("All");
+    setCurrentPage(0);
+    setMobileVisibleCount(MOBILE_LOAD_COUNT);
   };
 
   const filteredRecipes = allRecipes.filter((recipe) => {
@@ -112,14 +110,14 @@ const Discover = () => {
 
   const handleDelete = (id: string) => {
     // remove from local state instantly — no refresh needed
-    setAllRecipes(allRecipes.filter((r) => r.id !== id));
+    setAllRecipes(allRecipes.filter((r) => r._id !== id));
   };
   // reset to page 0 when filters change
-  useEffect(() => {
-    setCurrentPage(0);
-    // reset mobile count when filters/search change
-    setMobileVisibleCount(MOBILE_LOAD_COUNT);
-  }, [filters, searchQuery, selectedCategory]);
+  // useEffect(() => {
+  //   setCurrentPage(0);
+  //   // reset mobile count when filters/search change
+  //   setMobileVisibleCount(MOBILE_LOAD_COUNT);
+  // }, [filters, searchQuery, selectedCategory]);
 
   return (
     <div className="flex flex-col gap-4 px-6 py-4">
@@ -168,11 +166,11 @@ const Discover = () => {
           {mobileItems.length > 0 ? (
             mobileItems.map((item: RecipeItem) => (
               <RecipeCard
-                key={item.id}
+                key={item._id}
                 item={item}
                 onToggleFavorite={handleToggleFavorite}
                 onClickRecipeCard={onClickRecipeCard}
-                onDelete={() => handleDelete(item.id as string)}
+                onDelete={() => handleDelete(item._id as string)}
               />
             ))
           ) : (
@@ -191,11 +189,11 @@ const Discover = () => {
           {itemsToRender.length > 0 ? (
             itemsToRender.map((item: RecipeItem) => (
               <RecipeCard
-                key={item.id}
+                key={item._id}
                 item={item}
                 onToggleFavorite={handleToggleFavorite}
                 onClickRecipeCard={onClickRecipeCard}
-                onDelete={() => handleDelete(item.id as string)}
+                onDelete={() => handleDelete(item._id as string)}
               />
             ))
           ) : (

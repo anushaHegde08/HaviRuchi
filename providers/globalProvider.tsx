@@ -1,27 +1,30 @@
 "use client";
-import { useState, ReactNode, useEffect } from "react";
 import { GlobalContext } from "@/context/globalContext";
-import { discoverMockData } from "@/mockData/data";
-import { RecipeItem } from "@/types";
+import { RecipeDetail, RecipeItem } from "@/types";
+import { ReactNode, useState } from "react";
 
 export function GlobalProvider({ children }: { children: ReactNode }) {
   const [searchOpen, setSearchOpen] = useState(false);
   const [filterOpen, setFilterOpen] = useState(false);
   const [allRecipes, setAllRecipes] = useState<RecipeItem[]>([]);
 
+  const [recipeDetails, setRecipeDetails] = useState<
+    Record<string, RecipeDetail>
+  >({});
+
+  const cacheRecipeDetail = (id: string, recipe: RecipeDetail) => {
+    setRecipeDetails((prev) => ({ ...prev, [id]: recipe }));
+  };
+
   const toggleFavorite = (id: string) => {
     setAllRecipes((prev) =>
       prev.map((item) =>
-        item.id.toString() === id.toString()
+        item._id.toString() === id.toString()
           ? { ...item, isFavorite: !item.isFavorite }
           : item,
       ),
     );
   };
-
-  useEffect(() => {
-    console.log("allRecipes in context:", allRecipes);
-  }, [allRecipes]);
 
   return (
     <GlobalContext.Provider
@@ -33,6 +36,8 @@ export function GlobalProvider({ children }: { children: ReactNode }) {
         allRecipes,
         setAllRecipes,
         toggleFavorite,
+        recipeDetails,
+        cacheRecipeDetail,
       }}
     >
       {children}

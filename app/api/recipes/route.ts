@@ -1,10 +1,10 @@
-import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/authOptions";
 import connectDB from "@/lib/mongodb";
 import Recipe from "@/models/Recipe";
-import { z } from "zod";
 import User from "@/models/User";
+import { getServerSession } from "next-auth";
+import { NextResponse } from "next/server";
+import { z } from "zod";
 
 export const dynamic = "force-dynamic";
 
@@ -116,9 +116,7 @@ export async function GET(req: Request) {
     const difficulties = searchParams.getAll("difficulty");
     const maxTime = searchParams.get("maxTime");
 
-    // build MongoDB query dynamically
-    // const query: any = {};
-    const andConditions: any[] = [];
+    const andConditions: Record<string, unknown>[] = [];
 
     // search across title, description, category
     if (search) {
@@ -150,6 +148,7 @@ export async function GET(req: Request) {
     console.log("MongoDB query:", JSON.stringify(query));
 
     const recipes = await Recipe.find()
+      .select("-ingredients -instructions")
       .populate("createdBy", "name email") // ← get user details
       .sort({ createdAt: -1 }); // ← newest first
 
