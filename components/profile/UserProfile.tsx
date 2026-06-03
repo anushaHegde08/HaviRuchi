@@ -1,8 +1,21 @@
 "use client";
 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { useRecipes } from "@/hooks/useRecipes";
+import { uploadImage } from "@/lib/uploadImage";
 import {
   ArrowRight,
   BookOpen,
@@ -16,27 +29,13 @@ import {
   Phone,
   X,
 } from "lucide-react";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
 import { signOut, useSession } from "next-auth/react";
-import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useRecipes } from "@/hooks/useRecipes";
-import { uploadImage } from "@/lib/uploadImage";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { LoadingScreen } from "../loading/LoadingScreen";
-import { capitalizeFirst } from "@/lib/utilities/helperFunction";
 
-const UserProfile = ({ existingImage }: { existingImage?: string }) => {
+const UserProfile = () => {
   const { data: session } = useSession();
 
   const router = useRouter();
@@ -81,14 +80,14 @@ const UserProfile = ({ existingImage }: { existingImage?: string }) => {
           setPhone(data.phone || "");
         }
       } catch (error) {
-        console.error("Failed to fetch profile");
+        console.error("Failed to fetch profile", error);
       } finally {
         setProfileLoading(false);
         setLoading(false);
       }
     };
     fetchProfile();
-  }, []);
+  }, [profileLoading, setLoading]);
 
   const currentImage =
     profileData.image || preview || session?.user?.image || undefined;
@@ -115,7 +114,6 @@ const UserProfile = ({ existingImage }: { existingImage?: string }) => {
       toast.error("Only JPEG, PNG and WebP images are allowed");
       return;
     }
-    const url = await uploadImage(file, "profiles");
 
     const reader = new FileReader();
     reader.onload = () => setPreview(reader.result as string);
@@ -133,8 +131,9 @@ const UserProfile = ({ existingImage }: { existingImage?: string }) => {
       setProfileData((prev) => ({ ...prev, image: url }));
       setPreview(null);
       toast.success("Profile photo updated!");
-    } catch (error: any) {
-      toast.error(error.message || "Upload failed");
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Upload failed";
+      toast.error(message || "Upload failed");
     }
   };
 
@@ -153,6 +152,7 @@ const UserProfile = ({ existingImage }: { existingImage?: string }) => {
       toast.success("Phone number saved!");
     } catch (error) {
       toast.error("Failed to save phone number");
+      console.error("Failed to save phone number", error);
     }
   };
 
@@ -176,6 +176,7 @@ const UserProfile = ({ existingImage }: { existingImage?: string }) => {
       await signOut({ callbackUrl: "/screens/sign-up" });
     } catch (error) {
       toast.error("Something went wrong");
+      console.error("Failed to delete account", error);
     }
   };
 

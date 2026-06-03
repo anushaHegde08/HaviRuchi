@@ -28,17 +28,17 @@ const getBadges = (recipe: RecipeItem) => [
 ];
 
 export const RecipeBadges = ({ recipe }: { recipe: RecipeItem }) => (
-  <div className="flex flex-wrap gap-2">
+  <div className="flex overflow-auto gap-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
     {getBadges(recipe).map((badge) => (
       <span
         key={badge.label}
         className={cn(
-          "flex items-center gap-1 text-xs md:text-base lg:text-lg px-3 py-1 rounded-full border",
+          "flex items-center gap-1 text-[8px] md:text-base lg:text-lg px-3 py-1 rounded-full border",
           badge.color,
         )}
       >
         {badge.icon}
-        {badge.label}
+        <div className="text-nowrap"> {badge.label}</div>
       </span>
     ))}
   </div>

@@ -1,14 +1,14 @@
 "use client";
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import { useGlobalContext } from "@/context";
 import { RecipeItem } from "@/types";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 export const useRecipes = () => {
   const router = useRouter();
   const { allRecipes, setAllRecipes, toggleFavorite } = useGlobalContext();
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -20,14 +20,12 @@ export const useRecipes = () => {
           fetch("/api/recipes", { cache: "no-store" }),
           fetch("/api/users/favorites", { cache: "no-store" }),
         ]);
-        const recipesData = await recipesRes.json();
-        const favoritesData = await favoritesRes.json();
+        const recipesData: RecipeItem[] = await recipesRes.json();
+        const favoriteRecipeIds: string[] = await favoritesRes.json();
 
         // get favorite IDs
-        const favoriteIds = Array.isArray(favoritesData)
-          ? favoritesData.map((f: any) => {
-              return f._id || f;
-            })
+        const favoriteIds = Array.isArray(favoriteRecipeIds)
+          ? favoriteRecipeIds.map((id: string) => id)
           : [];
 
         // if (!recipesRes.ok) {
@@ -35,8 +33,8 @@ export const useRecipes = () => {
         //   return;
         // }
 
-        const mapped: RecipeItem[] = recipesData.map((r: any) => ({
-          id: r._id,
+        const mapped: RecipeItem[] = recipesData.map((r: RecipeItem) => ({
+          _id: r._id,
           title: r.title,
           description: r.description,
           image: r.image || "/images/placeholder.jpg",
@@ -44,8 +42,6 @@ export const useRecipes = () => {
           difficulty: r.difficulty,
           timeNeeded: r.timeNeeded,
           servings: r.servings,
-          ingredients: r.ingredients,
-          instructions: r.instructions,
           isFavorite: favoriteIds.includes(r._id),
           createdBy: r.createdBy,
         }));
@@ -53,19 +49,20 @@ export const useRecipes = () => {
         setAllRecipes(mapped);
       } catch (error) {
         setError("Something went wrong");
+        console.error("UseRecipe Hook failed to fetch with", error);
       } finally {
         setLoading(false);
       }
     };
-
+    if (allRecipes.length > 0) return;
     fetchRecipes();
-  }, []);
+  }, [allRecipes.length, setAllRecipes]);
 
   const favoriteRecipes = allRecipes.filter((r) => r.isFavorite);
 
   // toggle favorite — updates DB and local state
   const handleToggleFavorite = async (id: string) => {
-    const recipe = allRecipes.find((r) => r.id === id);
+    const recipe = allRecipes.find((r) => r._id === id);
     const wasFavorited = recipe?.isFavorite ?? false;
 
     // optimistic update — update UI immediately
@@ -77,19 +74,21 @@ export const useRecipes = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ recipeId: id }),
       });
-      wasFavorited
-        ? toast.error("Recipe removed from favorites", {
-            position: "top-right",
-          })
-        : toast.success("Recipe added to favorites", {
-            position: "top-right",
-          });
+      if (wasFavorited) {
+        toast.success("Recipe removed from favorites", {
+          position: "top-right",
+        });
+      } else {
+        toast.success("Recipe added to favorites", {
+          position: "top-right",
+        });
+      }
     } catch (error) {
-      // revert if API call fails
       toggleFavorite(id);
       toast.error("Failed to toggle favorite", {
         position: "top-right",
       });
+      console.error("Failed to toggle favorite with", error);
     }
   };
 

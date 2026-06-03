@@ -65,15 +65,18 @@ const RecipeActions = ({
   };
 
   return (
-    <div className={`flex items-center gap-2 ${className}`}>
+    <div className={`flex items-center gap-1 md:gap-2 ${className}`}>
       {/* Edit button */}
       <Button
         variant="outline"
-        size={variant === "card" ? "icon" : "default"}
-        onClick={() => router.push(`/screens/edit-recipe/${recipeId}`)}
-        className="border-primary text-primary hover:bg-primary/5 hover:scale-110 transition-transform"
+        size={variant === "card" ? "iconSmall" : "default"}
+        onClick={(e) => {
+          e.stopPropagation();
+          router.push(`/screens/edit-recipe/${recipeId}`);
+        }}
+        className="h-auto w-auto p-1 gap-0 md:gap-1 border-primary text-primary hover:bg-primary/5 hover:scale-110 transition-transform"
       >
-        <Pencil className="h-4 w-4" />
+        <Pencil />
         {variant === "detail" && <span className="ml-1">Edit</span>}
       </Button>
 
@@ -82,11 +85,11 @@ const RecipeActions = ({
         <AlertDialogTrigger asChild>
           <Button
             variant="outline"
-            size={variant === "card" ? "icon" : "default"}
-            className="border-destructive text-destructive hover:bg-destructive/5 hover:scale-110 transition-transform"
+            size={variant === "card" ? "iconSmall" : "default"}
+            className="h-auto w-auto p-1 gap-0 md:gap-1 border-destructive text-destructive hover:bg-destructive/5 hover:scale-110 transition-transform"
           >
-            <Trash2 className="h-4 w-4" />
-            {variant === "detail" && <span className="ml-1">Delete</span>}
+            <Trash2 />
+            {variant === "detail" && <span>Delete</span>}
           </Button>
         </AlertDialogTrigger>
         <AlertDialogContent>

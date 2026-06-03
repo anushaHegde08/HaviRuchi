@@ -1,19 +1,16 @@
 "use client";
 import PaginationComponent from "@/components/discover/PaginationComponent";
 import RecipeCard from "@/components/discover/RecipeCard";
-import { Typography } from "@/components/ui/typography";
-import { useRecipes } from "@/hooks/useRecipes";
-import { ITEMS_PER_PAGE, MOBILE_LOAD_COUNT } from "@/mockData/constatnts";
-import { discoverMockData } from "@/mockData/data";
-import { RecipeItem } from "@/types";
-import { totalPages } from "@/lib/utilities/helperFunction";
-import { useEffect, useState } from "react";
-import { useIsOwner } from "@/hooks/useIsOwner";
-import { useSession } from "next-auth/react";
-import { LoadingScreen } from "@/components/loading/LoadingScreen";
-import { Heart } from "lucide-react";
 import { NoItemsFound } from "@/components/empty-state/NoItemsFound";
 import { RecipeGridSkeleton } from "@/components/loading/RecipeCardSkeleton";
+import { Typography } from "@/components/ui/typography";
+import { useRecipes } from "@/hooks/useRecipes";
+import { totalPages } from "@/lib/utilities/helperFunction";
+import { ITEMS_PER_PAGE, MOBILE_LOAD_COUNT } from "@/mockData/constatnts";
+import { RecipeItem } from "@/types";
+import { Heart } from "lucide-react";
+import { useSession } from "next-auth/react";
+import { useState } from "react";
 
 const Favorites = () => {
   const {
@@ -26,12 +23,12 @@ const Favorites = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const [mobileVisibleCount, setMobileVisibleCount] =
     useState(MOBILE_LOAD_COUNT);
-  const { data: session } = useSession();
+  useSession();
 
-  useEffect(() => {
-    setCurrentPage(0);
-    setMobileVisibleCount(MOBILE_LOAD_COUNT);
-  }, [favoriteRecipes.length]);
+  // useEffect(() => {
+  //   setCurrentPage(0);
+  //   setMobileVisibleCount(MOBILE_LOAD_COUNT);
+  // }, [favoriteRecipes.length]);
 
   const startIndex = currentPage * ITEMS_PER_PAGE;
   const itemsToRender = favoriteRecipes.slice(
@@ -41,7 +38,9 @@ const Favorites = () => {
   const mobileItems = favoriteRecipes.slice(0, mobileVisibleCount);
 
   const handleDelete = (id: string) => {
-    setAllRecipes(favoriteRecipes.filter((r) => r.id !== id));
+    setAllRecipes(favoriteRecipes.filter((r) => r._id !== id));
+    setCurrentPage(0);
+    setMobileVisibleCount(MOBILE_LOAD_COUNT);
   };
 
   return (
@@ -74,22 +73,22 @@ const Favorites = () => {
               <div className="grid grid-cols-1 gap-6 md:hidden">
                 {mobileItems.map((item: RecipeItem) => (
                   <RecipeCard
-                    key={item.id}
+                    key={item._id}
                     item={item}
                     onToggleFavorite={handleToggleFavorite}
                     onClickRecipeCard={onClickRecipeCard}
-                    onDelete={() => handleDelete(item.id as string)}
+                    onDelete={() => handleDelete(item._id as string)}
                   />
                 ))}
               </div>
               <div className="hidden md:grid md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-2 gap-6">
                 {itemsToRender.map((item: RecipeItem) => (
                   <RecipeCard
-                    key={item.id}
+                    key={item._id}
                     item={item}
                     onToggleFavorite={handleToggleFavorite}
                     onClickRecipeCard={onClickRecipeCard}
-                    onDelete={() => handleDelete(item.id as string)}
+                    onDelete={() => handleDelete(item._id as string)}
                   />
                 ))}
               </div>

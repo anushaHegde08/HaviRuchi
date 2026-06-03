@@ -1,5 +1,5 @@
 export interface RecipeItem {
-  id: string;
+  _id: string;
   title: string;
   description: string;
   image: string;
@@ -8,8 +8,6 @@ export interface RecipeItem {
   difficulty: string;
   servings: number;
   isFavorite: boolean;
-  ingredients: string[];
-  instructions: string[];
   createdBy?: {
     _id: string;
     name: string;
@@ -21,4 +19,9 @@ export interface AddField {
   id: number;
   value: string;
   measurement?: string;
+}
+
+export interface RecipeDetail extends RecipeItem {
+  ingredients: string[];
+  instructions: string[];
 }
