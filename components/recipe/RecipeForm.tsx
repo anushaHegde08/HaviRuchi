@@ -1,6 +1,5 @@
 "use client";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import AddFields from "@/components/add-recipes/AddFields";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
@@ -11,6 +10,7 @@ import {
   FieldLegend,
   FieldSet,
 } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -19,19 +19,20 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Textarea } from "@/components/ui/textarea";
 import { Typography } from "@/components/ui/typography";
-import { ArrowLeft } from "lucide-react";
-import { CATEGORIES, DIFFICULTIES } from "@/mockData/constatnts";
-import { AddField } from "@/types";
-import AddFields from "@/components/add-recipes/AddFields";
 import { uploadImage } from "@/lib/uploadImage";
 import { capitalizeFirst } from "@/lib/utilities/helperFunction";
-import Image from "next/image";
 import { cn } from "@/lib/utils";
+import { CATEGORIES, DIFFICULTIES } from "@/mockData/constatnts";
+import { AddField } from "@/types";
+import { ArrowLeft } from "lucide-react";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { ImageCropper } from "../add-recipes/ImageCropper";
 import ButtonLoadingSpinner from "../loading/ButtonLoadingSpinner";
 
 export interface RecipeFormData {
@@ -125,6 +126,10 @@ const RecipeForm = ({
       general: "",
     });
 
+  const [cropperOpen, setCropperOpen] = useState(false);
+  const [rawImageSrc, setRawImageSrc] = useState<string | null>(null);
+  // const [rawImageName, setRawImageName] = useState("image.jpg");
+
   const handleHoursChange = (value: number) => {
     setHours(value);
     if (value === 0 && minutes < 10) setMinutes(10);
@@ -154,8 +159,30 @@ const RecipeForm = ({
 
     setImageError("");
     setImageFile(file);
-    setImagePreview(URL.createObjectURL(file));
-    onFormChange?.();
+    // read file and open cropper
+    const reader = new FileReader();
+    reader.onload = () => {
+      setRawImageSrc(reader.result as string);
+      setCropperOpen(true); // ← open cropper dialog
+    };
+    reader.readAsDataURL(file);
+
+    // reset input so same file can be selected again
+    e.target.value = "";
+    // setImagePreview(URL.createObjectURL(file));
+    // onFormChange?.();
+  };
+
+  const handleCropComplete = (croppedFile: File) => {
+    setImageFile(croppedFile);
+    setImagePreview(URL.createObjectURL(croppedFile));
+    setCropperOpen(false);
+    setRawImageSrc(null);
+  };
+
+  const handleCropCancel = () => {
+    setCropperOpen(false);
+    setRawImageSrc(null);
   };
 
   const validate = () => {
@@ -227,10 +254,12 @@ const RecipeForm = ({
         },
         totalMinutes,
       );
-    } catch (error: any) {
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Something went wrong";
       setErrors((prev) => ({
         ...prev,
-        general: error.message || "Something went wrong",
+        general: message,
       }));
     }
   };
@@ -538,6 +567,14 @@ const RecipeForm = ({
           </form>
         </Card>
       </div>
+      {rawImageSrc && (
+        <ImageCropper
+          open={cropperOpen}
+          imageSrc={rawImageSrc}
+          onCropComplete={handleCropComplete}
+          onCancel={handleCropCancel}
+        />
+      )}
     </div>
   );
 };
