@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import RecipeForm, { RecipeFormData } from "@/components/recipe/RecipeForm";
 import { AddField } from "@/types";
 import { LoadingScreen } from "@/components/loading/LoadingScreen";
+import { useGlobalContext } from "@/context";
 
 export default function EditRecipePage({
   params,
@@ -13,6 +14,7 @@ export default function EditRecipePage({
 }) {
   const { id } = use(params);
   const router = useRouter();
+  const { setAllRecipes } = useGlobalContext();
   const [buttonLoading, setButtonLoading] = useState(false);
   const [fetching, setFetching] = useState(true);
   const [initialData, setInitialData] = useState<RecipeFormData | undefined>(
@@ -90,6 +92,7 @@ export default function EditRecipePage({
       if (!response.ok) throw new Error(result.error);
 
       toast.success("Recipe updated successfully!");
+      setAllRecipes([]); // clear cache so UI refetches
       router.back();
     } finally {
       setButtonLoading(false);
