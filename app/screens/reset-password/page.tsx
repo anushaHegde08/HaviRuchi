@@ -6,6 +6,7 @@ import { PasswordInput } from "@/components/auth/PasswordInput";
 import { PasswordRules } from "@/components/auth/PasswordRules";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import ButtonLoadingSpinner from "@/components/loading/ButtonLoadingSpinner";
 
 export default function ResetPasswordPage() {
   const router = useRouter();
@@ -14,6 +15,7 @@ export default function ResetPasswordPage() {
 
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
 
   useEffect(() => {
     if (!token) {
@@ -44,6 +46,7 @@ export default function ResetPasswordPage() {
       }
 
       toast.success("Password reset successfully!");
+      setSuccess(true);
       router.push("/screens/sign-in");
     } catch (error) {
       toast.error("Something went wrong");
@@ -59,6 +62,7 @@ export default function ResetPasswordPage() {
       footerText="Remember your password?"
       footerLinkText="Sign In"
       footerLinkHref="/screens/sign-in"
+      buttonLoading={loading && !success}
     >
       <PasswordInput
         id="password"
@@ -72,10 +76,7 @@ export default function ResetPasswordPage() {
         disabled={loading}
       >
         {loading ? (
-          <span className="flex items-center gap-2">
-            <span className="h-4 w-4 rounded-full border-2 border-white border-t-transparent animate-spin" />
-            Resetting...
-          </span>
+           <ButtonLoadingSpinner loadingText="Resetting..." />
         ) : (
           "Reset Password"
         )}

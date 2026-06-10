@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import { signIn, useSession } from "next-auth/react";
 import { toast } from "sonner";
 import { FcGoogle } from "react-icons/fc";
+import ButtonLoadingSpinner from "@/components/loading/ButtonLoadingSpinner";
 
 export default function SignInPage() {
   const { status } = useSession();
@@ -17,7 +18,9 @@ export default function SignInPage() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [credentialsLoading, setCredentialsLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
+  const loading = credentialsLoading || googleLoading;
 
   const [errors, setErrors] = useState({
     email: "",
@@ -55,8 +58,10 @@ export default function SignInPage() {
       hasError = true;
     }
     if (hasError) return;
+    
+    let isNavigating = false;
     try {
-      setLoading(true);
+      setCredentialsLoading(true);
       const result = await signIn("credentials", {
         email,
         password,
@@ -87,25 +92,32 @@ export default function SignInPage() {
         return;
       }
       toast.success("Welcome back!");
+      isNavigating = true;
       router.replace("/screens/discover");
     } catch (error) {
       toast.error("Something went wrong. Please try again.");
     } finally {
-      setLoading(false);
+      if (!isNavigating) {
+        setCredentialsLoading(false);
+      }
     }
   };
 
   const handleGoogleSignIn = async () => {
+    let isNavigating = false;
     try {
-      setLoading(true);
+      setGoogleLoading(true);
       await signIn("google", {
         callbackUrl: "/screens/discover",
         prompt: "select_account", // ← always show account picker
       });
+      isNavigating = true;
     } catch (error) {
       toast.error("Google sign in failed. Please try again.");
     } finally {
-      setLoading(false);
+      if (!isNavigating) {
+        setGoogleLoading(false);
+      }
     }
   };
 
@@ -159,7 +171,7 @@ export default function SignInPage() {
         disabled={loading}
         className="w-full h-12 rounded-xl"
       >
-        {loading ? "Signing in..." : "Sign In"}
+        {credentialsLoading ? <ButtonLoadingSpinner loadingText="Signing in..." /> : "Sign In"}
       </Button>
 
       <div className="flex items-center gap-3">
@@ -171,10 +183,17 @@ export default function SignInPage() {
       <Button
         variant="outline"
         onClick={handleGoogleSignIn}
+        disabled={loading}
         className="w-full h-12 rounded-xl gap-2"
       >
-        <FcGoogle className="h-4 w-4" />
-        Google
+        {googleLoading ? (
+          <ButtonLoadingSpinner loadingText="Connecting..." />
+        ) : (
+          <>
+            <FcGoogle className="h-4 w-4" />
+            Google
+          </>
+        )}
       </Button>
     </AuthLayout>
   );

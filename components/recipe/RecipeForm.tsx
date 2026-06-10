@@ -56,6 +56,8 @@ interface RecipeFormProps {
   submitLabel: string; // "Submit" or "Update Recipe"
   onFormChange?: () => void;
   submitDisabled?: boolean;
+  onBeforeSubmit?: () => void;
+  onValidationFailed?: () => void;
 }
 
 const defaultData: RecipeFormData = {
@@ -79,6 +81,8 @@ const RecipeForm = ({
   submitLabel,
   onFormChange,
   submitDisabled,
+  onBeforeSubmit,
+  onValidationFailed,
 }: RecipeFormProps) => {
   const router = useRouter();
 
@@ -228,7 +232,11 @@ const RecipeForm = ({
   };
 
   const handleSubmit = async () => {
-    if (!validate()) return;
+    onBeforeSubmit?.();
+    if (!validate()) {
+      onValidationFailed?.();
+      return;
+    }
 
     try {
       // upload image if new one selected

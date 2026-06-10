@@ -1,8 +1,6 @@
 "use client";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { Pencil, Trash2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import ButtonLoadingSpinner from "@/components/loading/ButtonLoadingSpinner";
+import { PageOverlay } from "@/components/loading/PageOverlay";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -14,6 +12,10 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
+import { Pencil, Trash2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { toast } from "sonner";
 
 interface RecipeActionsProps {
@@ -33,10 +35,12 @@ const RecipeActions = ({
 }: RecipeActionsProps) => {
   const router = useRouter();
   const [deleting, setDeleting] = useState(false);
+  const [editLoading, setEditLoading] = useState(false);
 
   if (!isOwner) return null;
 
   const handleDelete = async () => {
+    let isNavigating = false;
     try {
       setDeleting(true);
       const response = await fetch(`/api/recipes/${recipeId}`, {
@@ -55,25 +59,31 @@ const RecipeActions = ({
       if (onDelete) {
         onDelete();
       } else {
+        isNavigating = true;
         router.back();
       }
     } catch (error) {
       toast.error("Failed to delete recipe");
     } finally {
-      setDeleting(false);
+      if (!isNavigating) {
+        setDeleting(false);
+      }
     }
   };
 
   return (
     <div className={`flex items-center gap-1 md:gap-2 ${className}`}>
+      <PageOverlay show={deleting || editLoading} />
       {/* Edit button */}
       <Button
         variant="outline"
         size={variant === "card" ? "iconSmall" : "default"}
         onClick={(e) => {
           e.stopPropagation();
+          setEditLoading(true);
           router.push(`/screens/edit-recipe/${recipeId}`);
         }}
+        disabled={editLoading}
         className="h-auto w-auto p-1 gap-0 md:gap-1 border-primary text-primary hover:bg-primary/5 hover:scale-110 transition-transform"
       >
         <Pencil />
@@ -103,7 +113,11 @@ const RecipeActions = ({
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction onClick={handleDelete} disabled={deleting}>
-              {deleting ? "Deleting..." : "Delete"}
+              {deleting ? (
+                <ButtonLoadingSpinner loadingText="Deleting..." />
+              ) : (
+                "Delete"
+              )}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

@@ -6,6 +6,7 @@ import RecipeForm, { RecipeFormData } from "@/components/recipe/RecipeForm";
 import { AddField } from "@/types";
 import { LoadingScreen } from "@/components/loading/LoadingScreen";
 import { useGlobalContext } from "@/context";
+import { PageOverlay } from "@/components/loading/PageOverlay";
 
 export default function EditRecipePage({
   params,
@@ -104,15 +105,18 @@ export default function EditRecipePage({
       {fetching ? (
         <LoadingScreen />
       ) : (
-        <RecipeForm
-          initialData={initialData}
-          onSubmit={handleSubmit}
-          buttonLoading={buttonLoading}
-          pageTitle="Edit Recipe"
-          submitLabel="Update Recipe"
-          onFormChange={() => setHasChanges(true)}
-          submitDisabled={!hasChanges}
-        />
+        <>
+          <PageOverlay show={buttonLoading} />
+          <RecipeForm
+            initialData={initialData}
+            onSubmit={handleSubmit}
+            buttonLoading={buttonLoading}
+            pageTitle="Edit Recipe"
+            submitLabel="Update Recipe"
+            onFormChange={() => setHasChanges(true)}
+            submitDisabled={!hasChanges}
+          />
+        </>
       )}
     </>
   );

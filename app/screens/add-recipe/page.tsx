@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import RecipeForm, { RecipeFormData } from "@/components/recipe/RecipeForm";
 import { useGlobalContext } from "@/context";
+import { PageOverlay } from "@/components/loading/PageOverlay";
 
 const AddRecipe = () => {
   const router = useRouter();
@@ -12,7 +13,6 @@ const AddRecipe = () => {
 
   const handleSubmit = async (data: RecipeFormData, totalMinutes: number) => {
     try {
-      setButtonLoading(true);
       const response = await fetch("/api/recipes", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -41,12 +41,17 @@ const AddRecipe = () => {
   };
 
   return (
-    <RecipeForm
-      onSubmit={handleSubmit}
-      buttonLoading={buttonloading}
-      pageTitle="Add New Recipe"
-      submitLabel="Submit"
-    />
+    <>
+      <PageOverlay show={buttonloading} />
+      <RecipeForm
+        onSubmit={handleSubmit}
+        buttonLoading={buttonloading}
+        pageTitle="Add New Recipe"
+        submitLabel="Submit"
+        onBeforeSubmit={() => setButtonLoading(true)}
+        onValidationFailed={() => setButtonLoading(false)}
+      />
+    </>
   );
 };
 
