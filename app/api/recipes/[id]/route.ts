@@ -1,10 +1,9 @@
-import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/authOptions";
 import connectDB from "@/lib/mongodb";
 import Recipe from "@/models/Recipe";
 import User from "@/models/User";
-import { z } from "zod";
+import { getServerSession } from "next-auth";
+import { NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
 
@@ -16,10 +15,9 @@ export async function GET(
     const { id } = await params;
     await connectDB();
 
-    const recipe = await Recipe.findById(id).populate(
-      "createdBy",
-      "name email",
-    );
+    const recipe = await Recipe.findById(id)
+      .populate("createdBy", "name email")
+      .lean();
 
     if (!recipe) {
       return NextResponse.json({ error: "Recipe not found" }, { status: 404 });

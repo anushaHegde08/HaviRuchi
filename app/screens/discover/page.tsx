@@ -4,7 +4,6 @@ import RecipeCard from "@/components/discover/RecipeCard";
 import SearchBar from "@/components/discover/SearchBar";
 import { NoItemsFound } from "@/components/empty-state/NoItemsFound";
 import { APIErrors } from "@/components/error-screens/APIErrors";
-import { FilterTrigger } from "@/components/filter/FilterTrigger";
 import { RecipeGridSkeleton } from "@/components/loading/RecipeCardSkeleton";
 import { Badge } from "@/components/ui/badge";
 import { useRecipes } from "@/hooks/useRecipes";
@@ -16,7 +15,19 @@ import {
 } from "@/mockData/constatnts";
 import { defaultFilters, FilterState, RecipeItem } from "@/types";
 import { DatabaseSearch } from "lucide-react";
-import { useState } from "react";
+import dynamic from "next/dynamic";
+import { useCallback, useMemo, useState } from "react";
+
+const LazyFilterTrigger = dynamic(
+  () =>
+    import("@/components/filter/FilterTrigger").then(
+      (mod) => mod.FilterTrigger,
+    ),
+  {
+    ssr: false,
+    loading: () => <div className="h-8 w-20 animate-pulse rounded bg-muted" />,
+  },
+);
 
 const Discover = () => {
   const [currentPage, setCurrentPage] = useState(0);
@@ -37,64 +48,72 @@ const Discover = () => {
   const [mobileVisibleCount, setMobileVisibleCount] =
     useState(MOBILE_LOAD_COUNT);
 
-  // handle badge click
-  const handleCategoryClick = (category: string) => {
+  const handleSearchChange = useCallback((value: string) => {
+    setSearchQuery(value);
+  }, []);
+
+  const handleCategoryClick = useCallback((category: string) => {
     setSelectedCategory(category);
-    // clear filter categories when badge is clicked
     setFilters((prev) => ({ ...prev, categories: [] }));
     setCurrentPage(0);
     setMobileVisibleCount(MOBILE_LOAD_COUNT);
-  };
+  }, []);
 
-  // handle filter apply — clear selected badge
-  const handleApplyFilter = (newFilters: FilterState) => {
+  const handleApplyFilter = useCallback((newFilters: FilterState) => {
     setFilters(newFilters);
     setSelectedCategory("All");
     setCurrentPage(0);
     setMobileVisibleCount(MOBILE_LOAD_COUNT);
-  };
+  }, []);
 
-  // handle filter clear
-  const handleClearFilter = () => {
+  const handleClearFilter = useCallback(() => {
     setFilters(defaultFilters);
     setSelectedCategory("All");
     setCurrentPage(0);
     setMobileVisibleCount(MOBILE_LOAD_COUNT);
-  };
+  }, []);
 
-  const filteredRecipes = allRecipes.filter((recipe) => {
-    // search across title, description, category
-    const searchMatch =
-      searchQuery === "" ||
-      recipe.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      recipe.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      recipe.category.toLowerCase().includes(searchQuery.toLowerCase());
+  const filteredRecipes = useMemo(
+    () =>
+      allRecipes.filter((recipe) => {
+        const searchMatch =
+          searchQuery === "" ||
+          recipe.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          recipe.description
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase()) ||
+          recipe.category.toLowerCase().includes(searchQuery.toLowerCase());
 
-    // badge category filter
-    const badgeCategoryMatch =
-      selectedCategory === "All" || recipe.category === selectedCategory;
+        const badgeCategoryMatch =
+          selectedCategory === "All" || recipe.category === selectedCategory;
 
-    // filter panel category filter
-    const categoryMatch =
-      filters.categories.length === 0 ||
-      filters.categories.includes(recipe.category);
+        const categoryMatch =
+          filters.categories.length === 0 ||
+          filters.categories.includes(recipe.category);
 
-    // difficulty filter
-    const difficultyMatch =
-      filters.difficulties.length === 0 ||
-      filters.difficulties.includes(recipe.difficulty);
+        const difficultyMatch =
+          filters.difficulties.length === 0 ||
+          filters.difficulties.includes(recipe.difficulty);
 
-    // time filter
-    const timeMatch = recipe.timeNeeded <= filters.maxTime;
+        const timeMatch = recipe.timeNeeded <= filters.maxTime;
 
-    return (
-      searchMatch &&
-      badgeCategoryMatch &&
-      categoryMatch &&
-      difficultyMatch &&
-      timeMatch
-    );
-  });
+        return (
+          searchMatch &&
+          badgeCategoryMatch &&
+          categoryMatch &&
+          difficultyMatch &&
+          timeMatch
+        );
+      }),
+    [
+      allRecipes,
+      filters.categories,
+      filters.difficulties,
+      filters.maxTime,
+      searchQuery,
+      selectedCategory,
+    ],
+  );
 
   // const filteredRecipes = allRecipes;
   // paginate filtered results
@@ -106,14 +125,16 @@ const Discover = () => {
 
   const mobileItems = filteredRecipes.slice(0, mobileVisibleCount);
 
-  const handleLoadMore = () => {
+  const handleLoadMore = useCallback(() => {
     setMobileVisibleCount((prev) => prev + MOBILE_LOAD_COUNT);
-  };
+  }, []);
 
-  const handleDelete = (id: string) => {
-    // remove from local state instantly — no refresh needed
-    setAllRecipes(allRecipes.filter((r) => r._id !== id));
-  };
+  const handleDelete = useCallback(
+    (id: string) => {
+      setAllRecipes(allRecipes.filter((r) => r._id !== id));
+    },
+    [allRecipes, setAllRecipes],
+  );
   // reset to page 0 when filters change
   // useEffect(() => {
   //   setCurrentPage(0);
@@ -137,17 +158,17 @@ const Discover = () => {
               </Badge>
             ),
           )}
-          <FilterTrigger
+          <LazyFilterTrigger
             filters={filters}
             onApply={handleApplyFilter}
             onClear={handleClearFilter}
           />
         </div>
         <div className=" flex-[1]">
-          <SearchBar value={searchQuery} onChange={setSearchQuery} />
+          <SearchBar value={searchQuery} onChange={handleSearchChange} />
         </div>
         <div className="md:hidden">
-          <FilterTrigger
+          <LazyFilterTrigger
             filters={filters}
             onApply={handleApplyFilter}
             onClear={handleClearFilter}
@@ -169,10 +190,11 @@ const Discover = () => {
       {!loading && !error && (
         <div className="grid grid-cols-1 gap-6 md:hidden">
           {mobileItems.length > 0 ? (
-            mobileItems.map((item: RecipeItem) => (
+            mobileItems.map((item: RecipeItem, index: number) => (
               <RecipeCard
                 key={item._id}
                 item={item}
+                priority={index < 3}
                 onToggleFavorite={handleToggleFavorite}
                 onClickRecipeCard={onClickRecipeCard}
                 onDelete={() => handleDelete(item._id as string)}
@@ -192,10 +214,11 @@ const Discover = () => {
       {!loading && !error && (
         <div className="hidden md:grid md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
           {itemsToRender.length > 0 ? (
-            itemsToRender.map((item: RecipeItem) => (
+            itemsToRender.map((item: RecipeItem, index: number) => (
               <RecipeCard
                 key={item._id}
                 item={item}
+                priority={index < 3}
                 onToggleFavorite={handleToggleFavorite}
                 onClickRecipeCard={onClickRecipeCard}
                 onDelete={() => handleDelete(item._id as string)}

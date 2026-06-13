@@ -8,7 +8,13 @@ export interface GlobalContextType {
   filterOpen: boolean;
   setFilterOpen: (open: boolean) => void;
   allRecipes: RecipeItem[];
-  setAllRecipes: (recipes: RecipeItem[]) => void;
+  setAllRecipes: (
+    recipes: RecipeItem[] | ((prev: RecipeItem[]) => RecipeItem[]),
+  ) => void;
+  recipesFetched: boolean;
+  setRecipesFetched: (value: boolean) => void;
+  favoritesFetched: boolean;
+  setFavoritesFetched: (value: boolean) => void;
   toggleFavorite: (id: string) => void;
   recipeDetails: Record<string, RecipeDetail>;
   cacheRecipeDetail: (id: string, recipe: RecipeDetail) => void;

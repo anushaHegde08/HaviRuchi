@@ -11,7 +11,7 @@ import { useIsOwner } from "@/hooks/useIsOwner";
 import { useRecipes } from "@/hooks/useRecipes";
 import { RecipeDetail } from "@/types";
 import { useSession } from "next-auth/react";
-import { use, useEffect, useState } from "react";
+import { use, useEffect, useRef, useState } from "react";
 
 export default function RecipeDetailPage({
   params,
@@ -24,6 +24,7 @@ export default function RecipeDetailPage({
   const { recipeDetails, cacheRecipeDetail, allRecipes } = useGlobalContext();
 
   const { handleToggleFavorite, loading, setLoading } = useRecipes();
+  const fetchInFlightRef = useRef(false);
   const [recipe, setRecipe] = useState<RecipeDetail | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [retryTrigger, setRetryTrigger] = useState(0);
@@ -36,6 +37,7 @@ export default function RecipeDetailPage({
         setLoading(true);
         setError(null);
       }
+
       const cached = recipeDetails[id];
       if (cached) {
         if (!ignore) {
@@ -44,6 +46,9 @@ export default function RecipeDetailPage({
         }
         return;
       }
+
+      if (fetchInFlightRef.current) return;
+      fetchInFlightRef.current = true;
 
       try {
         const response = await fetch(`/api/recipes/${id}`);
@@ -81,6 +86,7 @@ export default function RecipeDetailPage({
         setError("Something went wrong");
         console.error("Failed to fetch recipe", error);
       } finally {
+        fetchInFlightRef.current = false;
         if (!ignore) setLoading(false);
       }
     };
@@ -102,9 +108,6 @@ export default function RecipeDetailPage({
   const isOwner = useIsOwner(recipe ?? allRecipes.find((r) => r._id === id));
 
   const isFavorited = allRecipes.find((r) => r._id === id)?.isFavorite ?? false;
-
-  if (!recipe && !loading && !error)
-    return <p className="text-center py-12">Recipe not found</p>;
 
   return (
     <>
@@ -152,7 +155,9 @@ export default function RecipeDetailPage({
             </div>
           </div>
         </div>
-      ) : null}
+      ) : (
+        <p className="text-center py-12">Recipe not found</p>
+      )}
     </>
   );
 }

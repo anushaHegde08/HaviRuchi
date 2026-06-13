@@ -62,24 +62,39 @@ const UserProfile = () => {
   const [deletingAccount, setDeletingAccount] = useState(false);
 
   const [myRecipesCount, setMyRecipesCount] = useState(0);
+  const profileFetchRef = useRef(false);
+  const countFetchRef = useRef(false);
 
   useEffect(() => {
+    if (countFetchRef.current) return;
+    countFetchRef.current = true;
+
     const fetchMyRecipesCount = async () => {
-      const response = await fetch("/api/recipes/my-recipes");
-      const data = await response.json();
-      if (Array.isArray(data)) setMyRecipesCount(data.length);
+      try {
+        const response = await fetch("/api/recipes/my-recipes?countOnly=true");
+        const data = await response.json();
+
+        if (response.ok && typeof data?.count === "number") {
+          setMyRecipesCount(data.count);
+        }
+      } catch (error) {
+        console.error("Failed to fetch my recipes count", error);
+      }
     };
+
     fetchMyRecipesCount();
   }, []);
 
   useEffect(() => {
+    if (profileFetchRef.current) return;
+    profileFetchRef.current = true;
+
     const fetchProfile = async () => {
       try {
         console.log("fetching profile...");
 
         const response = await fetch("/api/users/profile");
         console.log("profile response status:", response.status);
-        if (profileLoading) return <LoadingScreen />;
 
         const data = await response.json();
         if (response.ok) {
@@ -94,7 +109,7 @@ const UserProfile = () => {
       }
     };
     fetchProfile();
-  }, [profileLoading, setLoading]);
+  }, [setLoading]);
 
   const currentImage =
     profileData.image || preview || session?.user?.image || undefined;

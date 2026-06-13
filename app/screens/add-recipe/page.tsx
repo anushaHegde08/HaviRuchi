@@ -1,14 +1,14 @@
 "use client";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
+import { PageOverlay } from "@/components/loading/PageOverlay";
 import RecipeForm, { RecipeFormData } from "@/components/recipe/RecipeForm";
 import { useGlobalContext } from "@/context";
-import { PageOverlay } from "@/components/loading/PageOverlay";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { toast } from "sonner";
 
 const AddRecipe = () => {
   const router = useRouter();
-  const { setAllRecipes } = useGlobalContext();
+  const { setAllRecipes, setRecipesFetched } = useGlobalContext();
   const [buttonloading, setButtonLoading] = useState(false);
 
   const handleSubmit = async (data: RecipeFormData, totalMinutes: number) => {
@@ -33,7 +33,8 @@ const AddRecipe = () => {
       if (!response.ok) throw new Error(result.error);
 
       toast.success("Recipe added successfully!");
-      setAllRecipes([]); // clear cache so discover page refetches
+      setAllRecipes([]);
+      setRecipesFetched(false);
       router.push("/screens/discover");
     } finally {
       setButtonLoading(false);

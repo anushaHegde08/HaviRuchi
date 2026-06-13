@@ -147,10 +147,13 @@ export async function GET(req: Request) {
     const query = andConditions.length > 0 ? { $and: andConditions } : {};
     console.log("MongoDB query:", JSON.stringify(query));
 
-    const recipes = await Recipe.find()
-      .select("-ingredients -instructions")
-      .populate("createdBy", "name email") // ← get user details
-      .sort({ createdAt: -1 }); // ← newest first
+    const recipes = await Recipe.find(query)
+      .select(
+        "_id title description image category difficulty timeNeeded servings isFavorite createdBy",
+      )
+      .populate("createdBy", "name email")
+      .sort({ createdAt: -1 })
+      .lean();
 
     console.log("recipes found:", recipes.length);
 

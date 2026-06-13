@@ -13,6 +13,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
+import { useGlobalContext } from "@/context";
 import { Pencil, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -34,6 +35,7 @@ const RecipeActions = ({
   className = "flex-col",
 }: RecipeActionsProps) => {
   const router = useRouter();
+  const { setRecipesFetched } = useGlobalContext();
   const [deleting, setDeleting] = useState(false);
   const [editLoading, setEditLoading] = useState(false);
 
@@ -55,6 +57,7 @@ const RecipeActions = ({
       }
 
       toast.success("Recipe deleted successfully");
+      setRecipesFetched(false);
 
       if (onDelete) {
         onDelete();

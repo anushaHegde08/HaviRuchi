@@ -1,10 +1,8 @@
 "use client";
-import Image from "next/image";
-import Link from "next/link";
-import { ArrowLeft, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { toast } from "sonner";
+import { ArrowLeft, Heart } from "lucide-react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 
 interface RecipeImageProps {
@@ -55,6 +53,8 @@ export const RecipeImage = ({
           src={image || "/images/placeholder.jpg"}
           alt={title}
           fill
+          priority
+          sizes="(max-width: 768px) 100vw, (max-width: 1280px) 100vw, 100vw"
           className="object-cover"
           onError={(e) => {
             e.currentTarget.src = "/images/placeholder.jpg";

@@ -29,10 +29,10 @@ import { cn } from "@/lib/utils";
 import { CATEGORIES, DIFFICULTIES } from "@/mockData/constatnts";
 import { AddField } from "@/types";
 import { ArrowLeft } from "lucide-react";
+import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { ImageCropper } from "../add-recipes/ImageCropper";
 import ButtonLoadingSpinner from "../loading/ButtonLoadingSpinner";
 
 export interface RecipeFormData {
@@ -59,6 +59,19 @@ interface RecipeFormProps {
   onBeforeSubmit?: () => void;
   onValidationFailed?: () => void;
 }
+
+const LazyImageCropper = dynamic(
+  () =>
+    import("@/components/add-recipes/ImageCropper").then(
+      (mod) => mod.ImageCropper,
+    ),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="h-48 w-full animate-pulse rounded-xl bg-muted" />
+    ),
+  },
+);
 
 const defaultData: RecipeFormData = {
   title: "",
@@ -576,7 +589,7 @@ const RecipeForm = ({
         </Card>
       </div>
       {rawImageSrc && (
-        <ImageCropper
+        <LazyImageCropper
           open={cropperOpen}
           imageSrc={rawImageSrc}
           onCropComplete={handleCropComplete}
