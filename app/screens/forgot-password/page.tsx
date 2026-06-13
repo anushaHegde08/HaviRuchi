@@ -1,9 +1,10 @@
 "use client";
-import { useState } from "react";
 import { AuthLayout } from "@/components/auth/AuthLayout";
 import { IconInput } from "@/components/auth/IconInput";
+import ButtonLoadingSpinner from "@/components/loading/ButtonLoadingSpinner";
 import { Button } from "@/components/ui/button";
 import { Mail } from "lucide-react";
+import { useState } from "react";
 import { toast } from "sonner";
 
 export default function ForgotPasswordPage() {
@@ -51,6 +52,7 @@ export default function ForgotPasswordPage() {
       footerText="Remember your password?"
       footerLinkText="Sign In"
       footerLinkHref="/screens/sign-in"
+      buttonLoading={loading && !sent}
     >
       {!sent ? (
         <>
@@ -68,10 +70,7 @@ export default function ForgotPasswordPage() {
             disabled={loading}
           >
             {loading ? (
-              <span className="flex items-center gap-2">
-                <span className="h-4 w-4 rounded-full border-2 border-white border-t-transparent animate-spin" />
-                Sending...
-              </span>
+              <ButtonLoadingSpinner loadingText="Sending..." />
             ) : (
               "Send Reset Link"
             )}

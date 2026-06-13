@@ -9,6 +9,7 @@ import { PasswordRules } from "@/components/auth/PasswordRules";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
+import ButtonLoadingSpinner from "@/components/loading/ButtonLoadingSpinner";
 
 export default function SignUpPage() {
   const { status } = useSession();
@@ -162,7 +163,7 @@ export default function SignUpPage() {
         disabled={loading}
         onClick={handleSignUpClick}
       >
-        {loading ? "Creating account..." : "Sign Up"}
+        {loading ? <ButtonLoadingSpinner loadingText="Creating account..." /> : "Sign Up"}
       </Button>
     </AuthLayout>
   );

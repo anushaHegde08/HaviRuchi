@@ -1,5 +1,7 @@
 "use client";
 
+import ButtonLoadingSpinner from "@/components/loading/ButtonLoadingSpinner";
+import { PageOverlay } from "@/components/loading/PageOverlay";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -53,6 +55,11 @@ const UserProfile = () => {
     phone: "",
   });
   const [profileLoading, setProfileLoading] = useState(true);
+
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [savingPhone, setSavingPhone] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
+  const [deletingAccount, setDeletingAccount] = useState(false);
 
   const [myRecipesCount, setMyRecipesCount] = useState(0);
 
@@ -120,6 +127,7 @@ const UserProfile = () => {
     reader.readAsDataURL(file);
 
     try {
+      setUploadingImage(true);
       // upload to Cloudinary
       const url = await uploadImage(file, "profiles");
       console.log("Profile image uploaded:", url);
@@ -134,12 +142,15 @@ const UserProfile = () => {
     } catch (error) {
       const message = error instanceof Error ? error.message : "Upload failed";
       toast.error(message || "Upload failed");
+    } finally {
+      setUploadingImage(false);
     }
   };
 
   const handleSavePhone = async () => {
     if (!phoneInput.trim()) return;
     try {
+      setSavingPhone(true);
       await fetch("/api/users/profile", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
@@ -153,6 +164,8 @@ const UserProfile = () => {
     } catch (error) {
       toast.error("Failed to save phone number");
       console.error("Failed to save phone number", error);
+    } finally {
+      setSavingPhone(false);
     }
   };
 
@@ -161,22 +174,43 @@ const UserProfile = () => {
     setEditingPhone(false);
   };
 
-  const handleDeleteAccount = async () => {
+  const handleLogout = async () => {
+    let isNavigating = false;
     try {
+      setLoggingOut(true);
+      await signOut({ callbackUrl: "/screens/sign-in" });
+      isNavigating = true;
+    } finally {
+      if (!isNavigating) {
+        setLoggingOut(false);
+      }
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    let isNavigating = false;
+    try {
+      setDeletingAccount(true);
       const response = await fetch("/api/users/profile", {
         method: "DELETE",
       });
 
       if (!response.ok) {
         toast.error("Failed to delete account");
+        setDeletingAccount(false);
         return;
       }
 
       toast.success("Account deleted successfully");
       await signOut({ callbackUrl: "/screens/sign-up" });
+      isNavigating = true;
     } catch (error) {
       toast.error("Something went wrong");
       console.error("Failed to delete account", error);
+    } finally {
+      if (!isNavigating) {
+        setDeletingAccount(false);
+      }
     }
   };
 
@@ -201,6 +235,11 @@ const UserProfile = () => {
         <LoadingScreen />
       ) : (
         <div className="min-h-screen bg-background px-4 py-6 md:py-12">
+          <PageOverlay
+            show={
+              uploadingImage || savingPhone || loggingOut || deletingAccount
+            }
+          />
           <div className="flex flex-col gap-6 w-full md:max-w-2xl md:mx-auto mb-10 md:mb-0">
             <Card className="p-4 flex items-center gap-4 md:flex-col md:items-center md:py-8 md:gap-3">
               <div className="relative shrink-0">
@@ -227,18 +266,20 @@ const UserProfile = () => {
                   onClick={() => fileInputRef.current?.click()}
                   className="absolute bottom-0 right-0 md:bottom-1 md:right-1 bg-primary rounded-full p-1.5 cursor-pointer hover:bg-primary/90 transition-colors"
                 >
-                  {preview ? (
-                    <Pencil className="h-3 w-3 md:h-5 md:w-5 text-white" />
+                  {uploadingImage ? (
+                    <span className="block h-3 w-3 md:h-5 md:w-5 rounded-full border-2 border-white border-t-transparent animate-spin" />
+                  ) : preview ? (
+                    <Pencil className="block h-3 w-3 md:h-5 md:w-5 text-white" />
                   ) : (
-                    <Camera className="h-3 w-3 md:h-5 md:w-5 text-white" />
+                    <Camera className="block h-3 w-3 md:h-5 md:w-5 text-white" />
                   )}
                 </div>
               </div>
-              <div className="flex flex-col md:items-center">
-                <span className="text-lg font-bold md:text-2xl">
+              <div className="flex min-w-0 flex-1 flex-col md:items-center">
+                <span className="truncate text-base font-bold sm:text-lg md:text-2xl">
                   {session?.user?.name ?? "User"}
                 </span>
-                <span className="text-sm text-muted-foreground">
+                <span className="max-w-full break-all text-xs text-muted-foreground sm:text-base md:text-lg md:text-center">
                   {session?.user?.email ?? ""}
                 </span>
               </div>
@@ -264,29 +305,42 @@ const UserProfile = () => {
                   </div>
                 </div>
                 {/* Phone */}
-                <div className="flex items-center gap-4 p-4">
+                <div className="flex items-start gap-4 p-4">
                   <div className="bg-primary/10 rounded-full p-2 shrink-0">
                     <Phone className="h-5 w-5 text-primary" />
                   </div>
-                  <div className="flex flex-col">
+                  <div className="flex min-w-0 flex-1 flex-col">
                     <span className="text-xs text-muted-foreground">
                       Phone Number
                     </span>
                     {editingPhone ? (
                       // editing mode
-                      <div className="flex items-center gap-2 mt-1">
+                      <div className="mt-1 flex min-w-0 items-center gap-2 overflow-hidden">
                         <input
                           type="tel"
                           value={phoneInput}
                           onChange={(e) => setPhoneInput(e.target.value)}
                           placeholder="+91 94481 00000"
                           autoFocus
-                          className="text-sm border-b border-primary outline-none flex-1 py-0.5"
+                          className="min-w-0 flex-1 border-b border-primary py-0.5 text-sm outline-none"
                         />
-                        <button onClick={handleSavePhone}>
-                          <Check className="h-4 w-4 text-primary" />
+                        <button
+                          type="button"
+                          onClick={handleSavePhone}
+                          disabled={savingPhone}
+                          className="shrink-0"
+                        >
+                          {savingPhone ? (
+                            <span className="inline-block h-4 w-4 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+                          ) : (
+                            <Check className="h-4 w-4 text-primary" />
+                          )}
                         </button>
-                        <button onClick={handleCancelPhone}>
+                        <button
+                          type="button"
+                          onClick={handleCancelPhone}
+                          className="shrink-0"
+                        >
                           <X className="h-4 w-4 text-muted-foreground" />
                         </button>
                       </div>
@@ -346,11 +400,18 @@ const UserProfile = () => {
             </div>
 
             <Button
-              onClick={() => signOut({ callbackUrl: "/screens/sign-in" })}
+              onClick={handleLogout}
+              disabled={loggingOut}
               className="w-full rounded-xl h-12 gap-2"
             >
-              <LogOut className="h-4 w-4" />
-              Logout
+              {loggingOut ? (
+                <ButtonLoadingSpinner loadingText="Logging out..." />
+              ) : (
+                <>
+                  <LogOut className="h-4 w-4" />
+                  Logout
+                </>
+              )}
             </Button>
             <AlertDialog>
               <AlertDialogTrigger asChild>
@@ -373,9 +434,14 @@ const UserProfile = () => {
                   <AlertDialogCancel>Cancel</AlertDialogCancel>
                   <AlertDialogAction
                     onClick={handleDeleteAccount}
+                    disabled={deletingAccount}
                     className="bg-destructive hover:bg-destructive/90"
                   >
-                    Delete Account
+                    {deletingAccount ? (
+                      <ButtonLoadingSpinner loadingText="Deleting..." />
+                    ) : (
+                      "Delete Account"
+                    )}
                   </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>

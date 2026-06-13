@@ -1,4 +1,5 @@
 "use client";
+import { APIErrors } from "@/components/error-screens/APIErrors";
 import { LoadingScreen } from "@/components/loading/LoadingScreen";
 import RecipeActions from "@/components/recipe/RecipeActions";
 import { RecipeBadges } from "@/components/recipe/RecipeBadges";
@@ -24,14 +25,20 @@ export default function RecipeDetailPage({
 
   const { handleToggleFavorite, loading, setLoading } = useRecipes();
   const [recipe, setRecipe] = useState<RecipeDetail | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [retryTrigger, setRetryTrigger] = useState(0);
 
   useEffect(() => {
-    let cancelled = false;
+    let ignore = false;
 
     const fetchRecipe = async () => {
+      if (retryTrigger > 0) {
+        setLoading(true);
+        setError(null);
+      }
       const cached = recipeDetails[id];
       if (cached) {
-        if (!cancelled) {
+        if (!ignore) {
           setRecipe(cached);
           setLoading(false);
         }
@@ -39,10 +46,15 @@ export default function RecipeDetailPage({
       }
 
       try {
-        if (!cancelled) setLoading(true);
         const response = await fetch(`/api/recipes/${id}`);
         const data = await response.json();
-        if (!response.ok || cancelled) return;
+
+        if (ignore) return;
+
+        if (!response.ok) {
+          setError(data.error || "Failed to load");
+          return;
+        }
 
         const mapped: RecipeDetail = {
           _id: data._id,
@@ -60,33 +72,50 @@ export default function RecipeDetailPage({
             data.isFavorite,
           createdBy: data.createdBy,
         };
-        if (!cancelled) {
+        if (!ignore) {
           cacheRecipeDetail(id, mapped);
           setRecipe(mapped);
         }
       } catch (error) {
+        if (ignore) return;
+        setError("Something went wrong");
         console.error("Failed to fetch recipe", error);
       } finally {
-        if (!cancelled) setLoading(false);
+        if (!ignore) setLoading(false);
       }
     };
+
     fetchRecipe();
+
     return () => {
-      cancelled = true;
+      ignore = true;
     };
-  }, [allRecipes, cacheRecipeDetail, id, recipeDetails, setLoading]);
+  }, [
+    allRecipes,
+    cacheRecipeDetail,
+    id,
+    recipeDetails,
+    setLoading,
+    retryTrigger,
+  ]);
 
   const isOwner = useIsOwner(recipe ?? allRecipes.find((r) => r._id === id));
 
   const isFavorited = allRecipes.find((r) => r._id === id)?.isFavorite ?? false;
 
-  if (!recipe) return <p className="text-center py-12">Recipe not found</p>;
+  if (!recipe && !loading && !error)
+    return <p className="text-center py-12">Recipe not found</p>;
 
   return (
     <>
-      {loading ? (
+      {error ? (
+        <APIErrors
+          message="Failed to load recipes. Try again."
+          onRetry={() => setRetryTrigger((prev) => prev + 1)}
+        />
+      ) : loading ? (
         <LoadingScreen />
-      ) : (
+      ) : recipe ? (
         <div className="min-h-screen bg-background px-6 mb-16 mt-2 md:mt-4">
           <div className="max-w-4xl mx-auto">
             <RecipeImage
@@ -123,7 +152,7 @@ export default function RecipeDetailPage({
             </div>
           </div>
         </div>
-      )}
+      ) : null}
     </>
   );
 }

@@ -1,5 +1,9 @@
-import Link from "next/link";
+"use client";
+
 import { Utensils } from "lucide-react";
+import Link from "next/link";
+import { useState } from "react";
+import { PageOverlay } from "../loading/PageOverlay";
 import { Typography } from "../ui/typography";
 
 interface AuthLayoutProps {
@@ -22,66 +26,76 @@ export const AuthLayout = ({
   buttonLoading = false,
   showLogo = false,
   children,
-}: AuthLayoutProps) => (
-  <div className="min-h-screen flex bg-background px-6 mb-10">
-    {/* Left panel — desktop only */}
-    <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-b from-primary/80 to-primary/30 flex-col items-center justify-center">
-      <div className="flex flex-col gap-4">
-        <Typography weight="bold" color="foreground" variant="h2">
-          HaviRuchi
-        </Typography>
-        <Typography weight="bold" color="foreground" variant="h2">
-          Discover & Save
-          <br />
-          Authentic Recipes
-        </Typography>
-      </div>
-      <Typography
-        variant="caption"
-        color="foreground"
-        className="fixed bottom-10"
-      >
-        © 2026 HaviRuchi. Celebrating Havyaka Heritage.
-      </Typography>
-    </div>
+}: AuthLayoutProps) => {
+  const [isNavigating, setIsNavigating] = useState(false);
 
-    {/* Right panel — form */}
-    <div className="flex flex-1 items-center justify-center px-6 py-12">
-      <div className="w-full max-w-sm flex flex-col gap-6">
-        {/* Logo — mobile only, sign-in only */}
-        {showLogo && (
-          <div className="flex justify-center md:hidden">
-            <Utensils className="h-12 w-12 text-primary" />
-          </div>
-        )}
-
-        {/* Header */}
-        <div className="flex flex-col gap-2 text-center md:text-left">
-          <Typography variant="large" weight="bold" color="primary">
-            {title}
+  return (
+    <div className="min-h-screen flex bg-background px-6 mb-10">
+      {/* Centralized PageOverlay handles both button and link loading */}
+      <PageOverlay show={buttonLoading || isNavigating} />
+      {/* Left panel — desktop only */}
+      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-b from-primary/80 to-primary/30 flex-col items-center justify-center">
+        <div className="flex flex-col gap-4">
+          <Typography weight="bold" color="foreground" variant="h2">
+            HaviRuchi
           </Typography>
-          <Typography variant="small" color="muted">
-            {subtitle}
+          <Typography weight="bold" color="foreground" variant="h2">
+            Discover & Save
+            <br />
+            Authentic Recipes
           </Typography>
         </div>
-
-        {/* Form fields */}
-        <div className="flex flex-col gap-4">{children}</div>
-
-        {/* Footer */}
-        <Typography variant="small" color="muted">
-          {footerText}{" "}
-          <Link
-            href={buttonLoading ? "#" : footerLinkHref}
-            onClick={(e) => {
-              if (buttonLoading) e.preventDefault();
-            }}
-            className={`text-primary font-medium hover:underline ${buttonLoading ? "opacity-50 cursor-not-allowed pointer-events-none" : ""}`}
-          >
-            {footerLinkText}
-          </Link>
+        <Typography
+          variant="caption"
+          color="foreground"
+          className="fixed bottom-10"
+        >
+          © 2026 HaviRuchi. Celebrating Havyaka Heritage.
         </Typography>
       </div>
+
+      {/* Right panel — form */}
+      <div className="flex flex-1 items-center justify-center px-6 py-12">
+        <div className="w-full max-w-sm flex flex-col gap-6">
+          {/* Logo — mobile only, sign-in only */}
+          {showLogo && (
+            <div className="flex justify-center md:hidden">
+              <Utensils className="h-12 w-12 text-primary" />
+            </div>
+          )}
+
+          {/* Header */}
+          <div className="flex flex-col gap-2 text-center md:text-left">
+            <Typography variant="large" weight="bold" color="primary">
+              {title}
+            </Typography>
+            <Typography variant="small" color="muted">
+              {subtitle}
+            </Typography>
+          </div>
+
+          {/* Form fields */}
+          <div className="flex flex-col gap-4">{children}</div>
+
+          {/* Footer */}
+          <Typography variant="small" color="muted">
+            {footerText}{" "}
+            <Link
+              href={buttonLoading || isNavigating ? "#" : footerLinkHref}
+              onClick={(e) => {
+                if (buttonLoading || isNavigating) {
+                  e.preventDefault();
+                } else {
+                  setIsNavigating(true); // Trigger overlay immediately on click
+                }
+              }}
+              className={`text-primary font-medium hover:underline ${buttonLoading || isNavigating ? "opacity-50 cursor-not-allowed pointer-events-none" : ""}`}
+            >
+              {footerLinkText}
+            </Link>
+          </Typography>
+        </div>
+      </div>
     </div>
-  </div>
-);
+  );
+};

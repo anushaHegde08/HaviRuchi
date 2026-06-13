@@ -1,5 +1,5 @@
-import { ReactNode } from "react";
 import { useRouter } from "next/navigation";
+import { ReactNode } from "react";
 import { Button } from "../ui/button";
 
 interface NoItemsFoundProps {
@@ -20,17 +20,23 @@ export const NoItemsFound = ({
   const router = useRouter();
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-[60vh] py-16 gap-4 text-center">
-      <div className="bg-primary/10 rounded-full p-6">{icon}</div>
-      <div className="flex flex-col gap-1">
-        <p className="text-lg font-semibold">{title}</p>
-        <p className="text-sm text-secondary max-w-xs">{description}</p>
+    <div className="flex min-h-[calc(100vh-128px)] items-center justify-center px-4 py-12 md:min-h-[calc(100vh-64px)]">
+      <div className="flex w-full max-w-xl flex-col items-center justify-center gap-4 text-center">
+        <div className="rounded-full bg-primary/10 p-6">{icon}</div>
+        <div className="flex flex-col items-center gap-1">
+          <p className="text-lg font-semibold text-primary">{title}</p>
+          <p className="max-w-xs text-sm text-secondary">{description}</p>
+        </div>
+        {actionLabel && actionHref && (
+          <Button
+            variant="outline"
+            onClick={() => router.push(actionHref)}
+            className="mt-2 min-w-[140px] border-primary text-primary hover:bg-primary/5"
+          >
+            {actionLabel}
+          </Button>
+        )}
       </div>
-      {actionLabel && actionHref && (
-        <Button onClick={() => router.push(actionHref)} className="mt-2">
-          {actionLabel}
-        </Button>
-      )}
     </div>
   );
 };
