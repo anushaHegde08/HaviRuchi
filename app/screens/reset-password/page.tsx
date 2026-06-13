@@ -1,12 +1,12 @@
 "use client";
-import { useState, useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
 import { AuthLayout } from "@/components/auth/AuthLayout";
 import { PasswordInput } from "@/components/auth/PasswordInput";
 import { PasswordRules } from "@/components/auth/PasswordRules";
-import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
 import ButtonLoadingSpinner from "@/components/loading/ButtonLoadingSpinner";
+import { Button } from "@/components/ui/button";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 export default function ResetPasswordPage() {
   const router = useRouter();
@@ -76,7 +76,7 @@ export default function ResetPasswordPage() {
         disabled={loading}
       >
         {loading ? (
-           <ButtonLoadingSpinner loadingText="Resetting..." />
+          <ButtonLoadingSpinner loadingText="Resetting..." />
         ) : (
           "Reset Password"
         )}

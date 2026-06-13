@@ -275,11 +275,11 @@ const UserProfile = () => {
                   )}
                 </div>
               </div>
-              <div className="flex flex-col md:items-center">
-                <span className="text-lg font-bold md:text-2xl">
+              <div className="flex min-w-0 flex-1 flex-col md:items-center">
+                <span className="truncate text-base font-bold sm:text-lg md:text-2xl">
                   {session?.user?.name ?? "User"}
                 </span>
-                <span className="text-sm text-muted-foreground">
+                <span className="max-w-full break-all text-xs text-muted-foreground sm:text-base md:text-lg md:text-center">
                   {session?.user?.email ?? ""}
                 </span>
               </div>
@@ -305,36 +305,42 @@ const UserProfile = () => {
                   </div>
                 </div>
                 {/* Phone */}
-                <div className="flex items-center gap-4 p-4">
+                <div className="flex items-start gap-4 p-4">
                   <div className="bg-primary/10 rounded-full p-2 shrink-0">
                     <Phone className="h-5 w-5 text-primary" />
                   </div>
-                  <div className="flex flex-col">
+                  <div className="flex min-w-0 flex-1 flex-col">
                     <span className="text-xs text-muted-foreground">
                       Phone Number
                     </span>
                     {editingPhone ? (
                       // editing mode
-                      <div className="flex items-center gap-2 mt-1">
+                      <div className="mt-1 flex min-w-0 items-center gap-2 overflow-hidden">
                         <input
                           type="tel"
                           value={phoneInput}
                           onChange={(e) => setPhoneInput(e.target.value)}
                           placeholder="+91 94481 00000"
                           autoFocus
-                          className="text-sm border-b border-primary outline-none flex-1 py-0.5"
+                          className="min-w-0 flex-1 border-b border-primary py-0.5 text-sm outline-none"
                         />
                         <button
+                          type="button"
                           onClick={handleSavePhone}
                           disabled={savingPhone}
+                          className="shrink-0"
                         >
                           {savingPhone ? (
-                            <span className="h-4 w-4 rounded-full border-2 border-primary border-t-transparent animate-spin inline-block" />
+                            <span className="inline-block h-4 w-4 rounded-full border-2 border-primary border-t-transparent animate-spin" />
                           ) : (
                             <Check className="h-4 w-4 text-primary" />
                           )}
                         </button>
-                        <button onClick={handleCancelPhone}>
+                        <button
+                          type="button"
+                          onClick={handleCancelPhone}
+                          className="shrink-0"
+                        >
                           <X className="h-4 w-4 text-muted-foreground" />
                         </button>
                       </div>

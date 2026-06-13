@@ -2,7 +2,7 @@
 import { useGlobalContext } from "@/context";
 import { RecipeItem } from "@/types";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 
 export const useRecipes = () => {
@@ -11,52 +11,78 @@ export const useRecipes = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchRecipes = async () => {
-      try {
-        setLoading(true);
-        // fetch recipes and favorites in parallel
-        const [recipesRes, favoritesRes] = await Promise.all([
-          fetch("/api/recipes", { cache: "no-store" }),
-          fetch("/api/users/favorites", { cache: "no-store" }),
-        ]);
-        const recipesData: RecipeItem[] = await recipesRes.json();
-        const favoriteRecipeIds: string[] = await favoritesRes.json();
+  const fetchRecipes = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
 
-        // get favorite IDs
-        const favoriteIds = Array.isArray(favoriteRecipeIds)
-          ? favoriteRecipeIds.map((id: string) => id)
+      const [recipesResult, favoritesResult] = await Promise.allSettled([
+        fetch("/api/recipes", { cache: "no-store" }),
+        fetch("/api/users/favorites", { cache: "no-store" }),
+      ]);
+
+      if (recipesResult.status === "rejected" || !recipesResult.value?.ok) {
+        setError("Failed to load recipes. Try again.");
+        return;
+      }
+
+      let recipesData: RecipeItem[];
+      try {
+        recipesData = await recipesResult.value.json();
+      } catch {
+        setError("Failed to load recipes. Try again.");
+        return;
+      }
+
+      if (!Array.isArray(recipesData)) {
+        setError("Failed to load recipes. Try again.");
+        return;
+      }
+
+      const favoriteRecipeIds =
+        favoritesResult.status === "fulfilled" && favoritesResult.value?.ok
+          ? await (async () => {
+              try {
+                return (await favoritesResult.value.json()) as string[];
+              } catch {
+                return [] as string[];
+              }
+            })()
           : [];
 
-        // if (!recipesRes.ok) {
-        //   setError(recipesData.error);
-        //   return;
-        // }
+      const favoriteIds = Array.isArray(favoriteRecipeIds)
+        ? favoriteRecipeIds.map((id: string) => id)
+        : [];
 
-        const mapped: RecipeItem[] = recipesData.map((r: RecipeItem) => ({
-          _id: r._id,
-          title: r.title,
-          description: r.description,
-          image: r.image || "/images/placeholder.jpg",
-          category: r.category,
-          difficulty: r.difficulty,
-          timeNeeded: r.timeNeeded,
-          servings: r.servings,
-          isFavorite: favoriteIds.includes(r._id),
-          createdBy: r.createdBy,
-        }));
+      const mapped: RecipeItem[] = recipesData.map((r: RecipeItem) => ({
+        _id: r._id,
+        title: r.title,
+        description: r.description,
+        image: r.image || "/images/placeholder.jpg",
+        category: r.category,
+        difficulty: r.difficulty,
+        timeNeeded: r.timeNeeded,
+        servings: r.servings,
+        isFavorite: favoriteIds.includes(r._id),
+        createdBy: r.createdBy,
+      }));
 
-        setAllRecipes(mapped);
-      } catch (error) {
-        setError("Something went wrong");
-        console.error("UseRecipe Hook failed to fetch with", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    if (allRecipes.length > 0) return;
-    fetchRecipes();
-  }, [allRecipes.length, setAllRecipes]);
+      setAllRecipes(mapped);
+    } catch (error) {
+      setError("Failed to load recipes. Try again.");
+      console.error("UseRecipe Hook failed to fetch with", error);
+    } finally {
+      setLoading(false);
+    }
+  }, [setAllRecipes]);
+
+  useEffect(() => {
+    const timeoutId = window.setTimeout(() => {
+      void fetchRecipes();
+    }, 0);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [fetchRecipes]);
 
   const favoriteRecipes = allRecipes.filter((r) => r.isFavorite);
 
@@ -105,5 +131,6 @@ export const useRecipes = () => {
     loading,
     setLoading,
     error,
+    retryFetch: fetchRecipes,
   };
 };

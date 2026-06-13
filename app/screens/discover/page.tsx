@@ -3,6 +3,7 @@ import PaginationComponent from "@/components/discover/PaginationComponent";
 import RecipeCard from "@/components/discover/RecipeCard";
 import SearchBar from "@/components/discover/SearchBar";
 import { NoItemsFound } from "@/components/empty-state/NoItemsFound";
+import { APIErrors } from "@/components/error-screens/APIErrors";
 import { FilterTrigger } from "@/components/filter/FilterTrigger";
 import { RecipeGridSkeleton } from "@/components/loading/RecipeCardSkeleton";
 import { Badge } from "@/components/ui/badge";
@@ -30,6 +31,7 @@ const Discover = () => {
     onClickRecipeCard,
     loading,
     error,
+    retryFetch,
   } = useRecipes();
 
   const [mobileVisibleCount, setMobileVisibleCount] =
@@ -157,7 +159,10 @@ const Discover = () => {
 
       {/* error state */}
       {error && (
-        <div className="text-center py-12 text-destructive">{error}</div>
+        <APIErrors
+          message="Failed to load recipes. Try again."
+          onRetry={retryFetch}
+        />
       )}
 
       {/* Mobile grid */}

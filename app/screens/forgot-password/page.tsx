@@ -1,11 +1,11 @@
 "use client";
-import { useState } from "react";
 import { AuthLayout } from "@/components/auth/AuthLayout";
 import { IconInput } from "@/components/auth/IconInput";
+import ButtonLoadingSpinner from "@/components/loading/ButtonLoadingSpinner";
 import { Button } from "@/components/ui/button";
 import { Mail } from "lucide-react";
+import { useState } from "react";
 import { toast } from "sonner";
-import ButtonLoadingSpinner from "@/components/loading/ButtonLoadingSpinner";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");

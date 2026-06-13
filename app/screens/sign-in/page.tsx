@@ -1,16 +1,16 @@
 "use client";
-import { Button } from "@/components/ui/button";
-import { Chrome, GoalIcon, Mail } from "lucide-react";
-import Link from "next/link";
 import { AuthLayout } from "@/components/auth/AuthLayout";
 import { IconInput } from "@/components/auth/IconInput";
 import { PasswordInput } from "@/components/auth/PasswordInput";
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { signIn, useSession } from "next-auth/react";
-import { toast } from "sonner";
-import { FcGoogle } from "react-icons/fc";
 import ButtonLoadingSpinner from "@/components/loading/ButtonLoadingSpinner";
+import { Button } from "@/components/ui/button";
+import { Mail } from "lucide-react";
+import { signIn, useSession } from "next-auth/react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { FcGoogle } from "react-icons/fc";
+import { toast } from "sonner";
 
 export default function SignInPage() {
   const { status } = useSession();
@@ -58,7 +58,7 @@ export default function SignInPage() {
       hasError = true;
     }
     if (hasError) return;
-    
+
     let isNavigating = false;
     try {
       setCredentialsLoading(true);
@@ -171,7 +171,11 @@ export default function SignInPage() {
         disabled={loading}
         className="w-full h-12 rounded-xl"
       >
-        {credentialsLoading ? <ButtonLoadingSpinner loadingText="Signing in..." /> : "Sign In"}
+        {credentialsLoading ? (
+          <ButtonLoadingSpinner loadingText="Signing in..." />
+        ) : (
+          "Sign In"
+        )}
       </Button>
 
       <div className="flex items-center gap-3">

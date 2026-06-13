@@ -3,6 +3,7 @@ import PaginationComponent from "@/components/discover/PaginationComponent";
 import RecipeCard from "@/components/discover/RecipeCard";
 import { NoItemsFound } from "@/components/empty-state/NoItemsFound";
 import { RecipeGridSkeleton } from "@/components/loading/RecipeCardSkeleton";
+import { APIErrors } from "@/components/error-screens/APIErrors";
 import { Typography } from "@/components/ui/typography";
 import { useRecipes } from "@/hooks/useRecipes";
 import { totalPages } from "@/lib/utilities/helperFunction";
@@ -19,6 +20,8 @@ const Favorites = () => {
     handleToggleFavorite,
     onClickRecipeCard,
     loading,
+    error,
+    retryFetch,
   } = useRecipes();
   const [currentPage, setCurrentPage] = useState(0);
   const [mobileVisibleCount, setMobileVisibleCount] =
@@ -45,7 +48,9 @@ const Favorites = () => {
 
   return (
     <>
-      {loading ? (
+      {error ? (
+        <APIErrors message="Failed to load favorites. Try again." onRetry={retryFetch} />
+      ) : loading ? (
         <RecipeGridSkeleton count={ITEMS_PER_PAGE} />
       ) : (
         <div className="flex flex-col gap-4 px-6">
