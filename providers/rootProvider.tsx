@@ -1,8 +1,8 @@
 "use client";
 import { SessionProvider } from "next-auth/react";
-import { GlobalProvider } from "./globalProvider";
-import { ErrorProvider } from "./errorProvider";
 import React from "react";
+import { ErrorProvider } from "./errorProvider";
+import { GlobalProvider } from "./globalProvider";
 
 interface RootProviderProps {
   children: React.ReactNode;
@@ -10,7 +10,7 @@ interface RootProviderProps {
 
 const RootProvider = ({ children }: RootProviderProps) => {
   return (
-    <SessionProvider>
+    <SessionProvider refetchOnWindowFocus={false} refetchInterval={0}>
       <GlobalProvider>
         <ErrorProvider>{children}</ErrorProvider>
       </GlobalProvider>

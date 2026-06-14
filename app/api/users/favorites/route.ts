@@ -1,9 +1,9 @@
-import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/authOptions";
 import connectDB from "@/lib/mongodb";
 import User from "@/models/User";
 import mongoose from "mongoose";
+import { getServerSession } from "next-auth";
+import { NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
 
@@ -28,10 +28,15 @@ export async function GET() {
     }
     // manually fetch recipes instead of populate
     const Recipe = (await import("@/models/Recipe")).default;
-    const favorites = await Recipe.find({
+    const favoriteRecipes = await Recipe.find({
       _id: { $in: user.favorites },
-    }).select("-ingredients -instructions");
-    return NextResponse.json(user.favorites);
+    })
+      .select("_id")
+      .lean();
+
+    return NextResponse.json(
+      favoriteRecipes.map((recipe) => recipe._id.toString()),
+    );
   } catch (error) {
     console.error("Get favorites error:", error);
     return NextResponse.json(

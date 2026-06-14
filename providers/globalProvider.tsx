@@ -7,6 +7,8 @@ export function GlobalProvider({ children }: { children: ReactNode }) {
   const [searchOpen, setSearchOpen] = useState(false);
   const [filterOpen, setFilterOpen] = useState(false);
   const [allRecipes, setAllRecipes] = useState<RecipeItem[]>([]);
+  const [recipesFetched, setRecipesFetched] = useState(false);
+  const [favoritesFetched, setFavoritesFetched] = useState(false);
 
   const [recipeDetails, setRecipeDetails] = useState<
     Record<string, RecipeDetail>
@@ -19,7 +21,8 @@ export function GlobalProvider({ children }: { children: ReactNode }) {
   const toggleFavorite = (id: string) => {
     setAllRecipes((prev) =>
       prev.map((item) =>
-        item._id.toString() === id.toString()
+        item._id.toString() === id.toString() ||
+        item.id?.toString() === id.toString()
           ? { ...item, isFavorite: !item.isFavorite }
           : item,
       ),
@@ -35,6 +38,10 @@ export function GlobalProvider({ children }: { children: ReactNode }) {
         setFilterOpen,
         allRecipes,
         setAllRecipes,
+        recipesFetched,
+        setRecipesFetched,
+        favoritesFetched,
+        setFavoritesFetched,
         toggleFavorite,
         recipeDetails,
         cacheRecipeDetail,

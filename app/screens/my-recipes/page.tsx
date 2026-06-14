@@ -11,7 +11,7 @@ import { ITEMS_PER_PAGE, MOBILE_LOAD_COUNT } from "@/mockData/constatnts";
 import { RecipeItem } from "@/types";
 import { BookOpen } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const MyRecipes = () => {
   const router = useRouter();
@@ -20,62 +20,57 @@ const MyRecipes = () => {
   const [myRecipes, setMyRecipes] = useState<RecipeItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [retryTrigger, setRetryTrigger] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
   const [mobileVisibleCount, setMobileVisibleCount] =
     useState(MOBILE_LOAD_COUNT);
+  const initialized = useRef(false);
+
+  const fetchMyRecipes = async (isRetry = false) => {
+    if (isRetry) {
+      setLoading(true);
+      setError(null);
+    }
+
+    try {
+      const response = await fetch("/api/recipes/my-recipes", {
+        cache: "no-store",
+      });
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.error || "Failed to load");
+        console.error(data.error);
+        return;
+      }
+
+      const mapped: RecipeItem[] = data.map((r: RecipeItem) => ({
+        id: r._id,
+        _id: r._id,
+        title: r.title,
+        description: r.description,
+        image: r.image || "",
+        category: r.category,
+        difficulty: r.difficulty,
+        timeNeeded: r.timeNeeded,
+        servings: r.servings,
+        isFavorite: r.isFavorite,
+        createdBy: r.createdBy,
+      }));
+
+      setMyRecipes(mapped);
+    } catch (error) {
+      setError("Something went wrong");
+      console.error("Failed to fetch my recipes", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    let ignore = false;
-
-    const fetchMyRecipes = async () => {
-      try {
-        if (retryTrigger > 0) {
-          setLoading(true);
-          setError(null);
-        }
-        const response = await fetch("/api/recipes/my-recipes", {
-          cache: "no-store",
-        });
-        const data = await response.json();
-
-        if (ignore) return;
-
-        if (!response.ok) {
-          setError(data.error || "Failed to load");
-          console.error(data.error);
-          return;
-        }
-
-        const mapped: RecipeItem[] = data.map((r: RecipeItem) => ({
-          _id: r._id,
-          title: r.title,
-          description: r.description,
-          image: r.image || "",
-          category: r.category,
-          difficulty: r.difficulty,
-          timeNeeded: r.timeNeeded,
-          servings: r.servings,
-          isFavorite: r.isFavorite,
-          createdBy: r.createdBy,
-        }));
-
-        if (!ignore) setMyRecipes(mapped);
-      } catch (error) {
-        if (ignore) return;
-        setError("Something went wrong");
-        console.error("Failed to fetch my recipes", error);
-      } finally {
-        if (!ignore) setLoading(false);
-      }
-    };
-
-    fetchMyRecipes();
-
-    return () => {
-      ignore = true;
-    };
-  }, [retryTrigger]);
+    if (initialized.current) return;
+    initialized.current = true;
+    void fetchMyRecipes();
+  }, []);
 
   // desktop pagination
   const startIndex = currentPage * ITEMS_PER_PAGE;
@@ -101,7 +96,7 @@ const MyRecipes = () => {
       {error ? (
         <APIErrors
           message="Failed to load recipes. Try again."
-          onRetry={() => setRetryTrigger((prev) => prev + 1)}
+          onRetry={() => void fetchMyRecipes(true)}
         />
       ) : loading ? (
         <RecipeGridSkeleton count={ITEMS_PER_PAGE} />

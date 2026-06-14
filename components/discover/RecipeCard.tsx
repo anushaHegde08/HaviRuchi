@@ -3,6 +3,7 @@ import { useIsOwner } from "@/hooks/useIsOwner";
 import { cn } from "@/lib/utils";
 import { RecipeItem } from "@/types";
 import { HeartIcon } from "lucide-react";
+import Image from "next/image";
 import React from "react";
 import RecipeActions from "../recipe/RecipeActions";
 import { RecipeBadges } from "../recipe/RecipeBadges";
@@ -20,6 +21,7 @@ interface RecipeCardProps {
   onToggleFavorite: (id: string) => void;
   onClickRecipeCard: (id: string) => void;
   onDelete?: () => void;
+  priority?: boolean;
 }
 
 const RecipeCard: React.FC<RecipeCardProps> = ({
@@ -27,6 +29,7 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
   onToggleFavorite,
   onClickRecipeCard,
   onDelete,
+  priority = false,
 }) => {
   const isOwner = useIsOwner(item);
 
@@ -36,18 +39,24 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
 
   return (
     <Card className="grid grid-cols-6 gap-2">
-      <img
-        src={
-          item.image && item.image !== ""
-            ? item.image
-            : "/images/placeholder.png"
-        }
-        alt={item.title}
-        className="col-span-2 h-[100px] md:h-[190px] object-cover overflow-auto rounded-s-xl"
-        onError={(e) => {
-          e.currentTarget.src = "/images/placeholder.jpg";
-        }}
-      />
+      <div className="relative col-span-2 h-[100px] overflow-hidden rounded-s-xl md:h-[190px]">
+        <Image
+          src={
+            item.image && item.image !== ""
+              ? item.image
+              : "/images/placeholder.png"
+          }
+          alt={item.title}
+          fill
+          priority={priority}
+          sizes="(max-width: 768px) 33vw, (max-width: 1280px) 50vw, 33vw"
+          className="object-cover"
+          onError={(e) => {
+            const target = e.currentTarget as HTMLImageElement;
+            target.src = "/images/placeholder.jpg";
+          }}
+        />
+      </div>
       <div
         className="col-span-4 py-1 flex flex-col justify-between cursor-pointer"
         onClick={() => onClickRecipeCard(item._id)}

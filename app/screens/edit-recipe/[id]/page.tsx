@@ -1,12 +1,12 @@
 "use client";
-import { use, useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
-import RecipeForm, { RecipeFormData } from "@/components/recipe/RecipeForm";
-import { AddField } from "@/types";
 import { LoadingScreen } from "@/components/loading/LoadingScreen";
-import { useGlobalContext } from "@/context";
 import { PageOverlay } from "@/components/loading/PageOverlay";
+import RecipeForm, { RecipeFormData } from "@/components/recipe/RecipeForm";
+import { useGlobalContext } from "@/context";
+import { AddField } from "@/types";
+import { useRouter } from "next/navigation";
+import { use, useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
 
 export default function EditRecipePage({
   params,
@@ -15,15 +15,19 @@ export default function EditRecipePage({
 }) {
   const { id } = use(params);
   const router = useRouter();
-  const { setAllRecipes } = useGlobalContext();
+  const { setAllRecipes, setRecipesFetched } = useGlobalContext();
   const [buttonLoading, setButtonLoading] = useState(false);
   const [fetching, setFetching] = useState(true);
   const [initialData, setInitialData] = useState<RecipeFormData | undefined>(
     undefined,
   );
   const [hasChanges, setHasChanges] = useState(false);
+  const initialized = useRef(false);
 
   useEffect(() => {
+    if (initialized.current) return;
+    initialized.current = true;
+
     const fetchRecipe = async () => {
       try {
         const response = await fetch(`/api/recipes/${id}`);
@@ -73,8 +77,8 @@ export default function EditRecipePage({
       }
     };
 
-    fetchRecipe();
-  }, [id]);
+    void fetchRecipe();
+  }, []);
 
   const handleSubmit = async (data: RecipeFormData, totalMinutes: number) => {
     try {
@@ -93,7 +97,8 @@ export default function EditRecipePage({
       if (!response.ok) throw new Error(result.error);
 
       toast.success("Recipe updated successfully!");
-      setAllRecipes([]); // clear cache so UI refetches
+      setAllRecipes([]);
+      setRecipesFetched(false);
       router.back();
     } finally {
       setButtonLoading(false);

@@ -62,39 +62,42 @@ const UserProfile = () => {
   const [deletingAccount, setDeletingAccount] = useState(false);
 
   const [myRecipesCount, setMyRecipesCount] = useState(0);
+  const initialized = useRef(false);
 
   useEffect(() => {
-    const fetchMyRecipesCount = async () => {
-      const response = await fetch("/api/recipes/my-recipes");
-      const data = await response.json();
-      if (Array.isArray(data)) setMyRecipesCount(data.length);
-    };
-    fetchMyRecipesCount();
-  }, []);
+    if (initialized.current) return;
+    initialized.current = true;
 
-  useEffect(() => {
-    const fetchProfile = async () => {
+    const fetchProfileData = async () => {
       try {
-        console.log("fetching profile...");
+        const [countResponse, profileResponse] = await Promise.all([
+          fetch("/api/recipes/my-recipes?countOnly=true"),
+          fetch("/api/users/profile"),
+        ]);
 
-        const response = await fetch("/api/users/profile");
-        console.log("profile response status:", response.status);
-        if (profileLoading) return <LoadingScreen />;
+        const countData = await countResponse.json();
+        if (countResponse.ok && typeof countData?.count === "number") {
+          setMyRecipesCount(countData.count);
+        }
 
-        const data = await response.json();
-        if (response.ok) {
-          setProfileData({ image: data.image || "", phone: data.phone || "" });
-          setPhone(data.phone || "");
+        const profileResult = await profileResponse.json();
+        if (profileResponse.ok) {
+          setProfileData({
+            image: profileResult.image || "",
+            phone: profileResult.phone || "",
+          });
+          setPhone(profileResult.phone || "");
         }
       } catch (error) {
-        console.error("Failed to fetch profile", error);
+        console.error("Failed to fetch profile data", error);
       } finally {
         setProfileLoading(false);
         setLoading(false);
       }
     };
-    fetchProfile();
-  }, [profileLoading, setLoading]);
+
+    void fetchProfileData();
+  }, []);
 
   const currentImage =
     profileData.image || preview || session?.user?.image || undefined;
