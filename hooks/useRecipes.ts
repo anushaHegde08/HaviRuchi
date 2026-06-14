@@ -2,7 +2,7 @@
 import { useGlobalContext } from "@/context";
 import { RecipeItem } from "@/types";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 export const useRecipes = () => {
@@ -59,6 +59,8 @@ export const useRecipes = () => {
 
         nextRecipes = recipesData.map((r: RecipeItem) => ({
           ...r,
+          id: r._id,
+          _id: r._id,
           image: r.image || "/images/placeholder.jpg",
         }));
 
@@ -135,14 +137,21 @@ export const useRecipes = () => {
     setRecipesFetched,
   ]);
 
+  const recipesFetchStarted = useRef(false);
+
   useEffect(() => {
     if (recipesFetched && favoritesFetched) return;
+    if (recipesFetchStarted.current) return;
+    recipesFetchStarted.current = true;
 
     const timeoutId = window.setTimeout(() => {
       void fetchRecipes();
     }, 0);
 
-    return () => window.clearTimeout(timeoutId);
+    return () => {
+      window.clearTimeout(timeoutId);
+      recipesFetchStarted.current = false;
+    };
   }, [fetchRecipes, recipesFetched, favoritesFetched]);
 
   const favoriteRecipes = allRecipes.filter((r) => r.isFavorite);
@@ -150,7 +159,7 @@ export const useRecipes = () => {
   // toggle favorite — updates DB and local state
   const handleToggleFavorite = useCallback(
     async (id: string) => {
-      const recipe = allRecipes.find((r) => r._id === id);
+      const recipe = allRecipes.find((r) => r._id === id || r.id === id);
       const wasFavorited = recipe?.isFavorite ?? false;
 
       // optimistic update — update UI immediately
@@ -162,7 +171,6 @@ export const useRecipes = () => {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ recipeId: id }),
         });
-        setFavoritesFetched(false);
         if (wasFavorited) {
           toast.success("Recipe removed from favorites", {
             position: "top-right",
@@ -180,7 +188,7 @@ export const useRecipes = () => {
         console.error("Failed to toggle favorite with", error);
       }
     },
-    [allRecipes, setFavoritesFetched, toggleFavorite],
+    [allRecipes, toggleFavorite],
   );
 
   const onClickRecipeCard = useCallback(

@@ -62,54 +62,42 @@ const UserProfile = () => {
   const [deletingAccount, setDeletingAccount] = useState(false);
 
   const [myRecipesCount, setMyRecipesCount] = useState(0);
-  const profileFetchRef = useRef(false);
-  const countFetchRef = useRef(false);
+  const initialized = useRef(false);
 
   useEffect(() => {
-    if (countFetchRef.current) return;
-    countFetchRef.current = true;
+    if (initialized.current) return;
+    initialized.current = true;
 
-    const fetchMyRecipesCount = async () => {
+    const fetchProfileData = async () => {
       try {
-        const response = await fetch("/api/recipes/my-recipes?countOnly=true");
-        const data = await response.json();
+        const [countResponse, profileResponse] = await Promise.all([
+          fetch("/api/recipes/my-recipes?countOnly=true"),
+          fetch("/api/users/profile"),
+        ]);
 
-        if (response.ok && typeof data?.count === "number") {
-          setMyRecipesCount(data.count);
+        const countData = await countResponse.json();
+        if (countResponse.ok && typeof countData?.count === "number") {
+          setMyRecipesCount(countData.count);
+        }
+
+        const profileResult = await profileResponse.json();
+        if (profileResponse.ok) {
+          setProfileData({
+            image: profileResult.image || "",
+            phone: profileResult.phone || "",
+          });
+          setPhone(profileResult.phone || "");
         }
       } catch (error) {
-        console.error("Failed to fetch my recipes count", error);
-      }
-    };
-
-    fetchMyRecipesCount();
-  }, []);
-
-  useEffect(() => {
-    if (profileFetchRef.current) return;
-    profileFetchRef.current = true;
-
-    const fetchProfile = async () => {
-      try {
-        console.log("fetching profile...");
-
-        const response = await fetch("/api/users/profile");
-        console.log("profile response status:", response.status);
-
-        const data = await response.json();
-        if (response.ok) {
-          setProfileData({ image: data.image || "", phone: data.phone || "" });
-          setPhone(data.phone || "");
-        }
-      } catch (error) {
-        console.error("Failed to fetch profile", error);
+        console.error("Failed to fetch profile data", error);
       } finally {
         setProfileLoading(false);
         setLoading(false);
       }
     };
-    fetchProfile();
-  }, [setLoading]);
+
+    void fetchProfileData();
+  }, []);
 
   const currentImage =
     profileData.image || preview || session?.user?.image || undefined;

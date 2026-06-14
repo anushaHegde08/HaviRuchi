@@ -22,99 +22,83 @@ export default function RecipeDetailPage({
   useSession();
 
   const { recipeDetails, cacheRecipeDetail, allRecipes } = useGlobalContext();
+  const [loading, setLoading] = useState(true);
 
-  const { handleToggleFavorite, loading, setLoading } = useRecipes();
-  const fetchInFlightRef = useRef(false);
+  const { handleToggleFavorite } = useRecipes();
+  const initialized = useRef(false);
   const [recipe, setRecipe] = useState<RecipeDetail | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [retryTrigger, setRetryTrigger] = useState(0);
 
-  useEffect(() => {
-    let ignore = false;
-
-    const fetchRecipe = async () => {
-      if (retryTrigger > 0) {
-        setLoading(true);
-        setError(null);
-      }
-
+  const fetchRecipeDetail = async (skipCache = false) => {
+    if (!skipCache) {
       const cached = recipeDetails[id];
       if (cached) {
-        if (!ignore) {
-          setRecipe(cached);
-          setLoading(false);
-        }
+        setRecipe(cached);
+        setLoading(false);
+        return;
+      }
+    }
+
+    if (skipCache) {
+      setLoading(true);
+      setError(null);
+    }
+
+    try {
+      const response = await fetch(`/api/recipes/${id}`);
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.error || "Failed to load");
         return;
       }
 
-      if (fetchInFlightRef.current) return;
-      fetchInFlightRef.current = true;
+      const mapped: RecipeDetail = {
+        id: data._id,
+        _id: data._id,
+        title: data.title,
+        description: data.description,
+        image: data.image || "",
+        category: data.category,
+        difficulty: data.difficulty,
+        timeNeeded: data.timeNeeded,
+        servings: data.servings,
+        ingredients: data.ingredients,
+        instructions: data.instructions,
+        isFavorite:
+          allRecipes.find((r) => r._id === data._id || r.id === data._id)
+            ?.isFavorite ?? data.isFavorite,
+        createdBy: data.createdBy,
+      };
+      cacheRecipeDetail(id, mapped);
+      setRecipe(mapped);
+    } catch (error) {
+      setError("Something went wrong");
+      console.error("Failed to fetch recipe", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-      try {
-        const response = await fetch(`/api/recipes/${id}`);
-        const data = await response.json();
+  useEffect(() => {
+    if (initialized.current) return;
+    initialized.current = true;
+    void fetchRecipeDetail();
+  }, []);
 
-        if (ignore) return;
+  const isOwner = useIsOwner(
+    recipe ?? allRecipes.find((r) => r._id === id || r.id === id),
+  );
 
-        if (!response.ok) {
-          setError(data.error || "Failed to load");
-          return;
-        }
-
-        const mapped: RecipeDetail = {
-          _id: data._id,
-          title: data.title,
-          description: data.description,
-          image: data.image || "",
-          category: data.category,
-          difficulty: data.difficulty,
-          timeNeeded: data.timeNeeded,
-          servings: data.servings,
-          ingredients: data.ingredients,
-          instructions: data.instructions,
-          isFavorite:
-            allRecipes.find((r) => r._id === data._id)?.isFavorite ??
-            data.isFavorite,
-          createdBy: data.createdBy,
-        };
-        if (!ignore) {
-          cacheRecipeDetail(id, mapped);
-          setRecipe(mapped);
-        }
-      } catch (error) {
-        if (ignore) return;
-        setError("Something went wrong");
-        console.error("Failed to fetch recipe", error);
-      } finally {
-        fetchInFlightRef.current = false;
-        if (!ignore) setLoading(false);
-      }
-    };
-
-    fetchRecipe();
-
-    return () => {
-      ignore = true;
-    };
-  }, [
-    allRecipes,
-    cacheRecipeDetail,
-    id,
-    recipeDetails,
-    setLoading,
-    retryTrigger,
-  ]);
-
-  const isOwner = useIsOwner(recipe ?? allRecipes.find((r) => r._id === id));
-
-  const isFavorited = allRecipes.find((r) => r._id === id)?.isFavorite ?? false;
+  const isFavorited =
+    allRecipes.find((r) => r._id === id || r.id === id)?.isFavorite ?? false;
 
   return (
     <>
       {error ? (
         <APIErrors
           message="Failed to load recipes. Try again."
-          onRetry={() => setRetryTrigger((prev) => prev + 1)}
+          onRetry={() => void fetchRecipeDetail(true)}
         />
       ) : loading ? (
         <LoadingScreen />

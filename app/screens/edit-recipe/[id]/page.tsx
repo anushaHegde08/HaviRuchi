@@ -5,7 +5,7 @@ import RecipeForm, { RecipeFormData } from "@/components/recipe/RecipeForm";
 import { useGlobalContext } from "@/context";
 import { AddField } from "@/types";
 import { useRouter } from "next/navigation";
-import { use, useEffect, useState } from "react";
+import { use, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 export default function EditRecipePage({
@@ -22,8 +22,12 @@ export default function EditRecipePage({
     undefined,
   );
   const [hasChanges, setHasChanges] = useState(false);
+  const initialized = useRef(false);
 
   useEffect(() => {
+    if (initialized.current) return;
+    initialized.current = true;
+
     const fetchRecipe = async () => {
       try {
         const response = await fetch(`/api/recipes/${id}`);
@@ -73,8 +77,8 @@ export default function EditRecipePage({
       }
     };
 
-    fetchRecipe();
-  }, [id]);
+    void fetchRecipe();
+  }, []);
 
   const handleSubmit = async (data: RecipeFormData, totalMinutes: number) => {
     try {

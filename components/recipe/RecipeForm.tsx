@@ -187,7 +187,7 @@ const RecipeForm = ({
     // reset input so same file can be selected again
     e.target.value = "";
     // setImagePreview(URL.createObjectURL(file));
-    // onFormChange?.();
+    onFormChange?.();
   };
 
   const handleCropComplete = (croppedFile: File) => {
