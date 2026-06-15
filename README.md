@@ -6,18 +6,6 @@ HaviRuchi is a full-stack recipe sharing web application built to celebrate and 
 
 ---
 
-## 🌐 Live Demo
-
-[haviruchi.com](https://haviruchi.com) _(coming soon)_
-
----
-
-## 📸 Screenshots
-
-_(Add screenshots here after deployment)_
-
----
-
 ## ✨ Features
 
 ### Currently Implemented
@@ -174,49 +162,141 @@ _(Add screenshots here after deployment)_
 
 ## 📁 Project Structure
 
+```
 havi-ruchi/
 ├── app/
-│ ├── api/
-│ │ ├── auth/
-│ │ │ ├── [...nextauth]/ # NextAuth handler
-│ │ │ ├── forgot-password/ # Send reset email
-│ │ │ ├── reset-password/ # Update password
-│ │ │ ├── resend-verification/ # Resend verify email
-│ │ │ └── verify-email/ # Verify email token
-│ │ ├── recipes/
-│ │ │ ├── route.ts # GET all, POST
-│ │ │ ├── [id]/route.ts # GET, PUT, DELETE
-│ │ │ └── my-recipes/route.ts # User's recipes
-│ │ ├── upload/route.ts # Cloudinary upload
-│ │ └── users/
-│ │ ├── signup/route.ts # Create account
-│ │ ├── profile/route.ts # GET, PATCH, DELETE
-│ │ └── favorites/route.ts # GET, POST
-│ ├── screens/ # App pages
-│ ├── layout.tsx # Root layout
-│ ├── page.tsx # Home page
-│ ├── error.tsx # Error boundary
-│ └── not-found.tsx # 404 page
+│   ├── api/
+│   │   ├── auth/
+│   │   │   ├── [...nextauth]/
+│   │   │   │   └── route.ts
+│   │   │   ├── forgot-password/
+│   │   │   │   └── route.ts
+│   │   │   ├── reset-password/
+│   │   │   │   └── route.ts
+│   │   │   ├── resend-verification/
+│   │   │   │   └── route.ts
+│   │   │   └── verify-email/
+│   │   │       └── route.ts
+│   │   ├── recipes/
+│   │   │   ├── route.ts
+│   │   │   ├── [id]/
+│   │   │   │   └── route.ts
+│   │   │   └── my-recipes/
+│   │   │       └── route.ts
+│   │   ├── upload/
+│   │   │   └── route.ts
+│   │   └── users/
+│   │       ├── signup/
+│   │       │   └── route.ts
+│   │       ├── profile/
+│   │       │   └── route.ts
+│   │       └── favorites/
+│   │           └── route.ts
+│   ├── screens/
+│   │   ├── add-recipe/
+│   │   │   └── page.tsx
+│   │   ├── discover/
+│   │   │   └── page.tsx
+│   │   ├── edit-recipe/
+│   │   │   └── [id]/
+│   │   │       └── page.tsx
+│   │   ├── favorites/
+│   │   │   └── page.tsx
+│   │   ├── forgot-password/
+│   │   │   └── page.tsx
+│   │   ├── my-recipes/
+│   │   │   └── page.tsx
+│   │   ├── profile/
+│   │   │   └── page.tsx
+│   │   ├── recipe/
+│   │   │   └── [id]/
+│   │   │       └── page.tsx
+│   │   ├── reset-password/
+│   │   │   └── page.tsx
+│   │   ├── sign-in/
+│   │   │   └── page.tsx
+│   │   ├── sign-up/
+│   │   │   └── page.tsx
+│   │   └── layout.tsx
+│   ├── error.tsx
+│   ├── globals.css
+│   ├── layout.tsx
+│   ├── not-found.tsx
+│   └── page.tsx
 ├── components/
-│ ├── auth/ # Auth components
-│ ├── discover/ # Recipe card, search, pagination
-│ ├── filter/ # Filter trigger, body, slider
-│ ├── recipe/ # Recipe form, actions, detail
-│ ├── profile/ # User profile
-│ ├── add-recipes/ # Dynamic fields
-│ ├── loading/ # Loading screen
-│ ├── error-screens/ # Error components
-│ └── ui/ # shadcn + custom components
-├── context/ # Global context
-├── providers/ # Context providers
-├── hooks/ # Custom hooks
-├── models/ # Mongoose models
-├── lib/ # Utilities
-├── types/ # TypeScript types
-├── mockData/ # Constants
-└── public/ # Static assets
-
----
+│   ├── add-recipes/
+│   │   └── AddFields.tsx
+│   ├── auth/
+│   │   ├── AuthLayout.tsx
+│   │   ├── IconInput.tsx
+│   │   ├── PasswordInput.tsx
+│   │   └── PasswordRules.tsx
+│   ├── discover/
+│   │   ├── PaginationComponent.tsx
+│   │   ├── RecipeCard.tsx
+│   │   └── SearchBar.tsx
+│   ├── error-screens/
+│   │   ├── APIErrors.tsx
+│   │   └── UnexpectedError.tsx
+│   ├── filter/
+│   │   ├── FilterBody.tsx
+│   │   ├── FilterCheckboxGroup.tsx
+│   │   ├── FilterSlider.tsx
+│   │   └── FilterTrigger.tsx
+│   ├── loading/
+│   │   └── LoadingScreen.tsx
+│   ├── profile/
+│   │   └── UserProfile.tsx
+│   ├── recipe/
+│   │   ├── RecipeActions.tsx
+│   │   ├── RecipeBadges.tsx
+│   │   ├── RecipeForm.tsx
+│   │   ├── RecipeImage.tsx
+│   │   ├── RecipeIngredients.tsx
+│   │   └── RecipeInstructions.tsx
+│   └── ui/
+│       ├── (all shadcn components)
+│       ├── EmptyState.tsx
+│       ├── ImageCropper.tsx
+│       ├── PageOverlay.tsx
+│       └── RecipeCardSkeleton.tsx
+├── context/
+│   └── globalContext.tsx
+├── hooks/
+│   ├── useIsOwner.ts
+│   └── useRecipes.ts
+├── lib/
+│   ├── authOptions.ts
+│   ├── cloudinary.ts
+│   ├── mongodb.ts
+│   ├── uploadImage.ts
+│   └── utilities/
+│       └── helpers.ts
+├── mockData/
+│   ├── constants.ts
+│   └── data.ts
+├── models/
+│   ├── Recipe.ts
+│   └── User.ts
+├── providers/
+│   ├── globalProvider.tsx
+│   ├── errorProvider.tsx
+│   └── RootProvider.tsx
+├── public/
+│   └── images/
+├── types/
+│   ├── filter.ts
+│   ├── index.ts
+│   └── next-auth.d.ts
+├── .env.local
+├── .gitignore
+├── next.config.ts
+├── package.json
+├── proxy.ts
+├── README.md
+├── tailwind.config.ts
+└── tsconfig.json
+```
 
 ## 🗄️ Data Models
 
