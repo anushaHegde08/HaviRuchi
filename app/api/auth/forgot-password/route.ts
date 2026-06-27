@@ -26,6 +26,13 @@ export async function POST(req: Request) {
       });
     }
 
+    if (!user.password) {
+      return NextResponse.json(
+        { error: "This account uses Google sign in. Please sign in with Google." },
+        { status: 400 }
+      );
+    }
+
     // generate reset token
     const resetToken = crypto.randomBytes(32).toString("hex");
     const resetTokenExpiry = new Date(Date.now() + 3600000); // 1 hour

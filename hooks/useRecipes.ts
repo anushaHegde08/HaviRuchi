@@ -16,13 +16,12 @@ export const useRecipes = () => {
     favoritesFetched,
     setFavoritesFetched,
   } = useGlobalContext();
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(!recipesFetched);
   const [error, setError] = useState<string | null>(null);
 
   const fetchRecipes = useCallback(async () => {
     try {
       setLoading(true);
-      setError(null);
 
       const shouldFetchRecipes = !recipesFetched;
       const shouldFetchFavorites = !favoritesFetched;
@@ -92,6 +91,7 @@ export const useRecipes = () => {
 
         setAllRecipes(nextRecipes);
         setRecipesFetched(true);
+        setError(null);
       } else if (shouldFetchFavorites) {
         if (
           favoritesResult.status === "rejected" ||
@@ -121,6 +121,7 @@ export const useRecipes = () => {
           })),
         );
         setFavoritesFetched(true);
+        setError(null);
       }
     } catch (error) {
       setError("Failed to load recipes. Try again.");

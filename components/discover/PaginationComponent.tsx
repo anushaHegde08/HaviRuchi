@@ -60,7 +60,7 @@ const PaginationComponent = ({
               <PaginationPrevious
                 onClick={(e) => {
                   e.preventDefault();
-                  !isFirst && onPageChange(currentPage - 1);
+                  if (!isFirst) onPageChange(currentPage - 1);
                 }}
                 className={
                   isFirst
@@ -86,7 +86,7 @@ const PaginationComponent = ({
               <PaginationNext
                 onClick={(e) => {
                   e.preventDefault();
-                  !isLast && onPageChange(currentPage + 1);
+                  if (!isLast) onPageChange(currentPage + 1);
                 }}
                 className={
                   isLast

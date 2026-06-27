@@ -66,6 +66,7 @@ const RecipeActions = ({
         router.back();
       }
     } catch (error) {
+      console.error(error);
       toast.error("Failed to delete recipe");
     } finally {
       if (!isNavigating) {

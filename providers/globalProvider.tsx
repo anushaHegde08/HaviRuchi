@@ -1,7 +1,8 @@
 "use client";
 import { GlobalContext } from "@/context/globalContext";
-import { RecipeDetail, RecipeItem } from "@/types";
+import { defaultFilters, FilterState, RecipeDetail, RecipeItem } from "@/types";
 import { ReactNode, useState } from "react";
+import { MOBILE_LOAD_COUNT } from "@/mockData/constatnts";
 
 export function GlobalProvider({ children }: { children: ReactNode }) {
   const [searchOpen, setSearchOpen] = useState(false);
@@ -17,6 +18,12 @@ export function GlobalProvider({ children }: { children: ReactNode }) {
   const cacheRecipeDetail = (id: string, recipe: RecipeDetail) => {
     setRecipeDetails((prev) => ({ ...prev, [id]: recipe }));
   };
+
+  const [discoverSearchQuery, setDiscoverSearchQuery] = useState("");
+  const [discoverFilters, setDiscoverFilters] = useState<FilterState>(defaultFilters);
+  const [discoverSelectedCategory, setDiscoverSelectedCategory] = useState("All");
+  const [discoverCurrentPage, setDiscoverCurrentPage] = useState(0);
+  const [discoverMobileVisibleCount, setDiscoverMobileVisibleCount] = useState(MOBILE_LOAD_COUNT);
 
   const toggleFavorite = (id: string) => {
     setAllRecipes((prev) =>
@@ -45,6 +52,16 @@ export function GlobalProvider({ children }: { children: ReactNode }) {
         toggleFavorite,
         recipeDetails,
         cacheRecipeDetail,
+        discoverSearchQuery,
+        setDiscoverSearchQuery,
+        discoverFilters,
+        setDiscoverFilters,
+        discoverSelectedCategory,
+        setDiscoverSelectedCategory,
+        discoverCurrentPage,
+        setDiscoverCurrentPage,
+        discoverMobileVisibleCount,
+        setDiscoverMobileVisibleCount,
       }}
     >
       {children}

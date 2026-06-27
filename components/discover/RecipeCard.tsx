@@ -58,20 +58,25 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
         />
       </div>
       <div
-        className="col-span-4 py-1 flex flex-col justify-between cursor-pointer"
+        className="col-span-4 min-w-0 py-1 flex flex-col justify-between cursor-pointer"
         onClick={() => onClickRecipeCard(item._id)}
       >
         <div className="grid grid-cols-6">
-          <div id="Details" className="col-span-5">
+          <div id="Details" className="col-span-5 min-w-0">
             <CardHeader className="p-0">
-              <CardTitle className="text-sm md:text-2xl lg:text-2xl">
+              <CardTitle className="text-sm md:text-2xl lg:text-2xl truncate">
                 {item.title}
               </CardTitle>
             </CardHeader>
             <CardContent className="p-0">
-              <CardDescription className="text-xs md:text-xl lg:text-xl text-secondary/70 leading-1 line-clamp-3 md:line-clamp-4">
+              <CardDescription className="text-xs md:text-xl lg:text-xl text-secondary/70 line-clamp-2 md:line-clamp-3 break-words whitespace-pre-wrap">
                 {item.description}
               </CardDescription>
+              {item.createdBy?.name && (
+                <p className="text-xs text-muted-foreground mt-1">
+                  by {item.createdBy.name}
+                </p>
+              )}
             </CardContent>
           </div>
           <div id="Actions" className="col-span-1">

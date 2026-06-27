@@ -2,8 +2,8 @@
 import PaginationComponent from "@/components/discover/PaginationComponent";
 import RecipeCard from "@/components/discover/RecipeCard";
 import { NoItemsFound } from "@/components/empty-state/NoItemsFound";
-import { RecipeGridSkeleton } from "@/components/loading/RecipeCardSkeleton";
 import { APIErrors } from "@/components/error-screens/APIErrors";
+import { RecipeGridSkeleton } from "@/components/loading/RecipeCardSkeleton";
 import { Typography } from "@/components/ui/typography";
 import { useRecipes } from "@/hooks/useRecipes";
 import { totalPages } from "@/lib/utilities/helperFunction";
@@ -49,7 +49,7 @@ const Favorites = () => {
   return (
     <>
       {error ? (
-        <APIErrors message="Failed to load favorites. Try again." onRetry={retryFetch} />
+        <APIErrors onRetry={retryFetch} className="min-h-[400px] md:min-h-[400px]" />
       ) : loading ? (
         <RecipeGridSkeleton count={ITEMS_PER_PAGE} />
       ) : (
@@ -72,6 +72,7 @@ const Favorites = () => {
               description="No favorite recipes yet. Start adding some!"
               actionLabel="Discover Recipes"
               actionHref="/screens/discover"
+              className="min-h-[400px] md:min-h-[400px]"
             />
           ) : (
             <>

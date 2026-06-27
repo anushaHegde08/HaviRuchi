@@ -26,7 +26,7 @@ import { Typography } from "@/components/ui/typography";
 import { uploadImage } from "@/lib/uploadImage";
 import { capitalizeFirst } from "@/lib/utilities/helperFunction";
 import { cn } from "@/lib/utils";
-import { CATEGORIES, DIFFICULTIES } from "@/mockData/constatnts";
+import { CATEGORIES, DIFFICULTIES, MAX_DESCRIPTION_LENGTH } from "@/mockData/constatnts";
 import { AddField } from "@/types";
 import { ArrowLeft } from "lucide-react";
 import dynamic from "next/dynamic";
@@ -151,12 +151,14 @@ const RecipeForm = ({
     setHours(value);
     if (value === 0 && minutes < 10) setMinutes(10);
     onFormChange?.();
+    if (errors.time) setErrors((prev) => ({ ...prev, time: "" }));
   };
 
   const handleMinutesChange = (value: number) => {
     if (hours === 0 && value < 10) return;
     setMinutes(value);
     onFormChange?.();
+    if (errors.time) setErrors((prev) => ({ ...prev, time: "" }));
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -175,6 +177,7 @@ const RecipeForm = ({
     }
 
     setImageError("");
+    if (errors.imageFile) setErrors((prev) => ({ ...prev, imageFile: "" }));
     setImageFile(file);
     // read file and open cropper
     const reader = new FileReader();
@@ -337,14 +340,14 @@ const RecipeForm = ({
                           variant="xsmall"
                           className="ml-auto text-muted-foreground"
                         >
-                          {description.length}/120
+                          {description.length}/{MAX_DESCRIPTION_LENGTH}
                         </Typography>
                       </FieldLabel>
                       <Textarea
                         id="description"
                         placeholder="Describe your traditional dish..."
                         rows={4}
-                        maxLength={120}
+                        maxLength={MAX_DESCRIPTION_LENGTH}
                         value={description}
                         className="text-sm"
                         onChange={(e) => {

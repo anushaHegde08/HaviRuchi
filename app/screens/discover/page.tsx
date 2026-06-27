@@ -6,6 +6,7 @@ import { NoItemsFound } from "@/components/empty-state/NoItemsFound";
 import { APIErrors } from "@/components/error-screens/APIErrors";
 import { RecipeGridSkeleton } from "@/components/loading/RecipeCardSkeleton";
 import { Badge } from "@/components/ui/badge";
+import { useGlobalContext } from "@/context/globalContext";
 import { useRecipes } from "@/hooks/useRecipes";
 import { totalPages } from "@/lib/utilities/helperFunction";
 import {
@@ -16,7 +17,7 @@ import {
 import { defaultFilters, FilterState, RecipeItem } from "@/types";
 import { DatabaseSearch } from "lucide-react";
 import dynamic from "next/dynamic";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo } from "react";
 
 const LazyFilterTrigger = dynamic(
   () =>
@@ -30,10 +31,18 @@ const LazyFilterTrigger = dynamic(
 );
 
 const Discover = () => {
-  const [currentPage, setCurrentPage] = useState(0);
-  const [filters, setFilters] = useState<FilterState>(defaultFilters);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("All");
+  const {
+    discoverSearchQuery: searchQuery,
+    setDiscoverSearchQuery: setSearchQuery,
+    discoverFilters: filters,
+    setDiscoverFilters: setFilters,
+    discoverSelectedCategory: selectedCategory,
+    setDiscoverSelectedCategory: setSelectedCategory,
+    discoverCurrentPage: currentPage,
+    setDiscoverCurrentPage: setCurrentPage,
+    discoverMobileVisibleCount: mobileVisibleCount,
+    setDiscoverMobileVisibleCount: setMobileVisibleCount,
+  } = useGlobalContext();
 
   const {
     allRecipes,
@@ -45,33 +54,39 @@ const Discover = () => {
     retryFetch,
   } = useRecipes();
 
-  const [mobileVisibleCount, setMobileVisibleCount] =
-    useState(MOBILE_LOAD_COUNT);
+  const handleSearchChange = useCallback(
+    (value: string) => {
+      setSearchQuery(value);
+    },
+    [setSearchQuery],
+  );
 
-  const handleSearchChange = useCallback((value: string) => {
-    setSearchQuery(value);
-  }, []);
+  const handleCategoryClick = useCallback(
+    (category: string) => {
+      setSelectedCategory(category);
+      setFilters(defaultFilters);
+      setCurrentPage(0);
+      setMobileVisibleCount(MOBILE_LOAD_COUNT);
+    },
+    [setSelectedCategory, setFilters, setCurrentPage, setMobileVisibleCount],
+  );
 
-  const handleCategoryClick = useCallback((category: string) => {
-    setSelectedCategory(category);
-    setFilters((prev) => ({ ...prev, categories: [] }));
-    setCurrentPage(0);
-    setMobileVisibleCount(MOBILE_LOAD_COUNT);
-  }, []);
-
-  const handleApplyFilter = useCallback((newFilters: FilterState) => {
-    setFilters(newFilters);
-    setSelectedCategory("All");
-    setCurrentPage(0);
-    setMobileVisibleCount(MOBILE_LOAD_COUNT);
-  }, []);
+  const handleApplyFilter = useCallback(
+    (newFilters: FilterState) => {
+      setFilters(newFilters);
+      setSelectedCategory("All");
+      setCurrentPage(0);
+      setMobileVisibleCount(MOBILE_LOAD_COUNT);
+    },
+    [setFilters, setSelectedCategory, setCurrentPage, setMobileVisibleCount],
+  );
 
   const handleClearFilter = useCallback(() => {
     setFilters(defaultFilters);
     setSelectedCategory("All");
     setCurrentPage(0);
     setMobileVisibleCount(MOBILE_LOAD_COUNT);
-  }, []);
+  }, [setFilters, setSelectedCategory, setCurrentPage, setMobileVisibleCount]);
 
   const filteredRecipes = useMemo(
     () =>
@@ -127,7 +142,7 @@ const Discover = () => {
 
   const handleLoadMore = useCallback(() => {
     setMobileVisibleCount((prev) => prev + MOBILE_LOAD_COUNT);
-  }, []);
+  }, [setMobileVisibleCount]);
 
   const handleDelete = useCallback(
     (id: string) => {
@@ -135,12 +150,6 @@ const Discover = () => {
     },
     [allRecipes, setAllRecipes],
   );
-  // reset to page 0 when filters change
-  // useEffect(() => {
-  //   setCurrentPage(0);
-  //   // reset mobile count when filters/search change
-  //   setMobileVisibleCount(MOBILE_LOAD_COUNT);
-  // }, [filters, searchQuery, selectedCategory]);
 
   return (
     <div className="flex flex-col gap-4 px-6 py-4">
@@ -176,15 +185,10 @@ const Discover = () => {
         </div>
       </div>
       {/* loading state */}
-      {loading && <RecipeGridSkeleton count={ITEMS_PER_PAGE} />}
+      {loading && !error && <RecipeGridSkeleton count={ITEMS_PER_PAGE} />}
 
       {/* error state */}
-      {error && (
-        <APIErrors
-          message="Failed to load recipes. Try again."
-          onRetry={retryFetch}
-        />
-      )}
+      {error && <APIErrors onRetry={retryFetch} className="min-h-[400px] md:min-h-[400px]" />}
 
       {/* Mobile grid */}
       {!loading && !error && (
@@ -205,6 +209,7 @@ const Discover = () => {
               icon={<DatabaseSearch className="h-8 w-8 text-primary" />}
               title="No recipes found"
               description="Try adjusting your search or filters"
+              className="min-h-[400px] md:min-h-[400px]"
             />
           )}
         </div>
@@ -225,11 +230,12 @@ const Discover = () => {
               />
             ))
           ) : (
-            <div className="col-span-2">
+            <div className="col-span-full">
               <NoItemsFound
                 icon={<DatabaseSearch className="h-8 w-8 text-primary" />}
                 title="No recipes found"
                 description="Try adjusting your search or filters"
+                className="min-h-[400px] md:min-h-[400px]"
               />
             </div>
           )}

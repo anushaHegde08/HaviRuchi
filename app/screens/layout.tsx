@@ -1,13 +1,7 @@
 import type { Metadata } from "next";
 import RootProvider from "@/providers/rootProvider";
-import { Inter } from "next/font/google";
 import { Navbar } from "@/components/navbar/Navbar";
 import { Toaster } from "sonner";
-
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -28,9 +22,13 @@ export default function ScreensLayout({
         {/* <SearchOverlay /> */}
         <main>{children}</main>
         <Toaster
+          position="top-center"
+          duration={3000}
+          closeButton={true}
           toastOptions={{
             classNames: {
               icon: "text-primary", // icon color
+              closeButton: "!left-auto !right-2 !top-1/2 !-translate-y-1/2",
             },
           }}
         />

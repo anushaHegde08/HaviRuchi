@@ -1,8 +1,6 @@
-import { HTMLProps } from "react";
 import { Slider } from "@/components/ui/slider";
 import { formatTime } from "@/lib/utilities/helperFunction";
-
-const TIME_LABELS = ["15M", "30M", "45M", "1H", "1H+"];
+import { HTMLProps } from "react";
 
 interface FilterSliderProps {
   value: number;
@@ -26,20 +24,14 @@ export const FilterSlider = ({
     </div>
     <Slider
       min={15}
-      max={180}
+      max={120}
       step={5}
       value={[value]}
       onValueChange={([val]) => onChange(val)}
     />
-    {/* <div className="flex justify-between">
-      {TIME_LABELS.map((label) => (
-        <span key={label} className="text-xs text-muted-foreground">
-          {label}
-        </span>
-      ))}
-    </div> */}
-    <div className="flex justify-between">
-      <span className="text-xs text-muted-foreground"></span>
+    <div className="flex justify-between mt-1">
+      <span className="text-xs text-muted-foreground">15 min</span>
+      <span className="text-xs text-muted-foreground">2h+</span>
     </div>
   </div>
 );

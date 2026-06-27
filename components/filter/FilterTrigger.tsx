@@ -1,10 +1,9 @@
 "use client";
-import { useCallback, useEffect, useState } from "react";
-import { FilterIcon, X } from "lucide-react";
+import { useState } from "react";
+import { FilterIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
-  SheetClose,
   SheetContent,
   SheetFooter,
   SheetHeader,
@@ -39,14 +38,19 @@ export const FilterTrigger = ({
     setOpen(false);
   };
 
-  useEffect(() => {
-    setLocalFilters(filters);
-  }, [filters]);
+  const handleOpenChange = (newOpen: boolean) => {
+    if (newOpen) {
+      setLocalFilters(filters);
+    }
+    setOpen(newOpen);
+  };
+
+  const hasChanges = JSON.stringify(localFilters) !== JSON.stringify(filters);
 
   return (
     <>
       <div className="block">
-        <Sheet open={open} onOpenChange={setOpen}>
+        <Sheet open={open} onOpenChange={handleOpenChange}>
           <SheetTrigger asChild>
             <Button
               variant="ghost"
@@ -55,14 +59,16 @@ export const FilterTrigger = ({
               <FilterIcon className="h-4 w-4" /> Filters
             </Button>
           </SheetTrigger>
-          <SheetContent side="top" className="data-[side=top]:max-h-[50vh]">
-            <SheetHeader className="text-left">
+          <SheetContent side="top" className="flex flex-col max-h-[500px]">
+            <SheetHeader className="text-left shrink-0">
               <SheetTitle className="text-primary text-xl font-bold">
                 Filter
               </SheetTitle>
             </SheetHeader>
-            <FilterBody filters={localFilters} onChange={setLocalFilters} />
-            <SheetFooter>
+            <div className="flex-1 overflow-y-auto min-h-0">
+              <FilterBody filters={localFilters} onChange={setLocalFilters} />
+            </div>
+            <SheetFooter className="shrink-0">
               <div className="flex gap-3 pt-2">
                 {/* <SheetClose asChild> */}
                 <Button
@@ -73,7 +79,11 @@ export const FilterTrigger = ({
                   Clear Filters
                 </Button>
                 {/* </SheetClose> */}
-                <Button className="flex-1 rounded-xl" onClick={handleApply}>
+                <Button 
+                  className="flex-1 rounded-xl" 
+                  onClick={handleApply}
+                  disabled={!hasChanges}
+                >
                   Apply Filters
                 </Button>
               </div>
