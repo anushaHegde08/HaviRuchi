@@ -20,6 +20,8 @@ interface ImageCropperProps {
   imageSrc: string;
   onCropComplete: (croppedFile: File) => void;
   onCancel: () => void;
+  circularCrop?: boolean;
+  outputSize?: number;
 }
 
 // helper — center a square crop on the image
@@ -41,6 +43,7 @@ async function getCroppedFile(
   image: HTMLImageElement,
   crop: PixelCrop,
   fileName: string,
+  outputSize: number = 800
 ): Promise<File> {
   const canvas = document.createElement("canvas");
   const ctx = canvas.getContext("2d");
@@ -50,9 +53,9 @@ async function getCroppedFile(
   const scaleX = image.naturalWidth / image.width;
   const scaleY = image.naturalHeight / image.height;
 
-  // output size — always 800x800
-  canvas.width = 800;
-  canvas.height = 800;
+  // output size
+  canvas.width = outputSize;
+  canvas.height = outputSize;
 
   ctx.drawImage(
     image,
@@ -62,8 +65,8 @@ async function getCroppedFile(
     crop.height * scaleY,
     0,
     0,
-    800,
-    800,
+    outputSize,
+    outputSize,
   );
 
   return new Promise((resolve, reject) => {
@@ -86,6 +89,8 @@ export const ImageCropper = ({
   imageSrc,
   onCropComplete,
   onCancel,
+  circularCrop = false,
+  outputSize = 800,
 }: ImageCropperProps) => {
   const imgRef = useRef<HTMLImageElement>(null);
   const [crop, setCrop] = useState<Crop>();
@@ -106,7 +111,8 @@ export const ImageCropper = ({
       const croppedFile = await getCroppedFile(
         imgRef.current,
         completedCrop,
-        "recipe-image.jpg",
+        "cropped-image.jpg",
+        outputSize
       );
       onCropComplete(croppedFile);
     } catch (error) {
@@ -134,7 +140,7 @@ export const ImageCropper = ({
             aspect={1} // ← forces 1:1 square
             minWidth={100}
             minHeight={100}
-            circularCrop={false}
+            circularCrop={circularCrop}
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img

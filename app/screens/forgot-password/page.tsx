@@ -5,16 +5,27 @@ import ButtonLoadingSpinner from "@/components/loading/ButtonLoadingSpinner";
 import { Button } from "@/components/ui/button";
 import { Mail } from "lucide-react";
 import { useState } from "react";
-import { toast } from "sonner";
+
+
+const isValidEmail = (email: string) => {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+};
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
+  const [error, setError] = useState("");
 
   const handleSubmit = async () => {
+    setError("");
     if (!email) {
-      toast.error("Please enter your email");
+      setError("Please enter your email");
+      return;
+    }
+
+    if (!isValidEmail(email)) {
+      setError("Please enter a valid email address");
       return;
     }
 
@@ -29,13 +40,14 @@ export default function ForgotPasswordPage() {
       const data = await response.json();
 
       if (!response.ok) {
-        toast.error(data.error);
+        setError(data.error);
         return;
       }
 
       setSent(true); // show success state
-    } catch (error) {
-      toast.error("Something went wrong");
+    } catch (err) {
+      console.error(err);
+      setError("Something went wrong");
     } finally {
       setLoading(false);
     }
@@ -56,14 +68,20 @@ export default function ForgotPasswordPage() {
     >
       {!sent ? (
         <>
-          <IconInput
-            id="email"
-            type="email"
-            placeholder="Enter your email"
-            icon={<Mail className="h-4 w-4" />}
-            value={email}
-            onChange={setEmail}
-          />
+          <div className="flex flex-col gap-1.5 w-full">
+            <IconInput
+              id="email"
+              type="email"
+              placeholder="Enter your email"
+              icon={<Mail className="h-4 w-4" />}
+              value={email}
+              onChange={(val) => {
+                setEmail(val);
+                if (error) setError("");
+              }}
+            />
+            {error && <p className="text-xs text-destructive px-1">{error}</p>}
+          </div>
           <Button
             className="w-full h-12 rounded-xl"
             onClick={handleSubmit}

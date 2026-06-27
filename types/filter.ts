@@ -7,5 +7,5 @@ export interface FilterState {
 export const defaultFilters: FilterState = {
   categories: [],
   difficulties: [],
-  maxTime: 180,
+  maxTime: 120,
 };

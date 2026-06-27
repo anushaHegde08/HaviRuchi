@@ -11,7 +11,7 @@ import { useIsOwner } from "@/hooks/useIsOwner";
 import { useRecipes } from "@/hooks/useRecipes";
 import { RecipeDetail } from "@/types";
 import { useSession } from "next-auth/react";
-import { use, useEffect, useRef, useState } from "react";
+import { use, useCallback, useEffect, useRef, useState } from "react";
 
 export default function RecipeDetailPage({
   params,
@@ -29,62 +29,65 @@ export default function RecipeDetailPage({
   const [recipe, setRecipe] = useState<RecipeDetail | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchRecipeDetail = async (skipCache = false) => {
-    if (!skipCache) {
-      const cached = recipeDetails[id];
-      if (cached) {
-        setRecipe(cached);
+  const fetchRecipeDetail = useCallback(
+    async (skipCache = false) => {
+      if (!skipCache) {
+        const cached = recipeDetails[id];
+        if (cached) {
+          setRecipe(cached);
+          setLoading(false);
+          return;
+        }
+      }
+
+      if (skipCache) {
+        setLoading(true);
+      }
+
+      try {
+        const response = await fetch(`/api/recipes/${id}`);
+        const data = await response.json();
+
+        if (!response.ok) {
+          setError(data.error || "Failed to load");
+          return;
+        }
+
+        const mapped: RecipeDetail = {
+          id: data._id,
+          _id: data._id,
+          title: data.title,
+          description: data.description,
+          image: data.image || "",
+          category: data.category,
+          difficulty: data.difficulty,
+          timeNeeded: data.timeNeeded,
+          servings: data.servings,
+          ingredients: data.ingredients,
+          instructions: data.instructions,
+          isFavorite:
+            allRecipes.find((r) => r._id === data._id || r.id === data._id)
+              ?.isFavorite ?? data.isFavorite,
+          createdBy: data.createdBy,
+        };
+        cacheRecipeDetail(id, mapped);
+        setRecipe(mapped);
+        setError(null);
+      } catch (error) {
+        setError("Something went wrong");
+        console.error("Failed to fetch recipe", error);
+      } finally {
         setLoading(false);
-        return;
       }
-    }
-
-    if (skipCache) {
-      setLoading(true);
-      setError(null);
-    }
-
-    try {
-      const response = await fetch(`/api/recipes/${id}`);
-      const data = await response.json();
-
-      if (!response.ok) {
-        setError(data.error || "Failed to load");
-        return;
-      }
-
-      const mapped: RecipeDetail = {
-        id: data._id,
-        _id: data._id,
-        title: data.title,
-        description: data.description,
-        image: data.image || "",
-        category: data.category,
-        difficulty: data.difficulty,
-        timeNeeded: data.timeNeeded,
-        servings: data.servings,
-        ingredients: data.ingredients,
-        instructions: data.instructions,
-        isFavorite:
-          allRecipes.find((r) => r._id === data._id || r.id === data._id)
-            ?.isFavorite ?? data.isFavorite,
-        createdBy: data.createdBy,
-      };
-      cacheRecipeDetail(id, mapped);
-      setRecipe(mapped);
-    } catch (error) {
-      setError("Something went wrong");
-      console.error("Failed to fetch recipe", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+    },
+    [id, recipeDetails, allRecipes, cacheRecipeDetail],
+  );
 
   useEffect(() => {
     if (initialized.current) return;
     initialized.current = true;
     void fetchRecipeDetail();
-  }, []);
+  }, [fetchRecipeDetail]);
 
   const isOwner = useIsOwner(
     recipe ?? allRecipes.find((r) => r._id === id || r.id === id),
@@ -96,10 +99,7 @@ export default function RecipeDetailPage({
   return (
     <>
       {error ? (
-        <APIErrors
-          message="Failed to load recipes. Try again."
-          onRetry={() => void fetchRecipeDetail(true)}
-        />
+        <APIErrors onRetry={() => void fetchRecipeDetail(true)} />
       ) : loading ? (
         <LoadingScreen />
       ) : recipe ? (
@@ -130,7 +130,15 @@ export default function RecipeDetailPage({
                     className="flex-row"
                   />
                 </div>
+                <p className="whitespace-pre-wrap break-words text-secondary/80 text-sm md:text-base">
+                  {recipe.description}
+                </p>
                 <RecipeBadges recipe={recipe} />
+                {recipe.createdBy?.name && (
+                  <p className="text-sm text-muted-foreground mt-2">
+                    Recipe by {recipe.createdBy.name}
+                  </p>
+                )}
               </div>
               <hr />
               <RecipeIngredients ingredients={recipe.ingredients} />

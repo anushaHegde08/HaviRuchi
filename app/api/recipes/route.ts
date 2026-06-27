@@ -5,12 +5,13 @@ import User from "@/models/User";
 import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { MAX_DESCRIPTION_LENGTH } from "@/mockData/constatnts";
 
 export const dynamic = "force-dynamic";
 
 const AddRecipeSchema = z.object({
   title: z.string().min(1, "Title is required"),
-  description: z.string().min(1, "Description is required"),
+  description: z.string().min(1, "Description is required").max(MAX_DESCRIPTION_LENGTH, `Description must be ${MAX_DESCRIPTION_LENGTH} characters or less`),
   image: z.string().optional(),
   category: z.string().min(1, "Category is required"),
   difficulty: z.enum(["Easy", "Medium", "Hard"] as const, {

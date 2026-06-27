@@ -16,35 +16,48 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { useRecipes } from "@/hooks/useRecipes";
 import { uploadImage } from "@/lib/uploadImage";
-import {
-  ArrowRight,
-  BookOpen,
-  Camera,
-  Check,
-  ChevronRight,
-  Heart,
-  LogOut,
-  Mail,
-  Pencil,
-  Phone,
-  X,
-} from "lucide-react";
+import { LogOut, Mail, Pencil, Phone, X, Camera, Check, ChevronRight, Heart, ArrowRight, BookOpen } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
+import dynamic from "next/dynamic";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { LoadingScreen } from "../loading/LoadingScreen";
 
+const LazyImageCropper = dynamic(
+  () =>
+    import("@/components/add-recipes/ImageCropper").then(
+      (mod) => mod.ImageCropper,
+    ),
+  { ssr: false },
+);
+
 const UserProfile = () => {
-  const { data: session } = useSession();
+  const { data: session, update: updateSession, status } = useSession();
 
   const router = useRouter();
   const { favoriteRecipes, loading, setLoading } = useRecipes();
 
   const [preview, setPreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [cropOpen, setCropOpen] = useState(false);
+  const [cropImageSrc, setCropImageSrc] = useState<string>("");
   const [phone, setPhone] = useState("");
   const [editingPhone, setEditingPhone] = useState(false);
   const [phoneInput, setPhoneInput] = useState("");
@@ -54,21 +67,41 @@ const UserProfile = () => {
     image: "",
     phone: "",
   });
-  const [profileLoading, setProfileLoading] = useState(true);
 
   const [uploadingImage, setUploadingImage] = useState(false);
   const [savingPhone, setSavingPhone] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
   const [deletingAccount, setDeletingAccount] = useState(false);
+  const [photoViewerOpen, setPhotoViewerOpen] = useState(false);
+  const [deletePhotoConfirmOpen, setDeletePhotoConfirmOpen] = useState(false);
+  const [deletingPhoto, setDeletingPhoto] = useState(false);
 
   const [myRecipesCount, setMyRecipesCount] = useState(0);
-  const initialized = useRef(false);
+  const initializedUser = useRef<string | null>(null);
 
   useEffect(() => {
-    if (initialized.current) return;
-    initialized.current = true;
+    console.log(
+      "EFFECT RUNNING - status:",
+      status,
+      "email:",
+      session?.user?.email,
+      "initializedUser.current:",
+      initializedUser.current,
+    );
+    if (status === "loading" || !session?.user?.email) return;
+
+    // If already initialized for THIS exact user, don't run again
+    if (initializedUser.current === session.user.email) return;
+
+    console.log(
+      "EFFECT CONTINUING - about to fetch for:",
+      session?.user?.email,
+    );
+    initializedUser.current = session.user.email;
+    console.log("INITIALIZED USER SET TO:", initializedUser.current);
 
     const fetchProfileData = async () => {
+      console.log("FETCH PROFILE DATA CALLED for:", session?.user?.email);
       try {
         const [countResponse, profileResponse] = await Promise.all([
           fetch("/api/recipes/my-recipes?countOnly=true"),
@@ -81,23 +114,28 @@ const UserProfile = () => {
         }
 
         const profileResult = await profileResponse.json();
+        console.log("PROFILE API RESULT:", profileResult);
         if (profileResponse.ok) {
           setProfileData({
             image: profileResult.image || "",
             phone: profileResult.phone || "",
           });
           setPhone(profileResult.phone || "");
+          console.log(
+            "PROFILE DATA STATE SET TO:",
+            profileResult.name,
+            profileResult.email,
+          );
         }
       } catch (error) {
         console.error("Failed to fetch profile data", error);
       } finally {
-        setProfileLoading(false);
         setLoading(false);
       }
     };
 
     void fetchProfileData();
-  }, []);
+  }, [session?.user?.email, status, setLoading]);
 
   const currentImage =
     profileData.image || preview || session?.user?.image || undefined;
@@ -126,13 +164,27 @@ const UserProfile = () => {
     }
 
     const reader = new FileReader();
-    reader.onload = () => setPreview(reader.result as string);
+    reader.onload = () => {
+      setCropImageSrc(reader.result as string);
+      setCropOpen(true);
+    };
     reader.readAsDataURL(file);
+
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const handleCropComplete = async (croppedFile: File) => {
+    setCropOpen(false);
+
+    // show local preview immediately
+    const reader = new FileReader();
+    reader.onload = () => setPreview(reader.result as string);
+    reader.readAsDataURL(croppedFile);
 
     try {
       setUploadingImage(true);
       // upload to Cloudinary
-      const url = await uploadImage(file, "profiles");
+      const url = await uploadImage(croppedFile, "profiles");
       console.log("Profile image uploaded:", url);
       await fetch("/api/users/profile", {
         method: "PATCH",
@@ -140,6 +192,7 @@ const UserProfile = () => {
         body: JSON.stringify({ image: url }),
       });
       setProfileData((prev) => ({ ...prev, image: url }));
+      await updateSession({ image: url });
       setPreview(null);
       toast.success("Profile photo updated!");
     } catch (error) {
@@ -147,6 +200,34 @@ const UserProfile = () => {
       toast.error(message || "Upload failed");
     } finally {
       setUploadingImage(false);
+    }
+  };
+
+  const handleDeletePhoto = async () => {
+    try {
+      setDeletingPhoto(true);
+      const response = await fetch("/api/users/profile", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ image: "" }),
+      });
+
+      if (!response.ok) {
+        toast.error("Failed to delete photo");
+        return;
+      }
+
+      setProfileData((prev) => ({ ...prev, image: "" }));
+      await updateSession({ image: "" });
+      setPreview(null);
+      setPhotoViewerOpen(false);
+      setDeletePhotoConfirmOpen(false);
+      toast.success("Profile photo removed");
+    } catch (error) {
+      console.error("Failed to delete photo", error);
+      toast.error("Something went wrong");
+    } finally {
+      setDeletingPhoto(false);
     }
   };
 
@@ -234,7 +315,7 @@ const UserProfile = () => {
 
   return (
     <>
-      {loading ? (
+      {loading || status === "loading" ? (
         <LoadingScreen />
       ) : (
         <div className="min-h-screen bg-background px-4 py-6 md:py-12">
@@ -265,18 +346,49 @@ const UserProfile = () => {
                   className="hidden"
                   onChange={handleFileChange}
                 />
-                <div
-                  onClick={() => fileInputRef.current?.click()}
-                  className="absolute bottom-0 right-0 md:bottom-1 md:right-1 bg-primary rounded-full p-1.5 cursor-pointer hover:bg-primary/90 transition-colors"
-                >
-                  {uploadingImage ? (
-                    <span className="block h-3 w-3 md:h-5 md:w-5 rounded-full border-2 border-white border-t-transparent animate-spin" />
-                  ) : preview ? (
-                    <Pencil className="block h-3 w-3 md:h-5 md:w-5 text-white" />
-                  ) : (
-                    <Camera className="block h-3 w-3 md:h-5 md:w-5 text-white" />
-                  )}
-                </div>
+                {profileData.image ? (
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <div className="absolute bottom-0 right-0 md:bottom-1 md:right-1 bg-primary rounded-full p-1.5 cursor-pointer hover:bg-primary/90 transition-colors">
+                        {uploadingImage ? (
+                          <span className="block h-3 w-3 md:h-5 md:w-5 rounded-full border-2 border-white border-t-transparent animate-spin" />
+                        ) : (
+                          <Pencil className="block h-3 w-3 md:h-5 md:w-5 text-white" />
+                        )}
+                      </div>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem
+                        onClick={() => setPhotoViewerOpen(true)}
+                      >
+                        View Photo
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={() => fileInputRef.current?.click()}
+                      >
+                        Change Photo
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem
+                        className="text-destructive focus:bg-destructive/10 focus:text-destructive"
+                        onClick={() => setDeletePhotoConfirmOpen(true)}
+                      >
+                        Remove Photo
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                ) : (
+                  <div
+                    onClick={() => fileInputRef.current?.click()}
+                    className="absolute bottom-0 right-0 md:bottom-1 md:right-1 bg-primary rounded-full p-1.5 cursor-pointer hover:bg-primary/90 transition-colors"
+                  >
+                    {uploadingImage ? (
+                      <span className="block h-3 w-3 md:h-5 md:w-5 rounded-full border-2 border-white border-t-transparent animate-spin" />
+                    ) : (
+                      <Camera className="block h-3 w-3 md:h-5 md:w-5 text-white" />
+                    )}
+                  </div>
+                )}
               </div>
               <div className="flex min-w-0 flex-1 flex-col md:items-center">
                 <span className="truncate text-base font-bold sm:text-lg md:text-2xl">
@@ -438,7 +550,7 @@ const UserProfile = () => {
                   <AlertDialogAction
                     onClick={handleDeleteAccount}
                     disabled={deletingAccount}
-                    className="bg-destructive hover:bg-destructive/90"
+                    className="bg-destructive text-white hover:bg-destructive/90 hover:text-white"
                   >
                     {deletingAccount ? (
                       <ButtonLoadingSpinner loadingText="Deleting..." />
@@ -450,6 +562,68 @@ const UserProfile = () => {
               </AlertDialogContent>
             </AlertDialog>
           </div>
+
+          <Dialog open={photoViewerOpen} onOpenChange={setPhotoViewerOpen}>
+            <DialogContent className="sm:max-w-md">
+              <DialogHeader>
+                <DialogTitle>Profile Photo</DialogTitle>
+              </DialogHeader>
+              <div className="flex justify-center p-4">
+                {currentImage && !imageError ? (
+                  <div className="relative w-48 h-48 sm:w-64 sm:h-64 rounded-full overflow-hidden border">
+                    <Image
+                      src={currentImage}
+                      alt="Profile"
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                ) : (
+                  <div className="w-48 h-48 sm:w-64 sm:h-64 rounded-full bg-primary/20 flex items-center justify-center text-primary text-6xl">
+                    {initials}
+                  </div>
+                )}
+              </div>
+            </DialogContent>
+          </Dialog>
+
+          <AlertDialog
+            open={deletePhotoConfirmOpen}
+            onOpenChange={setDeletePhotoConfirmOpen}
+          >
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Delete Profile Photo?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This will permanently remove your profile photo. You cannot
+                  undo this action.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={handleDeletePhoto}
+                  disabled={deletingPhoto}
+                  className="bg-destructive/90 text-primary hover:bg-destructive hover:text-white"
+                >
+                  {deletingPhoto ? (
+                    <ButtonLoadingSpinner loadingText="Deleting..." />
+                  ) : (
+                    "Delete Photo"
+                  )}
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+
+          <LazyImageCropper
+            open={cropOpen}
+            imageSrc={cropImageSrc}
+            onCropComplete={handleCropComplete}
+            onCancel={() => setCropOpen(false)}
+            circularCrop={true}
+            outputSize={200}
+          />
         </div>
       )}
     </>

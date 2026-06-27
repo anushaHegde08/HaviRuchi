@@ -17,6 +17,13 @@ const MyRecipes = () => {
   const router = useRouter();
   const { handleToggleFavorite } = useRecipes();
 
+  const onToggleFavorite = (id: string) => {
+    handleToggleFavorite(id);
+    setMyRecipes((prev) =>
+      prev.map((r) => (r._id === id ? { ...r, isFavorite: !r.isFavorite } : r)),
+    );
+  };
+
   const [myRecipes, setMyRecipes] = useState<RecipeItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -28,7 +35,6 @@ const MyRecipes = () => {
   const fetchMyRecipes = async (isRetry = false) => {
     if (isRetry) {
       setLoading(true);
-      setError(null);
     }
 
     try {
@@ -58,6 +64,7 @@ const MyRecipes = () => {
       }));
 
       setMyRecipes(mapped);
+      setError(null);
     } catch (error) {
       setError("Something went wrong");
       console.error("Failed to fetch my recipes", error);
@@ -94,10 +101,7 @@ const MyRecipes = () => {
   return (
     <>
       {error ? (
-        <APIErrors
-          message="Failed to load recipes. Try again."
-          onRetry={() => void fetchMyRecipes(true)}
-        />
+        <APIErrors onRetry={() => void fetchMyRecipes(true)} className="min-h-[400px] md:min-h-[400px]" />
       ) : loading ? (
         <RecipeGridSkeleton count={ITEMS_PER_PAGE} />
       ) : (
@@ -121,6 +125,7 @@ const MyRecipes = () => {
               description="Share your favorite Havyaka recipes with the community"
               actionLabel="Add Recipe"
               actionHref="/screens/add-recipe"
+              className="min-h-[400px] md:min-h-[400px]"
             />
           ) : (
             <>
@@ -130,7 +135,7 @@ const MyRecipes = () => {
                   <RecipeCard
                     key={item._id}
                     item={item}
-                    onToggleFavorite={handleToggleFavorite}
+                    onToggleFavorite={onToggleFavorite}
                     onClickRecipeCard={(id) =>
                       router.push("/screens/recipe/" + id)
                     }
@@ -145,7 +150,7 @@ const MyRecipes = () => {
                   <RecipeCard
                     key={item._id}
                     item={item}
-                    onToggleFavorite={handleToggleFavorite}
+                    onToggleFavorite={onToggleFavorite}
                     onClickRecipeCard={(id) =>
                       router.push("/screens/recipe/" + id)
                     }

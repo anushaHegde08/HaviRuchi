@@ -1,17 +1,17 @@
-import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/authOptions";
-import connectDB from "@/lib/mongodb";
-import User from "@/models/User";
 import cloudinary from "@/lib/cloudinary";
+import connectDB from "@/lib/mongodb";
 import Recipe from "@/models/Recipe";
+import User from "@/models/User";
+import { getServerSession } from "next-auth";
+import { NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
 
-export async function GET(req: Request) {
-  console.log("GET profile called");
+export async function GET() {
   try {
     const session = await getServerSession(authOptions);
+    console.log("API PROFILE GET - session.user.email:", session?.user?.email);
     if (!session?.user?.email) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
@@ -19,7 +19,6 @@ export async function GET(req: Request) {
     await connectDB();
     const user = await User.findOne({ email: session.user.email });
 
-    console.log("user from DB:", user.image, user.phone);
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
@@ -49,14 +48,29 @@ export async function PATCH(req: Request) {
     const body = await req.json();
     const { image, phone } = body;
 
+    const updateData: Record<string, string> = {};
+    if (image !== undefined) {
+      updateData.image = image;
+      // if clearing the image, delete from Cloudinary
+      if (image === "") {
+        const user = await User.findOne({ email: session.user.email });
+        if (user?.image && user.image.includes("cloudinary")) {
+          const publicId = user.image.split("/").pop()?.split(".")[0];
+          if (publicId) {
+            await cloudinary.uploader.destroy(`haviruchi/profiles/${publicId}`);
+          }
+        }
+      }
+    }
+    if (phone !== undefined) {
+      updateData.phone = phone;
+    }
+
     await connectDB();
 
     const updatedUser = await User.findOneAndUpdate(
       { email: session.user.email },
-      {
-        ...(image && { image }), // only update if provided
-        ...(phone && { phone }), // only update if provided
-      },
+      updateData,
       { new: true }, // return updated document
     );
 
@@ -75,7 +89,7 @@ export async function PATCH(req: Request) {
   }
 }
 
-export async function DELETE(req: Request) {
+export async function DELETE() {
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.email) {

@@ -1,5 +1,5 @@
 "use client";
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Mail, Phone, User } from "lucide-react";
 import { AuthLayout } from "@/components/auth/AuthLayout";
@@ -87,6 +87,7 @@ export default function SignUpPage() {
       toast.success("Account created successfully!");
       router.push("/screens/sign-in");
     } catch (error) {
+      console.error(error);
       setErrors((prev) => ({
         ...prev,
         general: "Something went wrong. Please try again.",
@@ -112,7 +113,10 @@ export default function SignUpPage() {
           placeholder="Name"
           icon={<User className="h-4 w-4" />}
           value={name}
-          onChange={setName}
+          onChange={(val) => {
+            setName(val);
+            if (errors.name) setErrors((prev) => ({ ...prev, name: "" }));
+          }}
           inputProps={{ required: true }}
         />
         {errors.name && (
@@ -126,7 +130,10 @@ export default function SignUpPage() {
           placeholder="Email Address"
           icon={<Mail className="h-4 w-4" />}
           value={email}
-          onChange={setEmail}
+          onChange={(val) => {
+            setEmail(val);
+            if (errors.email) setErrors((prev) => ({ ...prev, email: "" }));
+          }}
           inputProps={{ required: true }}
         />
         {errors.email && (
@@ -146,7 +153,10 @@ export default function SignUpPage() {
         <PasswordInput
           id="password"
           placeholder="Password"
-          onChange={setPassword}
+          onChange={(val) => {
+            setPassword(val);
+            if (errors.password) setErrors((prev) => ({ ...prev, password: "" }));
+          }}
         />
         {errors.password && (
           <p className="text-xs text-destructive pl-1">{errors.password}</p>

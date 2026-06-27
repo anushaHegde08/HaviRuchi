@@ -83,17 +83,43 @@ export const authOptions: AuthOptions = {
 
     // adds user id to the session
     async session({ session, token }) {
-      if (session.user) {
+      console.log("SESSION CALLBACK - token:", token);
+      if (session.user && token.sub) {
         session.user.id = token.sub as string;
+        session.user.name = (token.name as string) ?? session.user.name ?? "";
+        session.user.email = (token.email as string) ?? session.user.email ?? "";
+        session.user.image = (token.picture as string) ?? session.user.image ?? undefined;
+
+        await connectDB();
+        const dbUser = await User.findById(token.sub);
+        if (dbUser) {
+          session.user.name = dbUser.name ?? session.user.name ?? "";
+          session.user.email = dbUser.email ?? session.user.email ?? "";
+          session.user.image = dbUser.image ?? session.user.image ?? undefined;
+        }
       }
+      console.log("SESSION CALLBACK - final session.user:", session.user);
       return session;
     },
 
-    // adds user id to the token
-    async jwt({ token, user }) {
+    // adds user id and data to the token
+    async jwt({ token, user, trigger, session }) {
+      console.log("JWT CALLBACK - trigger:", trigger, "user:", user, "token before:", token);
+      // on initial sign in, completely overwrite token to prevent stale data merging
       if (user) {
         token.sub = user.id;
+        token.email = user.email;
+        token.name = user.name;
+        token.picture = user.image as string | null | undefined;
       }
+
+      // handle manual session updates from the client
+      if (trigger === "update" && session) {
+        if (session.image !== undefined) token.picture = session.image;
+        if (session.name !== undefined) token.name = session.name;
+      }
+
+      console.log("JWT CALLBACK - token after:", token);
       return token;
     },
   },

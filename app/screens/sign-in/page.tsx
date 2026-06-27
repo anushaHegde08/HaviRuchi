@@ -93,8 +93,9 @@ export default function SignInPage() {
       }
       toast.success("Welcome back!");
       isNavigating = true;
-      router.replace("/screens/discover");
+      window.location.href = "/screens/discover";
     } catch (error) {
+      console.error(error);
       toast.error("Something went wrong. Please try again.");
     } finally {
       if (!isNavigating) {
@@ -113,6 +114,7 @@ export default function SignInPage() {
       });
       isNavigating = true;
     } catch (error) {
+      console.error(error);
       toast.error("Google sign in failed. Please try again.");
     } finally {
       if (!isNavigating) {
@@ -138,7 +140,12 @@ export default function SignInPage() {
           value={email}
           placeholder="Email or phone number"
           icon={<Mail className="h-4 w-4" />}
-          onChange={setEmail}
+          onChange={(val) => {
+            setEmail(val);
+            if (errors.email) {
+              setErrors((prev) => ({ ...prev, email: "" }));
+            }
+          }}
         />
         {errors.email && (
           <p className="text-xs text-destructive pl-1">{errors.email}</p>
@@ -148,7 +155,12 @@ export default function SignInPage() {
         <PasswordInput
           id="password"
           placeholder="Password"
-          onChange={setPassword}
+          onChange={(val) => {
+            setPassword(val);
+            if (errors.password) {
+              setErrors((prev) => ({ ...prev, password: "" }));
+            }
+          }}
         />
         {errors.password && (
           <p className="text-xs text-destructive pl-1">{errors.password}</p>

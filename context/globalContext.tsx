@@ -1,5 +1,5 @@
 "use client";
-import { RecipeDetail, RecipeItem } from "@/types";
+import { FilterState, RecipeDetail, RecipeItem } from "@/types";
 import { createContext, useContext } from "react";
 
 export interface GlobalContextType {
@@ -18,6 +18,16 @@ export interface GlobalContextType {
   toggleFavorite: (id: string) => void;
   recipeDetails: Record<string, RecipeDetail>;
   cacheRecipeDetail: (id: string, recipe: RecipeDetail) => void;
+  discoverSearchQuery: string;
+  setDiscoverSearchQuery: (value: string) => void;
+  discoverFilters: FilterState;
+  setDiscoverFilters: (value: FilterState | ((prev: FilterState) => FilterState)) => void;
+  discoverSelectedCategory: string;
+  setDiscoverSelectedCategory: (value: string) => void;
+  discoverCurrentPage: number;
+  setDiscoverCurrentPage: (value: number | ((prev: number) => number)) => void;
+  discoverMobileVisibleCount: number;
+  setDiscoverMobileVisibleCount: (value: number | ((prev: number) => number)) => void;
 }
 
 export const GlobalContext = createContext<GlobalContextType | undefined>(

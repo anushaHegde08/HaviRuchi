@@ -8,6 +8,10 @@ export const useIsOwner = (recipe?: RecipeItem) => {
 
   if (!session?.user?.id || !recipe?.createdBy) return false;
 
+  if (typeof recipe.createdBy === "string") {
+    return session.user.id === recipe.createdBy;
+  }
+
   return (
     session.user.id === recipe.createdBy._id ||
     session.user.email === recipe.createdBy.email

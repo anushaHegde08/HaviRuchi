@@ -71,6 +71,7 @@ export default function EditRecipePage({
           image: data.image || "",
         });
       } catch (error) {
+        console.error(error);
         toast.error("Failed to load recipe");
       } finally {
         setFetching(false);
@@ -78,9 +79,9 @@ export default function EditRecipePage({
     };
 
     void fetchRecipe();
-  }, []);
+  }, [id, router]);
 
-  const handleSubmit = async (data: RecipeFormData, totalMinutes: number) => {
+  const handleSubmit = async (data: RecipeFormData) => {
     try {
       setButtonLoading(true);
       const { servings, ...rest } = data;

@@ -17,9 +17,11 @@ export const FilterCheckboxGroup = ({
   className,
 }: FilterCheckboxGroupProps) => {
   const toggle = (item: string) => {
-    selected.includes(item)
-      ? onChange(selected.filter((i) => i !== item))
-      : onChange([...selected, item]);
+    if (selected.includes(item)) {
+      onChange(selected.filter((i) => i !== item));
+    } else {
+      onChange([...selected, item]);
+    }
   };
 
   return (

@@ -3,7 +3,6 @@ import { FilterState } from "@/types/filter";
 import { FilterCheckboxGroup } from "./FilterCheckboxGroup";
 import { FilterSlider } from "./FilterSlider";
 import { CATEGORIES, DIFFICULTIES } from "@/mockData/constatnts";
-import { Button } from "@/components/ui/button";
 
 interface FilterBodyProps {
   filters: FilterState;

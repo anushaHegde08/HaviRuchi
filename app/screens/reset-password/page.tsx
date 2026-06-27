@@ -16,17 +16,19 @@ export default function ResetPasswordPage() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     if (!token) {
       toast.error("Invalid reset link");
       router.push("/screens/forgot-password");
     }
-  }, [token]);
+  }, [token, router]);
 
   const handleSubmit = async () => {
+    setError("");
     if (!password || password.length < 6) {
-      toast.error("Password must be at least 6 characters");
+      setError("Password must be at least 6 characters");
       return;
     }
 
@@ -41,15 +43,16 @@ export default function ResetPasswordPage() {
       const data = await response.json();
 
       if (!response.ok) {
-        toast.error(data.error);
+        setError(data.error);
         return;
       }
 
       toast.success("Password reset successfully!");
       setSuccess(true);
       router.push("/screens/sign-in");
-    } catch (error) {
-      toast.error("Something went wrong");
+    } catch (err) {
+      console.error(err);
+      setError("Something went wrong");
     } finally {
       setLoading(false);
     }
@@ -64,11 +67,17 @@ export default function ResetPasswordPage() {
       footerLinkHref="/screens/sign-in"
       buttonLoading={loading && !success}
     >
-      <PasswordInput
-        id="password"
-        placeholder="New password"
-        onChange={setPassword}
-      />
+      <div className="flex flex-col gap-1.5 w-full">
+        <PasswordInput
+          id="password"
+          placeholder="New password"
+          onChange={(val) => {
+            setPassword(val);
+            if (error) setError("");
+          }}
+        />
+        {error && <p className="text-xs text-destructive px-1">{error}</p>}
+      </div>
       <PasswordRules password={password} />
       <Button
         className="w-full h-12 rounded-xl"

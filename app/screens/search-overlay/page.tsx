@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Typography } from "@/components/ui/typography";
 import { useGlobalContext } from "@/context";
-import { Search, X } from "lucide-react";
+import { X } from "lucide-react";
 import React from "react";
 
 const SearchOverlay = () => {

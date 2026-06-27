@@ -2,7 +2,7 @@ import { AddField } from "@/types";
 import { Typography } from "../ui/typography";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
-import { MinusCircle, PlusCircle } from "lucide-react";
+import { ChevronDown, ChevronUp, MinusCircle, PlusCircle } from "lucide-react";
 import { Field, FieldLabel } from "../ui/field";
 import { capitalizeFirst } from "@/lib/utilities/helperFunction";
 
@@ -45,6 +45,21 @@ const AddFields = ({
     onChange(
       fields.map((item) => (item.id === id ? { ...item, measurement } : item)),
     );
+    onClearError?.();
+  };
+
+  const moveUp = (index: number) => {
+    if (index === 0) return;
+    const newFields = [...fields];
+    [newFields[index - 1], newFields[index]] = [newFields[index], newFields[index - 1]];
+    onChange(newFields);
+  };
+
+  const moveDown = (index: number) => {
+    if (index === fields.length - 1) return;
+    const newFields = [...fields];
+    [newFields[index + 1], newFields[index]] = [newFields[index], newFields[index + 1]];
+    onChange(newFields);
   };
 
   return (
@@ -88,6 +103,26 @@ const AddFields = ({
                 className="w-28 shrink-0"
               />
             )}
+            <div className="flex flex-col gap-0">
+              <Button
+                variant="ghost"
+                className="hover:bg-transparent shrink-0 p-1 h-auto"
+                onClick={() => moveUp(index)}
+                disabled={index === 0}
+                type="button"
+              >
+                <ChevronUp className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                className="hover:bg-transparent shrink-0 p-1 h-auto"
+                onClick={() => moveDown(index)}
+                disabled={index === fields.length - 1}
+                type="button"
+              >
+                <ChevronDown className="h-4 w-4" />
+              </Button>
+            </div>
             <Button
               variant="ghost"
               className="hover:bg-transparent shrink-0 p-0"
