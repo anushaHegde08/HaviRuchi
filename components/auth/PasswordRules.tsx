@@ -1,6 +1,6 @@
-import { Check } from "lucide-react";
+import { RULES } from "@/lib/utilities/constatnts";
 import { cn } from "@/lib/utils";
-import { RULES } from "@/mockData/constatnts";
+import { Check } from "lucide-react";
 
 export const PasswordRules = ({ password }: { password: string }) => (
   <div className="flex flex-col gap-2">

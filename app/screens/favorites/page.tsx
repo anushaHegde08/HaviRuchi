@@ -6,8 +6,8 @@ import { APIErrors } from "@/components/error-screens/APIErrors";
 import { RecipeGridSkeleton } from "@/components/loading/RecipeCardSkeleton";
 import { Typography } from "@/components/ui/typography";
 import { useRecipes } from "@/hooks/useRecipes";
+import { ITEMS_PER_PAGE, MOBILE_LOAD_COUNT } from "@/lib/utilities/constatnts";
 import { totalPages } from "@/lib/utilities/helperFunction";
-import { ITEMS_PER_PAGE, MOBILE_LOAD_COUNT } from "@/mockData/constatnts";
 import { RecipeItem } from "@/types";
 import { Heart } from "lucide-react";
 import { useSession } from "next-auth/react";
@@ -49,7 +49,10 @@ const Favorites = () => {
   return (
     <>
       {error ? (
-        <APIErrors onRetry={retryFetch} className="min-h-[400px] md:min-h-[400px]" />
+        <APIErrors
+          onRetry={retryFetch}
+          className="min-h-[400px] md:min-h-[400px]"
+        />
       ) : loading ? (
         <RecipeGridSkeleton count={ITEMS_PER_PAGE} />
       ) : (
@@ -77,10 +80,11 @@ const Favorites = () => {
           ) : (
             <>
               <div className="grid grid-cols-1 gap-6 md:hidden">
-                {mobileItems.map((item: RecipeItem) => (
+                {mobileItems.map((item: RecipeItem, index: number) => (
                   <RecipeCard
                     key={item._id}
                     item={item}
+                    priority={index < 2}
                     onToggleFavorite={handleToggleFavorite}
                     onClickRecipeCard={onClickRecipeCard}
                     onDelete={() => handleDelete(item._id as string)}
@@ -88,10 +92,11 @@ const Favorites = () => {
                 ))}
               </div>
               <div className="hidden md:grid md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-2 gap-6">
-                {itemsToRender.map((item: RecipeItem) => (
+                {itemsToRender.map((item: RecipeItem, index: number) => (
                   <RecipeCard
                     key={item._id}
                     item={item}
+                    priority={index < 2}
                     onToggleFavorite={handleToggleFavorite}
                     onClickRecipeCard={onClickRecipeCard}
                     onDelete={() => handleDelete(item._id as string)}

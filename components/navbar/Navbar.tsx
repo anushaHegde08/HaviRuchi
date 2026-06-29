@@ -1,8 +1,14 @@
 "use client";
 
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
-import { Heart, BookOpen, Menu, PlusCircle, UserCircle } from "lucide-react";
+import { BookOpen, Heart, Menu, PlusCircle, UserCircle } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -70,12 +76,12 @@ const NavLinks = ({
 export function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();
-  
+
   const hideNavItemsPaths = [
     "/screens/sign-in",
     "/screens/sign-up",
     "/screens/forgot-password",
-    "/screens/reset-password"
+    "/screens/reset-password",
   ];
   const hideNavItems = hideNavItemsPaths.includes(pathname);
 
@@ -89,6 +95,8 @@ export function Navbar() {
               alt="HaviRuchi Logo"
               width={100}
               height={40}
+              priority
+              className="w-auto h-auto"
             />
           </Link>
           {!hideNavItems && (
@@ -106,7 +114,10 @@ export function Navbar() {
                     </Button>
                   </SheetTrigger>
                   <SheetContent side="right" className="w-64 pt-12">
-                    {/* <SheetContent side="top" className="data-[side=top]:max-h-[50vh]"> */}
+                    <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
+                    <SheetDescription className="sr-only">
+                      Access main navigation links
+                    </SheetDescription>
                     <nav className="flex flex-col gap-6 px-4">
                       <NavLinks
                         className="flex items-center gap-3 text-base font-medium"

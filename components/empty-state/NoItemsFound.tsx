@@ -1,6 +1,6 @@
+import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { ReactNode } from "react";
-import { cn } from "@/lib/utils";
 import { Button } from "../ui/button";
 
 interface NoItemsFoundProps {
@@ -23,7 +23,12 @@ export const NoItemsFound = ({
   const router = useRouter();
 
   return (
-    <div className={cn("flex w-full min-h-[calc(100vh-128px)] items-center justify-center px-4 py-12 md:min-h-[calc(100vh-64px)]", className)}>
+    <div
+      className={cn(
+        "flex w-full min-h-[calc(100vh-128px)] items-center justify-center px-4 py-12 md:min-h-[calc(100vh-64px)]",
+        className,
+      )}
+    >
       <div className="flex w-full max-w-xl flex-col items-center justify-center gap-4 text-center">
         <div className="rounded-full bg-primary/10 p-6">{icon}</div>
         <div className="flex flex-col items-center gap-1">

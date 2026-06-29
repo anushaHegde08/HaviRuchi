@@ -1,5 +1,6 @@
 "use client";
 import { useGlobalContext } from "@/context";
+import { getRecipeImage } from "@/lib/utilities/categoryImages";
 import { RecipeItem } from "@/types";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -60,7 +61,7 @@ export const useRecipes = () => {
           ...r,
           id: r._id,
           _id: r._id,
-          image: r.image || "/images/placeholder.jpg",
+          image: getRecipeImage(r.image, r.category),
         }));
 
         if (shouldFetchFavorites) {
@@ -167,11 +168,24 @@ export const useRecipes = () => {
       toggleFavorite(id);
 
       try {
-        await fetch("/api/users/favorites", {
+        const response = await fetch("/api/users/favorites", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ recipeId: id }),
         });
+
+        if (response.status === 404) {
+          toggleFavorite(id);
+          setAllRecipes((prev) =>
+            prev.filter((r) => r._id !== id && r.id !== id),
+          );
+          toast.error("This recipe no longer exists", {
+            position: "top-right",
+          });
+          return;
+        }
+
+        if (!response.ok) throw new Error("Failed to toggle favorite");
         if (wasFavorited) {
           toast.success("Recipe removed from favorites", {
             position: "top-right",
@@ -189,7 +203,7 @@ export const useRecipes = () => {
         console.error("Failed to toggle favorite with", error);
       }
     },
-    [allRecipes, toggleFavorite],
+    [allRecipes, toggleFavorite, setAllRecipes],
   );
 
   const onClickRecipeCard = useCallback(

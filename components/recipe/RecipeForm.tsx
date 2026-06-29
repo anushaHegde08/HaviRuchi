@@ -24,9 +24,13 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { Typography } from "@/components/ui/typography";
 import { uploadImage } from "@/lib/uploadImage";
+import {
+  CATEGORIES,
+  DIFFICULTIES,
+  MAX_DESCRIPTION_LENGTH,
+} from "@/lib/utilities/constatnts";
 import { capitalizeFirst } from "@/lib/utilities/helperFunction";
 import { cn } from "@/lib/utils";
-import { CATEGORIES, DIFFICULTIES, MAX_DESCRIPTION_LENGTH } from "@/mockData/constatnts";
 import { AddField } from "@/types";
 import { ArrowLeft } from "lucide-react";
 import dynamic from "next/dynamic";
@@ -145,7 +149,6 @@ const RecipeForm = ({
 
   const [cropperOpen, setCropperOpen] = useState(false);
   const [rawImageSrc, setRawImageSrc] = useState<string | null>(null);
-  // const [rawImageName, setRawImageName] = useState("image.jpg");
 
   const handleHoursChange = (value: number) => {
     setHours(value);

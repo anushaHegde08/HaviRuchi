@@ -6,8 +6,9 @@ import { APIErrors } from "@/components/error-screens/APIErrors";
 import { RecipeGridSkeleton } from "@/components/loading/RecipeCardSkeleton";
 import { Typography } from "@/components/ui/typography";
 import { useRecipes } from "@/hooks/useRecipes";
+import { getRecipeImage } from "@/lib/utilities/categoryImages";
+import { ITEMS_PER_PAGE, MOBILE_LOAD_COUNT } from "@/lib/utilities/constatnts";
 import { totalPages } from "@/lib/utilities/helperFunction";
-import { ITEMS_PER_PAGE, MOBILE_LOAD_COUNT } from "@/mockData/constatnts";
 import { RecipeItem } from "@/types";
 import { BookOpen } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -54,7 +55,7 @@ const MyRecipes = () => {
         _id: r._id,
         title: r.title,
         description: r.description,
-        image: r.image || "",
+        image: getRecipeImage(r.image, r.category),
         category: r.category,
         difficulty: r.difficulty,
         timeNeeded: r.timeNeeded,
@@ -93,15 +94,13 @@ const MyRecipes = () => {
     setMyRecipes((prev) => prev.filter((r) => r._id !== id)); // ← remove instantly
   };
 
-  // if (loading)
-  //   return (
-  //     <p className="text-center py-12 text-muted-foreground">Loading...</p>
-  //   );
-
   return (
     <>
       {error ? (
-        <APIErrors onRetry={() => void fetchMyRecipes(true)} className="min-h-[400px] md:min-h-[400px]" />
+        <APIErrors
+          onRetry={() => void fetchMyRecipes(true)}
+          className="min-h-[400px] md:min-h-[400px]"
+        />
       ) : loading ? (
         <RecipeGridSkeleton count={ITEMS_PER_PAGE} />
       ) : (
@@ -131,10 +130,11 @@ const MyRecipes = () => {
             <>
               {/* Mobile grid */}
               <div className="grid grid-cols-1 gap-6 md:hidden">
-                {mobileItems.map((item: RecipeItem) => (
+                {mobileItems.map((item: RecipeItem, index: number) => (
                   <RecipeCard
                     key={item._id}
                     item={item}
+                    priority={index < 2}
                     onToggleFavorite={onToggleFavorite}
                     onClickRecipeCard={(id) =>
                       router.push("/screens/recipe/" + id)
@@ -146,10 +146,11 @@ const MyRecipes = () => {
 
               {/* Desktop grid */}
               <div className="hidden md:grid md:grid-cols-2 gap-6">
-                {itemsToRender.map((item: RecipeItem) => (
+                {itemsToRender.map((item: RecipeItem, index: number) => (
                   <RecipeCard
                     key={item._id}
                     item={item}
+                    priority={index < 2}
                     onToggleFavorite={onToggleFavorite}
                     onClickRecipeCard={(id) =>
                       router.push("/screens/recipe/" + id)

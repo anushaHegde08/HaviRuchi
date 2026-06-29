@@ -1,15 +1,15 @@
 "use client";
-import { useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Mail, Phone, User } from "lucide-react";
 import { AuthLayout } from "@/components/auth/AuthLayout";
 import { IconInput } from "@/components/auth/IconInput";
 import { PasswordInput } from "@/components/auth/PasswordInput";
 import { PasswordRules } from "@/components/auth/PasswordRules";
-import { toast } from "sonner";
-import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
 import ButtonLoadingSpinner from "@/components/loading/ButtonLoadingSpinner";
+import { Button } from "@/components/ui/button";
+import { Mail, Phone, User } from "lucide-react";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 export default function SignUpPage() {
   const { status } = useSession();
@@ -25,7 +25,7 @@ export default function SignUpPage() {
     name: "",
     email: "",
     password: "",
-    general: "", // for server errors
+    general: "",
   });
 
   const clearErrors = () =>
@@ -42,12 +42,7 @@ export default function SignUpPage() {
   if (status === "loading" || status === "authenticated") return null;
 
   const handleSignUpClick = async () => {
-    // if (!name || !email || !password) {
-    //   toast.error("Please fill in all fields");
-    //   return;
-    // }
     clearErrors();
-
     // client side inline validation
     let hasError = false;
 
@@ -70,12 +65,10 @@ export default function SignUpPage() {
       const response = await fetch("/api/users/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password }),
+        body: JSON.stringify({ name, email, password, phone: phoneNumber }),
       });
       const data = await response.json();
       if (!response.ok) {
-        // API returned an error (400, 500 etc)
-        // server errors — show inline on relevant field
         if (data.error.includes("email")) {
           setErrors((prev) => ({ ...prev, email: data.error }));
         } else {
@@ -83,7 +76,6 @@ export default function SignUpPage() {
         }
         return;
       }
-      // success
       toast.success("Account created successfully!");
       router.push("/screens/sign-in");
     } catch (error) {
@@ -155,7 +147,8 @@ export default function SignUpPage() {
           placeholder="Password"
           onChange={(val) => {
             setPassword(val);
-            if (errors.password) setErrors((prev) => ({ ...prev, password: "" }));
+            if (errors.password)
+              setErrors((prev) => ({ ...prev, password: "" }));
           }}
         />
         {errors.password && (
@@ -173,7 +166,11 @@ export default function SignUpPage() {
         disabled={loading}
         onClick={handleSignUpClick}
       >
-        {loading ? <ButtonLoadingSpinner loadingText="Creating account..." /> : "Sign Up"}
+        {loading ? (
+          <ButtonLoadingSpinner loadingText="Creating account..." />
+        ) : (
+          "Sign Up"
+        )}
       </Button>
     </AuthLayout>
   );

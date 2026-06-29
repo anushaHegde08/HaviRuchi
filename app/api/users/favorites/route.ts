@@ -49,23 +49,25 @@ export async function GET() {
 // toggle favorite
 export async function POST(req: Request) {
   try {
-    console.log("favorites POST called");
     const session = await getServerSession(authOptions);
-    console.log("1. session:", session?.user?.email);
     if (!session?.user?.email) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const { recipeId } = await req.json();
-    console.log("2. recipeId:", recipeId);
 
     await connectDB();
-    console.log("3. DB connected");
+
+    const Recipe = (await import("@/models/Recipe")).default;
+    const recipeExists = await Recipe.findById(recipeId).lean();
+    if (!recipeExists) {
+      return NextResponse.json(
+        { error: "This recipe no longer exists" },
+        { status: 404 }
+      );
+    }
 
     const user = await User.findOne({ email: session.user.email });
-    console.log("4. user:", user?._id);
-
-    console.log("user found:", user?._id, "favorites:", user?.favorites);
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
@@ -74,7 +76,6 @@ export async function POST(req: Request) {
     const isFavorited = (user.favorites || []).some(
       (id: mongoose.Types.ObjectId) => id.toString() === recipeId,
     );
-    console.log("5. isFavorited:", isFavorited);
 
     if (isFavorited) {
       // remove from favorites

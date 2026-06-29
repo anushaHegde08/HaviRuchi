@@ -9,6 +9,7 @@ const SignUpSchema = z.object({
   name: z.string().min(1, "Name is required"),
   email: z.email("Please enter a valid email address"),
   password: z.string().min(6, "Password must be at least 6 characters"),
+  phone: z.string().optional(),
 });
 
 export async function POST(req: Request) {
@@ -24,7 +25,7 @@ export async function POST(req: Request) {
       );
     }
 
-    const { name, email, password } = result.data;
+    const { name, email, password, phone } = result.data;
 
     await connectDB();
 
@@ -45,6 +46,7 @@ export async function POST(req: Request) {
       name,
       email,
       password: hashedPassword,
+      phone: phone || undefined,
       provider: "credentials",
     });
 

@@ -83,7 +83,6 @@ export const authOptions: AuthOptions = {
 
     // adds user id to the session
     async session({ session, token }) {
-      console.log("SESSION CALLBACK - token:", token);
       if (session.user && token.sub) {
         session.user.id = token.sub as string;
         session.user.name = (token.name as string) ?? session.user.name ?? "";
@@ -98,13 +97,11 @@ export const authOptions: AuthOptions = {
           session.user.image = dbUser.image ?? session.user.image ?? undefined;
         }
       }
-      console.log("SESSION CALLBACK - final session.user:", session.user);
       return session;
     },
 
     // adds user id and data to the token
     async jwt({ token, user, trigger, session }) {
-      console.log("JWT CALLBACK - trigger:", trigger, "user:", user, "token before:", token);
       // on initial sign in, completely overwrite token to prevent stale data merging
       if (user) {
         token.sub = user.id;
@@ -119,7 +116,6 @@ export const authOptions: AuthOptions = {
         if (session.name !== undefined) token.name = session.name;
       }
 
-      console.log("JWT CALLBACK - token after:", token);
       return token;
     },
   },

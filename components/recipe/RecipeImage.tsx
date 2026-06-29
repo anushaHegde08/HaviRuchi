@@ -50,14 +50,14 @@ export const RecipeImage = ({
       </div>
       <div className="relative w-full h-64 md:h-96 rounded-md md:rounded-2xl overflow-hidden">
         <Image
-          src={image || "/images/placeholder.jpg"}
+          src={image || "/images/placeholder.png"}
           alt={title}
           fill
           priority
           sizes="(max-width: 768px) 100vw, (max-width: 1280px) 100vw, 100vw"
           className="object-cover"
           onError={(e) => {
-            e.currentTarget.src = "/images/placeholder.jpg";
+            e.currentTarget.src = "/images/placeholder.png";
           }}
         />
       </div>
