@@ -46,6 +46,8 @@ export default function Home() {
               alt="HaviRuchi Logo"
               width={90}
               height={40}
+              priority
+              className="h-auto w-auto"
             />
           </Link>
           <div className="flex items-center gap-4">

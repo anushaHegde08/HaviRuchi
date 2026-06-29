@@ -31,7 +31,19 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useRecipes } from "@/hooks/useRecipes";
 import { uploadImage } from "@/lib/uploadImage";
-import { LogOut, Mail, Pencil, Phone, X, Camera, Check, ChevronRight, Heart, ArrowRight, BookOpen } from "lucide-react";
+import {
+  ArrowRight,
+  BookOpen,
+  Camera,
+  Check,
+  ChevronRight,
+  Heart,
+  LogOut,
+  Mail,
+  Pencil,
+  Phone,
+  X,
+} from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
@@ -80,28 +92,10 @@ const UserProfile = () => {
   const initializedUser = useRef<string | null>(null);
 
   useEffect(() => {
-    console.log(
-      "EFFECT RUNNING - status:",
-      status,
-      "email:",
-      session?.user?.email,
-      "initializedUser.current:",
-      initializedUser.current,
-    );
     if (status === "loading" || !session?.user?.email) return;
-
-    // If already initialized for THIS exact user, don't run again
     if (initializedUser.current === session.user.email) return;
-
-    console.log(
-      "EFFECT CONTINUING - about to fetch for:",
-      session?.user?.email,
-    );
     initializedUser.current = session.user.email;
-    console.log("INITIALIZED USER SET TO:", initializedUser.current);
-
     const fetchProfileData = async () => {
-      console.log("FETCH PROFILE DATA CALLED for:", session?.user?.email);
       try {
         const [countResponse, profileResponse] = await Promise.all([
           fetch("/api/recipes/my-recipes?countOnly=true"),
@@ -114,18 +108,12 @@ const UserProfile = () => {
         }
 
         const profileResult = await profileResponse.json();
-        console.log("PROFILE API RESULT:", profileResult);
         if (profileResponse.ok) {
           setProfileData({
             image: profileResult.image || "",
             phone: profileResult.phone || "",
           });
           setPhone(profileResult.phone || "");
-          console.log(
-            "PROFILE DATA STATE SET TO:",
-            profileResult.name,
-            profileResult.email,
-          );
         }
       } catch (error) {
         console.error("Failed to fetch profile data", error);
@@ -185,7 +173,6 @@ const UserProfile = () => {
       setUploadingImage(true);
       // upload to Cloudinary
       const url = await uploadImage(croppedFile, "profiles");
-      console.log("Profile image uploaded:", url);
       await fetch("/api/users/profile", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
@@ -359,7 +346,9 @@ const UserProfile = () => {
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                       <DropdownMenuItem
-                        onClick={() => setPhotoViewerOpen(true)}
+                        onClick={() =>
+                          setTimeout(() => setPhotoViewerOpen(true), 0)
+                        }
                       >
                         View Photo
                       </DropdownMenuItem>
@@ -371,7 +360,9 @@ const UserProfile = () => {
                       <DropdownMenuSeparator />
                       <DropdownMenuItem
                         className="text-destructive focus:bg-destructive/10 focus:text-destructive"
-                        onClick={() => setDeletePhotoConfirmOpen(true)}
+                        onClick={() =>
+                          setTimeout(() => setDeletePhotoConfirmOpen(true), 0)
+                        }
                       >
                         Remove Photo
                       </DropdownMenuItem>
@@ -564,7 +555,7 @@ const UserProfile = () => {
           </div>
 
           <Dialog open={photoViewerOpen} onOpenChange={setPhotoViewerOpen}>
-            <DialogContent className="sm:max-w-md">
+            <DialogContent className="sm:max-w-md" aria-describedby={undefined}>
               <DialogHeader>
                 <DialogTitle>Profile Photo</DialogTitle>
               </DialogHeader>
@@ -575,6 +566,7 @@ const UserProfile = () => {
                       src={currentImage}
                       alt="Profile"
                       fill
+                      sizes="(max-width: 640px) 192px, 256px"
                       className="object-cover"
                     />
                   </div>

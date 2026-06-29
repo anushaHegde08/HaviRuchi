@@ -1,6 +1,4 @@
 "use client";
-import { useState } from "react";
-import { FilterIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -10,8 +8,10 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { FilterBody } from "./FilterBody";
 import { defaultFilters, FilterState } from "@/types/filter";
+import { FilterIcon } from "lucide-react";
+import { useState } from "react";
+import { FilterBody } from "./FilterBody";
 
 interface FilterTriggerProps {
   filters: FilterState;
@@ -59,7 +59,11 @@ export const FilterTrigger = ({
               <FilterIcon className="h-4 w-4" /> Filters
             </Button>
           </SheetTrigger>
-          <SheetContent side="top" className="flex flex-col max-h-[500px]">
+          <SheetContent
+            side="top"
+            className="flex flex-col max-h-[500px]"
+            aria-describedby={undefined}
+          >
             <SheetHeader className="text-left shrink-0">
               <SheetTitle className="text-primary text-xl font-bold">
                 Filter
@@ -70,7 +74,6 @@ export const FilterTrigger = ({
             </div>
             <SheetFooter className="shrink-0">
               <div className="flex gap-3 pt-2">
-                {/* <SheetClose asChild> */}
                 <Button
                   variant="outline"
                   onClick={handleClear}
@@ -78,9 +81,8 @@ export const FilterTrigger = ({
                 >
                   Clear Filters
                 </Button>
-                {/* </SheetClose> */}
-                <Button 
-                  className="flex-1 rounded-xl" 
+                <Button
+                  className="flex-1 rounded-xl"
                   onClick={handleApply}
                   disabled={!hasChanges}
                 >

@@ -9,6 +9,7 @@ import { RecipeInstructions } from "@/components/recipe/RecipeInstructions";
 import { useGlobalContext } from "@/context";
 import { useIsOwner } from "@/hooks/useIsOwner";
 import { useRecipes } from "@/hooks/useRecipes";
+import { getRecipeImage } from "@/lib/utilities/categoryImages";
 import { RecipeDetail } from "@/types";
 import { useSession } from "next-auth/react";
 import { use, useCallback, useEffect, useRef, useState } from "react";
@@ -21,7 +22,8 @@ export default function RecipeDetailPage({
   const { id } = use(params);
   useSession();
 
-  const { recipeDetails, cacheRecipeDetail, allRecipes } = useGlobalContext();
+  const { recipeDetails, cacheRecipeDetail, allRecipes, setAllRecipes } =
+    useGlobalContext();
   const [loading, setLoading] = useState(true);
 
   const { handleToggleFavorite } = useRecipes();
@@ -50,6 +52,11 @@ export default function RecipeDetailPage({
 
         if (!response.ok) {
           setError(data.error || "Failed to load");
+          if (response.status === 404) {
+            setAllRecipes((prev) =>
+              prev.filter((r) => r._id !== id && r.id !== id),
+            );
+          }
           return;
         }
 
@@ -58,7 +65,7 @@ export default function RecipeDetailPage({
           _id: data._id,
           title: data.title,
           description: data.description,
-          image: data.image || "",
+          image: getRecipeImage(data.image, data.category),
           category: data.category,
           difficulty: data.difficulty,
           timeNeeded: data.timeNeeded,
@@ -80,7 +87,7 @@ export default function RecipeDetailPage({
         setLoading(false);
       }
     },
-    [id, recipeDetails, allRecipes, cacheRecipeDetail],
+    [id, recipeDetails, allRecipes, cacheRecipeDetail, setAllRecipes],
   );
 
   useEffect(() => {
@@ -106,11 +113,7 @@ export default function RecipeDetailPage({
         <div className="min-h-screen bg-background px-6 mb-16 mt-2 md:mt-4">
           <div className="max-w-4xl mx-auto">
             <RecipeImage
-              image={
-                recipe.image && recipe.image !== ""
-                  ? recipe.image
-                  : "/images/placeholder.png"
-              }
+              image={recipe.image}
               title={recipe.title}
               favorite={isFavorited}
               recipeId={recipe._id}
@@ -135,7 +138,7 @@ export default function RecipeDetailPage({
                 </p>
                 <RecipeBadges recipe={recipe} />
                 {recipe.createdBy?.name && (
-                  <p className="text-sm text-muted-foreground mt-2">
+                  <p className="text-xs lg:text-sm text-muted-foreground mt-2">
                     Recipe by {recipe.createdBy.name}
                   </p>
                 )}

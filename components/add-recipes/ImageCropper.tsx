@@ -6,6 +6,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import { useRef, useState } from "react";
 import ReactCrop, {
@@ -127,9 +128,9 @@ export const ImageCropper = ({
       <DialogContent className="max-w-lg">
         <DialogHeader>
           <DialogTitle>Crop Image</DialogTitle>
-          <p className="text-sm text-muted-foreground">
+          <DialogDescription>
             Drag to adjust. Image will be cropped to a square.
-          </p>
+          </DialogDescription>
         </DialogHeader>
 
         <div className="flex justify-center max-h-[60vh] overflow-auto">

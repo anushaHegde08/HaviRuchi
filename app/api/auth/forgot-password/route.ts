@@ -9,8 +9,6 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 export async function POST(req: Request) {
   try {
     const { email } = await req.json();
-    console.log("Resend API key exists:", !!process.env.RESEND_API_KEY);
-    console.log("Sending to:", email);
     if (!email) {
       return NextResponse.json({ error: "Email is required" }, { status: 400 });
     }
@@ -63,7 +61,13 @@ export async function POST(req: Request) {
         </div>
       `,
     });
-    console.log("Resend result:", result);
+
+    if (result.error) {
+      console.error("Resend error:", result.error);
+      // still return generic success message to user for security 
+      // (don't reveal email sending failures to prevent enumeration)
+    }
+
     return NextResponse.json({
       message: "If this email exists, a reset link has been sent",
     });

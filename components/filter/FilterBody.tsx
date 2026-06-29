@@ -1,8 +1,8 @@
 "use client";
+import { CATEGORIES, DIFFICULTIES } from "@/lib/utilities/constatnts";
 import { FilterState } from "@/types/filter";
 import { FilterCheckboxGroup } from "./FilterCheckboxGroup";
 import { FilterSlider } from "./FilterSlider";
-import { CATEGORIES, DIFFICULTIES } from "@/mockData/constatnts";
 
 interface FilterBodyProps {
   filters: FilterState;

@@ -1,17 +1,23 @@
 import { authOptions } from "@/lib/authOptions";
 import connectDB from "@/lib/mongodb";
+import { MAX_DESCRIPTION_LENGTH } from "@/lib/utilities/constatnts";
 import Recipe from "@/models/Recipe";
 import User from "@/models/User";
 import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { MAX_DESCRIPTION_LENGTH } from "@/mockData/constatnts";
 
 export const dynamic = "force-dynamic";
 
 const AddRecipeSchema = z.object({
   title: z.string().min(1, "Title is required"),
-  description: z.string().min(1, "Description is required").max(MAX_DESCRIPTION_LENGTH, `Description must be ${MAX_DESCRIPTION_LENGTH} characters or less`),
+  description: z
+    .string()
+    .min(1, "Description is required")
+    .max(
+      MAX_DESCRIPTION_LENGTH,
+      `Description must be ${MAX_DESCRIPTION_LENGTH} characters or less`,
+    ),
   image: z.string().optional(),
   category: z.string().min(1, "Category is required"),
   difficulty: z.enum(["Easy", "Medium", "Hard"] as const, {
@@ -146,7 +152,6 @@ export async function GET(req: Request) {
     }
 
     const query = andConditions.length > 0 ? { $and: andConditions } : {};
-    console.log("MongoDB query:", JSON.stringify(query));
 
     const recipes = await Recipe.find(query)
       .select(
@@ -155,8 +160,6 @@ export async function GET(req: Request) {
       .populate("createdBy", "name email")
       .sort({ createdAt: -1 })
       .lean();
-
-    console.log("recipes found:", recipes.length);
 
     return NextResponse.json(recipes);
   } catch (error) {

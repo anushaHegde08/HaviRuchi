@@ -1,5 +1,5 @@
 "use client";
-import { PREVIEW_COUNT } from "@/mockData/constatnts";
+import { PREVIEW_COUNT } from "@/lib/utilities/constatnts";
 import { useState } from "react";
 
 export const RecipeIngredients = ({

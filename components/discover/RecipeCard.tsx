@@ -41,11 +41,7 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
     <Card className="grid grid-cols-6 gap-2">
       <div className="relative col-span-2 h-[100px] overflow-hidden rounded-s-xl md:h-[190px]">
         <Image
-          src={
-            item.image && item.image !== ""
-              ? item.image
-              : "/images/placeholder.png"
-          }
+          src={item.image}
           alt={item.title}
           fill
           priority={priority}
@@ -53,7 +49,7 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
           className="object-cover"
           onError={(e) => {
             const target = e.currentTarget as HTMLImageElement;
-            target.src = "/images/placeholder.jpg";
+            target.src = "/images/placeholder.png";
           }}
         />
       </div>
@@ -73,7 +69,7 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
                 {item.description}
               </CardDescription>
               {item.createdBy?.name && (
-                <p className="text-xs text-muted-foreground mt-1">
+                <p className="text-[10px] md:text-sm text-muted-foreground mt-1">
                   by {item.createdBy.name}
                 </p>
               )}

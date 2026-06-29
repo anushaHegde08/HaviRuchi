@@ -1,8 +1,8 @@
 "use client";
 import { GlobalContext } from "@/context/globalContext";
+import { MOBILE_LOAD_COUNT } from "@/lib/utilities/constatnts";
 import { defaultFilters, FilterState, RecipeDetail, RecipeItem } from "@/types";
 import { ReactNode, useState } from "react";
-import { MOBILE_LOAD_COUNT } from "@/mockData/constatnts";
 
 export function GlobalProvider({ children }: { children: ReactNode }) {
   const [searchOpen, setSearchOpen] = useState(false);
@@ -20,10 +20,13 @@ export function GlobalProvider({ children }: { children: ReactNode }) {
   };
 
   const [discoverSearchQuery, setDiscoverSearchQuery] = useState("");
-  const [discoverFilters, setDiscoverFilters] = useState<FilterState>(defaultFilters);
-  const [discoverSelectedCategory, setDiscoverSelectedCategory] = useState("All");
+  const [discoverFilters, setDiscoverFilters] =
+    useState<FilterState>(defaultFilters);
+  const [discoverSelectedCategory, setDiscoverSelectedCategory] =
+    useState("All");
   const [discoverCurrentPage, setDiscoverCurrentPage] = useState(0);
-  const [discoverMobileVisibleCount, setDiscoverMobileVisibleCount] = useState(MOBILE_LOAD_COUNT);
+  const [discoverMobileVisibleCount, setDiscoverMobileVisibleCount] =
+    useState(MOBILE_LOAD_COUNT);
 
   const toggleFavorite = (id: string) => {
     setAllRecipes((prev) =>

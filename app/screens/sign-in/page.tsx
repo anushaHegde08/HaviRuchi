@@ -41,12 +41,6 @@ export default function SignInPage() {
   if (status === "loading" || status === "authenticated") return null;
 
   const handleSignInClick = async () => {
-    // if (!email || !password) {
-    //   toast.error("Please fill in all fields");
-    //   return;
-    // }
-    console.log(email, password);
-
     clearErrors();
     let hasError = false;
     if (!email) {

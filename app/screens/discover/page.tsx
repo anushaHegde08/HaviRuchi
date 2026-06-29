@@ -8,12 +8,12 @@ import { RecipeGridSkeleton } from "@/components/loading/RecipeCardSkeleton";
 import { Badge } from "@/components/ui/badge";
 import { useGlobalContext } from "@/context/globalContext";
 import { useRecipes } from "@/hooks/useRecipes";
-import { totalPages } from "@/lib/utilities/helperFunction";
 import {
   CATEGORIES,
   ITEMS_PER_PAGE,
   MOBILE_LOAD_COUNT,
-} from "@/mockData/constatnts";
+} from "@/lib/utilities/constatnts";
+import { totalPages } from "@/lib/utilities/helperFunction";
 import { defaultFilters, FilterState, RecipeItem } from "@/types";
 import { DatabaseSearch } from "lucide-react";
 import dynamic from "next/dynamic";
@@ -130,7 +130,6 @@ const Discover = () => {
     ],
   );
 
-  // const filteredRecipes = allRecipes;
   // paginate filtered results
   const startIndex = currentPage * ITEMS_PER_PAGE;
   const itemsToRender = filteredRecipes.slice(
@@ -188,7 +187,12 @@ const Discover = () => {
       {loading && !error && <RecipeGridSkeleton count={ITEMS_PER_PAGE} />}
 
       {/* error state */}
-      {error && <APIErrors onRetry={retryFetch} className="min-h-[400px] md:min-h-[400px]" />}
+      {error && (
+        <APIErrors
+          onRetry={retryFetch}
+          className="min-h-[400px] md:min-h-[400px]"
+        />
+      )}
 
       {/* Mobile grid */}
       {!loading && !error && (
@@ -198,7 +202,7 @@ const Discover = () => {
               <RecipeCard
                 key={item._id}
                 item={item}
-                priority={index < 3}
+                priority={index < 2}
                 onToggleFavorite={handleToggleFavorite}
                 onClickRecipeCard={onClickRecipeCard}
                 onDelete={() => handleDelete(item._id as string)}
@@ -223,7 +227,7 @@ const Discover = () => {
               <RecipeCard
                 key={item._id}
                 item={item}
-                priority={index < 3}
+                priority={index < 2}
                 onToggleFavorite={handleToggleFavorite}
                 onClickRecipeCard={onClickRecipeCard}
                 onDelete={() => handleDelete(item._id as string)}
