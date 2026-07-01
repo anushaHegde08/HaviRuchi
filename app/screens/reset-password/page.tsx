@@ -5,10 +5,10 @@ import { PasswordRules } from "@/components/auth/PasswordRules";
 import ButtonLoadingSpinner from "@/components/loading/ButtonLoadingSpinner";
 import { Button } from "@/components/ui/button";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { toast } from "sonner";
 
-export default function ResetPasswordPage() {
+function ResetPasswordContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
@@ -91,5 +91,13 @@ export default function ResetPasswordPage() {
         )}
       </Button>
     </AuthLayout>
+  );
+}
+
+export default function ResetPasswordPage() {
+  return (
+    <Suspense fallback={null}>
+      <ResetPasswordContent />
+    </Suspense>
   );
 }
