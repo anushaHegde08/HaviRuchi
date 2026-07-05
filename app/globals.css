@@ -8,7 +8,7 @@
   --background: 0 0% 100%; /* #FFFFFF */
   --foreground: 231 26% 21%; /* #2B2D42 */
 
-  --card: 8 83% 62% / 0.12;
+  --card: 8 83% 62% / 0.02;
   --card-foreground: 231 26% 21%;
 
   --popover: 0 0% 100%;
@@ -93,4 +93,28 @@ body {
 
 [data-sonner-toast] [data-title] {
   color: hsl(var(--primary)) !important;
+}
+
+.scrollbar-thin { scrollbar-width: thin; scrollbar-color: hsl(0 0% 90%) transparent; }
+.scrollbar-thin::-webkit-scrollbar { height: 2px; }
+.scrollbar-thin::-webkit-scrollbar-thumb { 
+  background: hsl(0 0% 90%); 
+  border-radius: 999px; 
+}
+.scrollbar-thin::-webkit-scrollbar-track { 
+  background: transparent; 
+}
+
+/* Custom scrollbar utility classes requested */
+.scrollbar-thumb-transparent::-webkit-scrollbar-thumb {
+  background: transparent;
+}
+.hover\:scrollbar-thumb-gray-200:hover::-webkit-scrollbar-thumb {
+  background: #e5e7eb;
+}
+.scrollbar-thumb-transparent {
+  scrollbar-color: transparent transparent;
+}
+.hover\:scrollbar-thumb-gray-200:hover {
+  scrollbar-color: #e5e7eb transparent;
 }

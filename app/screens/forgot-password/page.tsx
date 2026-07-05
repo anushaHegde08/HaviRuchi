@@ -75,6 +75,7 @@ export default function ForgotPasswordPage() {
               placeholder="Enter your email"
               icon={<Mail className="h-4 w-4" />}
               value={email}
+              className={error ? "border-destructive focus-visible:ring-destructive" : ""}
               onChange={(val) => {
                 setEmail(val);
                 if (error) setError("");

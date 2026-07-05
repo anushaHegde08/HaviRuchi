@@ -16,7 +16,7 @@ export const FilterSlider = ({
   <div className={`flex flex-col gap-3 ${className}`}>
     <div className="flex items-center justify-between">
       <p className="text-sm font-semibold text-primary tracking-widest uppercase">
-        Max Time
+        Time Needed
       </p>
       <span className="text-sm text-primary bg-primary/10 px-3 py-1 rounded-full">
         {formatTime(value)}
@@ -31,7 +31,7 @@ export const FilterSlider = ({
     />
     <div className="flex justify-between mt-1">
       <span className="text-xs text-muted-foreground">15 min</span>
-      <span className="text-xs text-muted-foreground">2h+</span>
+      <span className="text-xs text-muted-foreground">2 hours+</span>
     </div>
   </div>
 );

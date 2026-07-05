@@ -20,6 +20,8 @@ export default function SignUpPage() {
   const [name, setName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [loading, setLoading] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [resendLoading, setResendLoading] = useState(false);
 
   const [errors, setErrors] = useState({
     name: "",
@@ -77,7 +79,7 @@ export default function SignUpPage() {
         return;
       }
       toast.success("Account created successfully!");
-      router.push("/screens/sign-in");
+      setIsSuccess(true);
     } catch (error) {
       console.error(error);
       setErrors((prev) => ({
@@ -88,6 +90,53 @@ export default function SignUpPage() {
       setLoading(false);
     }
   };
+
+  const handleResend = async () => {
+    try {
+      setResendLoading(true);
+      const response = await fetch("/api/auth/resend-verification", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        toast.error(data.error);
+        return;
+      }
+      toast.success("Verification email resent!");
+    } catch (error) {
+      toast.error("Something went wrong");
+    } finally {
+      setResendLoading(false);
+    }
+  };
+
+  if (isSuccess) {
+    return (
+      <AuthLayout
+        title="Check your email"
+        subtitle={`We've sent a verification link to ${email}. Please verify your email to sign in.`}
+      >
+        <div className="flex flex-col gap-3 w-full">
+          <Button
+            className="w-full h-12 rounded-xl"
+            onClick={() => router.push("/screens/sign-in")}
+          >
+            Go to Sign In
+          </Button>
+          <Button
+            variant="outline"
+            className="w-full h-12 rounded-xl"
+            onClick={handleResend}
+            disabled={resendLoading}
+          >
+            {resendLoading ? <ButtonLoadingSpinner loadingText="Resending..." /> : "Resend Email"}
+          </Button>
+        </div>
+      </AuthLayout>
+    );
+  }
 
   return (
     <AuthLayout
@@ -105,6 +154,7 @@ export default function SignUpPage() {
           placeholder="Name"
           icon={<User className="h-4 w-4" />}
           value={name}
+          className={errors.name ? "border-destructive focus-visible:ring-destructive" : ""}
           onChange={(val) => {
             setName(val);
             if (errors.name) setErrors((prev) => ({ ...prev, name: "" }));
@@ -122,6 +172,7 @@ export default function SignUpPage() {
           placeholder="Email Address"
           icon={<Mail className="h-4 w-4" />}
           value={email}
+          className={errors.email ? "border-destructive focus-visible:ring-destructive" : ""}
           onChange={(val) => {
             setEmail(val);
             if (errors.email) setErrors((prev) => ({ ...prev, email: "" }));
@@ -145,6 +196,7 @@ export default function SignUpPage() {
         <PasswordInput
           id="password"
           placeholder="Password"
+          className={errors.password ? "border-destructive focus-visible:ring-destructive" : ""}
           onChange={(val) => {
             setPassword(val);
             if (errors.password)

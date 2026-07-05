@@ -8,11 +8,20 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
-import { BookOpen, Heart, Menu, PlusCircle, UserCircle } from "lucide-react";
+import {
+  BookOpen,
+  Heart,
+  LogIn,
+  Menu,
+  PlusCircle,
+  UserCircle,
+} from "lucide-react";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
+import { toast } from "sonner";
 import { Button } from "../ui/button";
 
 interface NavItem {
@@ -20,29 +29,6 @@ interface NavItem {
   icon: React.ReactNode;
   href: string;
 }
-
-const navItems: NavItem[] = [
-  {
-    name: "Recipes",
-    icon: <BookOpen className="h-5 w-5" />,
-    href: "/screens/discover",
-  },
-  {
-    name: "Add",
-    icon: <PlusCircle className="h-5 w-5" />,
-    href: "/screens/add-recipe",
-  },
-  {
-    name: "Favorites",
-    icon: <Heart className="h-5 w-5" />,
-    href: "/screens/favorites",
-  },
-  {
-    name: "Profile",
-    icon: <UserCircle className="h-5 w-5" />,
-    href: "/screens/profile",
-  },
-];
 
 const NavLinks = ({
   className,
@@ -52,13 +38,59 @@ const NavLinks = ({
   onLinkClick?: () => void;
 }) => {
   const pathname = usePathname();
+  const router = useRouter();
+  const { status } = useSession();
+
+  const dynamicNavItems: NavItem[] = [
+    {
+      name: "Recipes",
+      icon: <BookOpen className="h-5 w-5" />,
+      href: "/screens/discover",
+    },
+    {
+      name: "Add",
+      icon: <PlusCircle className="h-5 w-5" />,
+      href: "/screens/add-recipe",
+    },
+    {
+      name: "Favorites",
+      icon: <Heart className="h-5 w-5" />,
+      href: "/screens/favorites",
+    },
+    status === "unauthenticated"
+      ? {
+          name: "Sign In",
+          icon: <LogIn className="h-5 w-5" />,
+          href: "/screens/sign-in",
+        }
+      : {
+          name: "Profile",
+          icon: <UserCircle className="h-5 w-5" />,
+          href: "/screens/profile",
+        },
+  ];
+
+  const handleLinkClick = (e: React.MouseEvent, item: NavItem) => {
+    if (
+      status === "unauthenticated" &&
+      (item.href === "/screens/favorites" ||
+        item.href === "/screens/add-recipe")
+    ) {
+      e.preventDefault();
+      toast.error(`Please sign in to access ${item.name}`);
+      router.push("/screens/sign-in");
+      return;
+    }
+    if (onLinkClick) onLinkClick();
+  };
+
   return (
     <>
-      {navItems.map((item) => (
+      {dynamicNavItems.map((item) => (
         <Link
           key={item.name}
           href={item.href}
-          onClick={onLinkClick}
+          onClick={(e) => handleLinkClick(e, item)}
           className={cn(
             "transition-colors hover:text-primary",
             pathname === item.href ? "text-primary" : "text-secondary",
@@ -96,7 +128,7 @@ export function Navbar() {
               width={100}
               height={40}
               priority
-              className="w-auto h-auto"
+              className="w-[60px] md:w-[75px] lg:w-[90px] h-auto"
             />
           </Link>
           {!hideNavItems && (

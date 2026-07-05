@@ -9,9 +9,9 @@ import { Typography } from "../ui/typography";
 interface AuthLayoutProps {
   title: string;
   subtitle: string;
-  footerText: string;
-  footerLinkText: string;
-  footerLinkHref: string;
+  footerText?: string;
+  footerLinkText?: string;
+  footerLinkHref?: string;
   buttonLoading?: boolean;
   showLogo?: boolean;
   children: React.ReactNode;
@@ -78,22 +78,25 @@ export const AuthLayout = ({
           <div className="flex flex-col gap-4">{children}</div>
 
           {/* Footer */}
-          <Typography variant="small" color="muted">
-            {footerText}{" "}
-            <Link
-              href={buttonLoading || isNavigating ? "#" : footerLinkHref}
-              onClick={(e) => {
-                if (buttonLoading || isNavigating) {
-                  e.preventDefault();
-                } else {
-                  setIsNavigating(true); // Trigger overlay immediately on click
-                }
-              }}
-              className={`text-primary font-medium hover:underline ${buttonLoading || isNavigating ? "opacity-50 cursor-not-allowed pointer-events-none" : ""}`}
-            >
-              {footerLinkText}
-            </Link>
-          </Typography>
+          {/* Footer */}
+          {footerText && footerLinkText && footerLinkHref && (
+            <Typography variant="small" color="muted">
+              {footerText}{" "}
+              <Link
+                href={buttonLoading || isNavigating ? "#" : footerLinkHref}
+                onClick={(e) => {
+                  if (buttonLoading || isNavigating) {
+                    e.preventDefault();
+                  } else {
+                    setIsNavigating(true); // Trigger overlay immediately on click
+                  }
+                }}
+                className={`text-primary font-medium hover:underline ${buttonLoading || isNavigating ? "opacity-50 cursor-not-allowed pointer-events-none" : ""}`}
+              >
+                {footerLinkText}
+              </Link>
+            </Typography>
+          )}
         </div>
       </div>
     </div>

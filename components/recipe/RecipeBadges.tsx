@@ -1,13 +1,13 @@
-import { Clock, ForkKnife, Users } from "lucide-react";
+import { formatTime } from "@/lib/utilities/helperFunction";
 import { cn } from "@/lib/utils";
 import { RecipeItem } from "@/types";
-import { formatTime } from "@/lib/utilities/helperFunction";
+import { Clock, ForkKnife, Users } from "lucide-react";
 
-const getBadges = (recipe: RecipeItem) => [
+const getBadges = (recipe: RecipeItem, showServings: boolean) => [
   {
     label: recipe.category,
     color:
-      "text-green-500 border-green-500 bg-green-500/5 hover:bg-green-500/20",
+      "text-yellow-500 border-yellow-500 bg-yellow-500/5 hover:bg-yellow-500/20",
   },
   {
     label: recipe.difficulty,
@@ -15,11 +15,16 @@ const getBadges = (recipe: RecipeItem) => [
       "text-orange-500 border-orange-200 bg-orange-50/5 hover:bg-orange-500/20",
     icon: <ForkKnife className="h-3 md:h-4 lg:h-5 w-3 md:w-4 lg:w-5" />,
   },
-  {
-    label: `${recipe.servings} Servings`,
-    color: "text-pink-500 border-pink-200 bg-pink-50/5 hover:bg-pink-500/20",
-    icon: <Users className="h-3 md:h-4 lg:h-5 w-3 md:w-4 lg:w-5" />,
-  },
+  ...(showServings
+    ? [
+        {
+          label: `${recipe.servings} Servings`,
+          color:
+            "text-pink-500 border-pink-200 bg-pink-50/5 hover:bg-pink-500/20",
+          icon: <Users className="h-3 md:h-4 lg:h-5 w-3 md:w-4 lg:w-5" />,
+        },
+      ]
+    : []),
   {
     label: formatTime(recipe.timeNeeded),
     color: "text-blue-500 border-blue-200 bg-blue-50/5 hover:bg-blue-500/20",
@@ -27,13 +32,19 @@ const getBadges = (recipe: RecipeItem) => [
   },
 ];
 
-export const RecipeBadges = ({ recipe }: { recipe: RecipeItem }) => (
-  <div className="flex overflow-auto gap-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-    {getBadges(recipe).map((badge) => (
+export const RecipeBadges = ({
+  recipe,
+  showServings = false,
+}: {
+  recipe: RecipeItem;
+  showServings?: boolean;
+}) => (
+  <div className="flex gap-2 overflow-x-auto scrollbar-thin scrollbar-thumb-transparent hover:scrollbar-thumb-gray-200 scrollbar-track-transparent pb-1">
+    {getBadges(recipe, showServings).map((badge) => (
       <span
         key={badge.label}
         className={cn(
-          "flex items-center gap-1 text-[8px] md:text-base lg:text-lg px-3 py-1 rounded-full border",
+          "flex flex-shrink-0 items-center gap-1 text-[8px] md:text-base lg:text-lg px-3 rounded-full border",
           badge.color,
         )}
       >

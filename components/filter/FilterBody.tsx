@@ -15,7 +15,15 @@ export const FilterBody = ({ filters, onChange }: FilterBodyProps) => (
       title="Category"
       items={CATEGORIES}
       selected={filters.categories}
-      onChange={(categories) => onChange({ ...filters, categories })}
+      onChange={(categories) => {
+        let newCategories = categories;
+        if (categories.includes("All") && !filters.categories.includes("All")) {
+          newCategories = ["All"];
+        } else if (categories.includes("All") && categories.length > 1) {
+          newCategories = categories.filter((c) => c !== "All");
+        }
+        onChange({ ...filters, categories: newCategories });
+      }}
       // className="md:flex-[1]"
     />
     <FilterCheckboxGroup

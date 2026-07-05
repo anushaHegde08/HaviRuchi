@@ -1,5 +1,6 @@
 "use client";
 import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 import { Lock, Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
 
@@ -7,12 +8,14 @@ interface PasswordInputProps {
   id: string;
   placeholder?: string;
   onChange?: (value: string) => void;
+  className?: string;
 }
 
 export const PasswordInput = ({
   id,
   placeholder = "Password",
   onChange,
+  className,
 }: PasswordInputProps) => {
   const [show, setShow] = useState(false);
   return (
@@ -22,7 +25,7 @@ export const PasswordInput = ({
         id={id}
         type={show ? "text" : "password"}
         placeholder={placeholder}
-        className="pl-9 pr-9 rounded-xl h-12"
+        className={cn("pl-9 pr-9 rounded-xl h-12", className)}
         onChange={(e) => onChange?.(e.target.value)}
       />
       <button
