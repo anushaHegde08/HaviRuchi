@@ -5,6 +5,7 @@ import { Button } from "../ui/button";
 import { ChevronDown, ChevronUp, MinusCircle, PlusCircle } from "lucide-react";
 import { Field, FieldLabel } from "../ui/field";
 import { capitalizeFirst } from "@/lib/utilities/helperFunction";
+import { cn } from "@/lib/utils";
 
 interface DynamicFieldsProps {
   fields: AddField[];
@@ -12,6 +13,7 @@ interface DynamicFieldsProps {
   placeholder: string;
   label: string;
   showMeasurement?: boolean;
+  hasError?: boolean;
   onClearError?: () => void;
 }
 
@@ -21,6 +23,7 @@ const AddFields = ({
   placeholder,
   label,
   showMeasurement = false,
+  hasError = false,
   onClearError,
 }: DynamicFieldsProps) => {
   const add = () => {
@@ -90,7 +93,10 @@ const AddFields = ({
               onChange={(e) => {
                 update(field.id, e.target.value);
               }}
-              className="flex-1"
+              className={cn(
+                "flex-1",
+                hasError && !field.value.trim() ? "border-destructive focus-visible:ring-destructive" : ""
+              )}
             />
             {/* Measurement — only for ingredients */}
             {showMeasurement && (
@@ -100,7 +106,10 @@ const AddFields = ({
                 onChange={(e) => {
                   updateMeasurement(field.id, e.target.value);
                 }}
-                className="w-28 shrink-0"
+                className={cn(
+                  "w-28 shrink-0",
+                  hasError && !field.measurement?.trim() ? "border-destructive focus-visible:ring-destructive" : ""
+                )}
               />
             )}
             <div className="flex flex-col gap-0">

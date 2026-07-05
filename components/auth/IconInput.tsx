@@ -1,4 +1,5 @@
 import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 import React, { DetailedHTMLProps, InputHTMLAttributes } from "react";
 
 interface IconInputProps {
@@ -10,8 +11,9 @@ interface IconInputProps {
   onChange: (value: string) => void;
   inputProps?: Omit<
     DetailedHTMLProps<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>,
-    "ref"
+    "ref" | "className"
   >;
+  className?: string;
 }
 
 export const IconInput = ({
@@ -22,6 +24,7 @@ export const IconInput = ({
   value,
   onChange,
   inputProps,
+  className,
 }: IconInputProps) => (
   <div className="relative">
     <div className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">
@@ -33,7 +36,7 @@ export const IconInput = ({
       placeholder={placeholder}
       value={value}
       onChange={(e) => onChange?.(e.target.value)}
-      className="pl-9 rounded-xl h-12"
+      className={cn("pl-9 rounded-xl h-12", className)}
       {...inputProps}
     />
   </div>

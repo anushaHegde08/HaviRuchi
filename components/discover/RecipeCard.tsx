@@ -65,7 +65,7 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
               </CardTitle>
             </CardHeader>
             <CardContent className="p-0">
-              <CardDescription className="text-xs md:text-xl lg:text-xl text-secondary/70 line-clamp-2 md:line-clamp-3 break-words whitespace-pre-wrap">
+              <CardDescription className="text-xs md:text-xl text-secondary/70 line-clamp-2 md:line-clamp-3 break-words whitespace-pre-wrap">
                 {item.description}
               </CardDescription>
               {item.createdBy?.name && (

@@ -102,9 +102,10 @@ const Discover = () => {
         const badgeCategoryMatch =
           selectedCategory === "All" || recipe.category === selectedCategory;
 
+        const activeCategories = filters.categories.filter((c) => c !== "All");
         const categoryMatch =
-          filters.categories.length === 0 ||
-          filters.categories.includes(recipe.category);
+          activeCategories.length === 0 ||
+          activeCategories.includes(recipe.category);
 
         const difficultyMatch =
           filters.difficulties.length === 0 ||
@@ -221,7 +222,7 @@ const Discover = () => {
 
       {/* Desktop grid */}
       {!loading && !error && (
-        <div className="hidden md:grid md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+        <div className="hidden md:grid md:grid-cols-1 lg:grid-cols-2 gap-6">
           {itemsToRender.length > 0 ? (
             itemsToRender.map((item: RecipeItem, index: number) => (
               <RecipeCard

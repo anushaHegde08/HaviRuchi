@@ -136,7 +136,7 @@ export default function RecipeDetailPage({
                 <p className="whitespace-pre-wrap break-words text-secondary/80 text-sm md:text-base">
                   {recipe.description}
                 </p>
-                <RecipeBadges recipe={recipe} />
+                <RecipeBadges recipe={recipe} showServings={true} />
                 {recipe.createdBy?.name && (
                   <p className="text-xs lg:text-sm text-muted-foreground mt-2">
                     Recipe by {recipe.createdBy.name}

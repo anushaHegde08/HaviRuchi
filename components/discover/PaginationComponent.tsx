@@ -65,7 +65,7 @@ const PaginationComponent = ({
                 className={
                   isFirst
                     ? "pointer-events-none opacity-50 cursor-default"
-                    : "cursor-pointer hover:bg-primary hover:text-white"
+                    : "cursor-pointer"
                 }
               />
             </PaginationItem>
@@ -77,6 +77,7 @@ const PaginationComponent = ({
                     onPageChange(i);
                   }}
                   isActive={i === currentPage}
+                  className="cursor-pointer"
                 >
                   {i + 1}
                 </PaginationLink>
@@ -91,7 +92,7 @@ const PaginationComponent = ({
                 className={
                   isLast
                     ? "pointer-events-none opacity-50 cursor-default"
-                    : "cursor-pointer hover:bg-primary hover:text-white"
+                    : "cursor-pointer"
                 }
               />
             </PaginationItem>

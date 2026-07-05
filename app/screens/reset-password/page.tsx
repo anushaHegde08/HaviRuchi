@@ -71,6 +71,7 @@ function ResetPasswordContent() {
         <PasswordInput
           id="password"
           placeholder="New password"
+          className={error ? "border-destructive focus-visible:ring-destructive" : ""}
           onChange={(val) => {
             setPassword(val);
             if (error) setError("");

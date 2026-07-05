@@ -9,7 +9,7 @@ const CATEGORIES = [
 ];
 const DIFFICULTIES = ["Easy", "Medium", "Hard"];
 
-const ITEMS_PER_PAGE = 6;
+const ITEMS_PER_PAGE = 10;
 
 const MOBILE_LOAD_COUNT = 4;
 

@@ -1,5 +1,6 @@
 "use client";
 import { useGlobalContext } from "@/context";
+import { useSession } from "next-auth/react";
 import { getRecipeImage } from "@/lib/utilities/categoryImages";
 import { RecipeItem } from "@/types";
 import { useRouter } from "next/navigation";
@@ -8,6 +9,7 @@ import { toast } from "sonner";
 
 export const useRecipes = () => {
   const router = useRouter();
+  const { data: session } = useSession();
   const {
     allRecipes,
     setAllRecipes,
@@ -25,7 +27,7 @@ export const useRecipes = () => {
       setLoading(true);
 
       const shouldFetchRecipes = !recipesFetched;
-      const shouldFetchFavorites = !favoritesFetched;
+      const shouldFetchFavorites = !!session && !favoritesFetched;
 
       const [recipesResult, favoritesResult] = await Promise.allSettled([
         shouldFetchRecipes
@@ -57,11 +59,16 @@ export const useRecipes = () => {
           return;
         }
 
+        const existingFavoriteIds = allRecipes
+          .filter(r => r.isFavorite)
+          .map(r => r._id);
+
         nextRecipes = recipesData.map((r: RecipeItem) => ({
           ...r,
           id: r._id,
           _id: r._id,
           image: getRecipeImage(r.image, r.category),
+          isFavorite: existingFavoriteIds.includes(r._id),
         }));
 
         if (shouldFetchFavorites) {
@@ -137,6 +144,7 @@ export const useRecipes = () => {
     setAllRecipes,
     setFavoritesFetched,
     setRecipesFetched,
+    session,
   ]);
 
   const recipesFetchStarted = useRef(false);
@@ -161,6 +169,12 @@ export const useRecipes = () => {
   // toggle favorite — updates DB and local state
   const handleToggleFavorite = useCallback(
     async (id: string) => {
+      if (!session) {
+        toast.error("Please sign in to save favorites");
+        router.push("/screens/sign-in");
+        return;
+      }
+
       const recipe = allRecipes.find((r) => r._id === id || r.id === id);
       const wasFavorited = recipe?.isFavorite ?? false;
 
@@ -203,7 +217,7 @@ export const useRecipes = () => {
         console.error("Failed to toggle favorite with", error);
       }
     },
-    [allRecipes, toggleFavorite, setAllRecipes],
+    [allRecipes, toggleFavorite, setAllRecipes, session, router],
   );
 
   const onClickRecipeCard = useCallback(

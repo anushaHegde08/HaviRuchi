@@ -7,14 +7,15 @@ import { Button } from "@/components/ui/button";
 import { Mail } from "lucide-react";
 import { signIn, useSession } from "next-auth/react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense, useEffect, useState } from "react";
 import { FcGoogle } from "react-icons/fc";
 import { toast } from "sonner";
 
-export default function SignInPage() {
+function SignInContent() {
   const { status } = useSession();
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -36,6 +37,16 @@ export default function SignInPage() {
       router.replace("/screens/discover");
     }
   }, [status, router]);
+
+  useEffect(() => {
+    if (searchParams.get("verified") === "true") {
+      toast.success("Email verified successfully! You can now sign in.");
+      router.replace("/screens/sign-in");
+    } else if (searchParams.get("error") === "invalid-token") {
+      toast.error("Invalid or expired verification link.");
+      router.replace("/screens/sign-in");
+    }
+  }, [searchParams, router]);
 
   // show nothing while checking session
   if (status === "loading" || status === "authenticated") return null;
@@ -70,6 +81,8 @@ export default function SignInPage() {
           "No user found with this email": "No account found with this email",
           "Incorrect password": "Incorrect password",
           "Please sign in with Google": "This email is registered with Google",
+          "Please verify your email before signing in":
+            "Please verify your email before signing in",
         };
         const message = errorMessages[decodedError] ?? "Something went wrong";
 
@@ -134,6 +147,7 @@ export default function SignInPage() {
           value={email}
           placeholder="Email or phone number"
           icon={<Mail className="h-4 w-4" />}
+          className={errors.email ? "border-destructive focus-visible:ring-destructive" : ""}
           onChange={(val) => {
             setEmail(val);
             if (errors.email) {
@@ -149,6 +163,7 @@ export default function SignInPage() {
         <PasswordInput
           id="password"
           placeholder="Password"
+          className={errors.password ? "border-destructive focus-visible:ring-destructive" : ""}
           onChange={(val) => {
             setPassword(val);
             if (errors.password) {
@@ -206,5 +221,13 @@ export default function SignInPage() {
         )}
       </Button>
     </AuthLayout>
+  );
+}
+
+export default function SignInPage() {
+  return (
+    <Suspense fallback={null}>
+      <SignInContent />
+    </Suspense>
   );
 }

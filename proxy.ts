@@ -15,7 +15,6 @@ export default withAuth(
 export const config = {
   matcher: [
     // protect these routes
-    "/screens/discover/:path*",
     "/screens/add-recipe/:path*",
     "/screens/favorites/:path*",
     "/screens/profile/:path*",

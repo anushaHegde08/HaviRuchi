@@ -20,9 +20,6 @@ const AddRecipeSchema = z.object({
     ),
   image: z.string().optional(),
   category: z.string().min(1, "Category is required"),
-  difficulty: z.enum(["Easy", "Medium", "Hard"] as const, {
-    message: "Please select a difficulty level",
-  }),
   timeNeeded: z.number().min(10, "Minimum cook time is 10 minutes"),
   servings: z.number().min(1, "Servings must be at least 1"),
   ingredients: z
@@ -71,12 +68,14 @@ export async function POST(req: Request) {
       title,
       description,
       category,
-      difficulty,
       timeNeeded,
       servings,
       ingredients,
       instructions,
     } = result.data;
+
+    const calculatedDifficulty =
+      timeNeeded <= 30 ? "Easy" : timeNeeded <= 60 ? "Medium" : "Hard";
 
     await connectDB();
 
@@ -91,7 +90,7 @@ export async function POST(req: Request) {
       description,
       image: result.data.image || "",
       category,
-      difficulty,
+      difficulty: calculatedDifficulty,
       timeNeeded,
       servings,
       ingredients: ingredients.map((i) => `${i.value} - ${i.measurement}`),

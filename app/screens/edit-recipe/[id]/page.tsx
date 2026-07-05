@@ -62,7 +62,6 @@ export default function EditRecipePage({
           title: data.title,
           description: data.description,
           category: data.category,
-          difficulty: data.difficulty,
           hours: Math.floor(data.timeNeeded / 60),
           minutes: data.timeNeeded % 60 || 10,
           servings: data.servings,
@@ -81,15 +80,16 @@ export default function EditRecipePage({
     void fetchRecipe();
   }, [id, router]);
 
-  const handleSubmit = async (data: RecipeFormData) => {
+  const handleSubmit = async (data: RecipeFormData, totalMinutes: number) => {
     try {
       setButtonLoading(true);
-      const { servings, ...rest } = data;
+      const { servings, hours, minutes, ...rest } = data;
       const response = await fetch(`/api/recipes/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...rest,
+          timeNeeded: totalMinutes,
           servings: Number(servings),
         }),
       });
@@ -98,7 +98,6 @@ export default function EditRecipePage({
       if (!response.ok) throw new Error(result.error);
 
       toast.success("Recipe updated successfully!");
-      setAllRecipes([]);
       setRecipesFetched(false);
       router.back();
     } finally {

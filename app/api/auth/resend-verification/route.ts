@@ -1,63 +1,37 @@
 import { NextResponse } from "next/server";
-import bcrypt from "bcryptjs";
 import connectDB from "@/lib/mongodb";
 import User from "@/models/User";
-import { z } from "zod";
 import crypto from "crypto";
 import { Resend } from "resend";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-// validation schema
-const SignUpSchema = z.object({
-  name: z.string().min(1, "Name is required"),
-  email: z.email("Please enter a valid email address"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
-  phone: z.string().optional(),
-});
-
 export async function POST(req: Request) {
   try {
-    const body = await req.json();
+    const { email } = await req.json();
 
-    // validate incoming data
-    const result = SignUpSchema.safeParse(body);
-    if (!result.success) {
-      return NextResponse.json(
-        { error: result.error.issues[0].message },
-        { status: 400 },
-      );
+    if (!email) {
+      return NextResponse.json({ error: "Email is required" }, { status: 400 });
     }
-
-    const { name, email, password, phone } = result.data;
 
     await connectDB();
 
-    // check if user already exists
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return NextResponse.json(
-        { error: "User already exists with this email" },
-        { status: 400 },
-      );
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    // hash the password
-    const hashedPassword = await bcrypt.hash(password, 10);
+    if (user.isVerified) {
+      return NextResponse.json({ error: "Already verified" }, { status: 400 });
+    }
 
     const emailVerifyToken = crypto.randomBytes(32).toString("hex");
     const emailVerifyTokenExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
 
-    // create user in DB
-    const user = await User.create({
-      name,
-      email,
-      password: hashedPassword,
-      phone: phone || undefined,
-      provider: "credentials",
-      emailVerifyToken,
-      emailVerifyTokenExpiry,
-    });
+    user.emailVerifyToken = emailVerifyToken;
+    user.emailVerifyTokenExpiry = emailVerifyTokenExpiry;
+    await user.save();
 
     const verifyUrl = `${process.env.NEXTAUTH_URL}/api/auth/verify-email?token=${emailVerifyToken}`;
 
@@ -81,12 +55,9 @@ export async function POST(req: Request) {
       `,
     });
 
-    return NextResponse.json(
-      { message: "User created successfully. Please check your email to verify your account." },
-      { status: 201 },
-    );
+    return NextResponse.json({ message: "Verification email sent successfully" });
   } catch (error) {
-    console.error("Sign up error:", error);
+    console.error("Resend verification error:", error);
     return NextResponse.json(
       { error: "Something went wrong" },
       { status: 500 },

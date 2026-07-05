@@ -20,19 +20,14 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { Typography } from "@/components/ui/typography";
 import { uploadImage } from "@/lib/uploadImage";
-import {
-  CATEGORIES,
-  DIFFICULTIES,
-  MAX_DESCRIPTION_LENGTH,
-} from "@/lib/utilities/constatnts";
+import { CATEGORIES, MAX_DESCRIPTION_LENGTH } from "@/lib/utilities/constatnts";
 import { capitalizeFirst } from "@/lib/utilities/helperFunction";
 import { cn } from "@/lib/utils";
 import { AddField } from "@/types";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, ChevronDown, ChevronUp, Minus, Plus } from "lucide-react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -43,7 +38,6 @@ export interface RecipeFormData {
   title: string;
   description: string;
   category: string;
-  difficulty: string;
   hours: number;
   minutes: number;
   servings: number | "";
@@ -82,7 +76,6 @@ const defaultData: RecipeFormData = {
   description: "",
   image: "",
   category: "",
-  difficulty: "Easy",
   hours: 0,
   minutes: 10,
   servings: "",
@@ -106,7 +99,6 @@ const RecipeForm = ({
   const [title, setTitle] = useState(initialData.title);
   const [description, setDescription] = useState(initialData.description);
   const [category, setCategory] = useState(initialData.category);
-  const [difficulty, setDifficulty] = useState(initialData.difficulty);
   const [hours, setHours] = useState(initialData.hours);
   const [minutes, setMinutes] = useState(initialData.minutes);
   const [servings, setServings] = useState(initialData.servings);
@@ -153,15 +145,26 @@ const RecipeForm = ({
   const handleHoursChange = (value: number) => {
     setHours(value);
     if (value === 0 && minutes < 10) setMinutes(10);
+    if (value > 0 && minutes > 55) setMinutes(55);
     onFormChange?.();
     if (errors.time) setErrors((prev) => ({ ...prev, time: "" }));
   };
 
   const handleMinutesChange = (value: number) => {
     if (hours === 0 && value < 10) return;
+    if (value > 55) return;
+    if (value < 0) return;
     setMinutes(value);
     onFormChange?.();
     if (errors.time) setErrors((prev) => ({ ...prev, time: "" }));
+  };
+
+  const handleServingsChange = (value: number) => {
+    if (value < 1) return;
+    if (value > 50) return;
+    setServings(value);
+    onFormChange?.();
+    if (errors.servings) setErrors((prev) => ({ ...prev, servings: "" }));
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -271,7 +274,6 @@ const RecipeForm = ({
           title,
           description,
           category,
-          difficulty,
           hours,
           minutes,
           servings,
@@ -322,6 +324,11 @@ const RecipeForm = ({
                         type="text"
                         placeholder="e.g., Pineapple Gojju"
                         value={title}
+                        className={
+                          errors.title
+                            ? "border-destructive focus-visible:ring-destructive"
+                            : ""
+                        }
                         onChange={(e) => {
                           setTitle(capitalizeFirst(e.target.value));
                           onFormChange?.();
@@ -352,7 +359,12 @@ const RecipeForm = ({
                         rows={4}
                         maxLength={MAX_DESCRIPTION_LENGTH}
                         value={description}
-                        className="text-sm"
+                        className={cn(
+                          "text-sm",
+                          errors.description
+                            ? "border-destructive focus-visible:ring-destructive"
+                            : "",
+                        )}
                         onChange={(e) => {
                           setDescription(capitalizeFirst(e.target.value));
                           onFormChange?.();
@@ -382,7 +394,12 @@ const RecipeForm = ({
                         id="picture"
                         type="file"
                         accept="image/jpeg,image/jpg,image/png,image/webp"
-                        className="h-auto file:text-foreground/75 text-muted-foreground"
+                        className={cn(
+                          "h-auto file:text-foreground/75 text-muted-foreground",
+                          errors.imageFile
+                            ? "border-destructive focus-visible:ring-destructive"
+                            : "",
+                        )}
                         onChange={handleImageChange}
                       />
                       <FieldDescription className="text-xs">
@@ -412,7 +429,14 @@ const RecipeForm = ({
                             setErrors((prev) => ({ ...prev, category: "" }));
                         }}
                       >
-                        <SelectTrigger id="category">
+                        <SelectTrigger
+                          id="category"
+                          className={
+                            errors.category
+                              ? "border-destructive focus-visible:ring-destructive"
+                              : ""
+                          }
+                        >
                           <SelectValue placeholder="Select Category" />
                         </SelectTrigger>
                         <SelectContent>
@@ -433,63 +457,110 @@ const RecipeForm = ({
                         </p>
                       )}
                     </Field>
-
-                    <Field>
-                      <FieldLabel>Difficulty Level</FieldLabel>
-                      <Tabs
-                        value={difficulty}
-                        onValueChange={(val) => {
-                          setDifficulty(val);
-                          onFormChange?.();
-                        }}
-                      >
-                        <TabsList className="bg-primary/2 border w-full">
-                          {DIFFICULTIES.map((level) => (
-                            <TabsTrigger
-                              key={level}
-                              value={level}
-                              className="flex-1 data-[state=active]:bg-primary/20"
-                            >
-                              {level}
-                            </TabsTrigger>
-                          ))}
-                        </TabsList>
-                      </Tabs>
-                    </Field>
                     <Field>
                       <FieldLabel>Cook Time</FieldLabel>
                       <div className="flex items-center gap-2">
-                        <Input
-                          type="number"
-                          min={0}
-                          max={5}
-                          step={1}
-                          value={hours}
-                          onChange={(e) =>
-                            handleHoursChange(Number(e.target.value))
-                          }
-                          className="w-20"
-                        />
-                        <span className="text-muted-foreground shrink-0">
+                        <div className="flex items-center gap-1">
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="icon"
+                            className="h-8 w-8 disabled:opacity-100 disabled:bg-muted disabled:text-muted-foreground disabled:cursor-not-allowed disabled:hover:bg-muted disabled:active:bg-muted"
+                            onClick={() =>
+                              handleHoursChange(Math.max(0, hours - 1))
+                            }
+                            disabled={hours === 0}
+                          >
+                            <Minus className="h-3 w-3" />
+                          </Button>
+                          <Input
+                            type="number"
+                            min={0}
+                            max={5}
+                            step={1}
+                            value={hours}
+                            onChange={(e) =>
+                              handleHoursChange(Number(e.target.value))
+                            }
+                            className={cn(
+                              "w-16 text-center",
+                              errors.time
+                                ? "border-destructive focus-visible:ring-destructive"
+                                : "",
+                            )}
+                          />
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="icon"
+                            className="h-8 w-8 disabled:opacity-100 disabled:bg-muted disabled:text-muted-foreground disabled:cursor-not-allowed disabled:hover:bg-muted disabled:active:bg-muted"
+                            onClick={() =>
+                              handleHoursChange(Math.min(5, hours + 1))
+                            }
+                            disabled={hours === 5}
+                          >
+                            <Plus className="h-3 w-3" />
+                          </Button>
+                        </div>
+                        <span className="text-muted-foreground shrink-0 text-sm">
                           Hr
                         </span>
-                        <Input
-                          type="number"
-                          min={hours === 0 ? 10 : 0}
-                          max={55}
-                          step={5}
-                          value={minutes}
-                          onChange={(e) =>
-                            handleMinutesChange(Number(e.target.value))
-                          }
-                          className="w-20"
-                        />
-                        <span className="text-muted-foreground shrink-0">
+
+                        <div className="flex items-center gap-1 ml-2">
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="icon"
+                            className="h-8 w-8 disabled:opacity-100 disabled:bg-muted disabled:text-muted-foreground disabled:cursor-not-allowed disabled:hover:bg-muted disabled:active:bg-muted"
+                            onClick={() =>
+                              handleMinutesChange(
+                                hours === 0
+                                  ? Math.max(10, minutes - 5)
+                                  : Math.max(0, minutes - 5),
+                              )
+                            }
+                            disabled={
+                              (hours === 0 && minutes <= 10) ||
+                              (hours > 0 && minutes === 0)
+                            }
+                          >
+                            <Minus className="h-3 w-3" />
+                          </Button>
+                          <Input
+                            type="number"
+                            min={hours === 0 ? 10 : 0}
+                            max={55}
+                            step={5}
+                            value={minutes}
+                            onChange={(e) =>
+                              handleMinutesChange(Number(e.target.value))
+                            }
+                            className={cn(
+                              "w-16 text-center",
+                              errors.time
+                                ? "border-destructive focus-visible:ring-destructive"
+                                : "",
+                            )}
+                          />
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="icon"
+                            className="h-8 w-8 disabled:opacity-100 disabled:bg-muted disabled:text-muted-foreground disabled:cursor-not-allowed disabled:hover:bg-muted disabled:active:bg-muted"
+                            onClick={() =>
+                              handleMinutesChange(Math.min(55, minutes + 5))
+                            }
+                            disabled={minutes === 55}
+                          >
+                            <Plus className="h-3 w-3" />
+                          </Button>
+                        </div>
+                        <span className="text-muted-foreground shrink-0 text-sm">
                           Min
                         </span>
                       </div>
                       {errors.time && (
-                        <p className="text-xs text-destructive">
+                        <p className="text-xs text-destructive mt-1">
                           {errors.time}
                         </p>
                       )}
@@ -497,19 +568,35 @@ const RecipeForm = ({
 
                     <Field>
                       <FieldLabel htmlFor="servings">Servings</FieldLabel>
-                      <Input
-                        id="servings"
-                        type="number"
-                        placeholder="No. of servings"
-                        min={1}
-                        value={servings}
-                        onChange={(e) => {
-                          setServings(Number(e.target.value));
-                          onFormChange?.();
-                          if (errors.servings)
-                            setErrors((prev) => ({ ...prev, servings: "" }));
-                        }}
-                      />
+                      <div className="flex items-center w-fit border rounded-lg overflow-hidden">
+                        <button
+                          type="button"
+                          onClick={() =>
+                            handleServingsChange(
+                              Math.max(1, Number(servings) - 1),
+                            )
+                          }
+                          disabled={Number(servings) <= 1}
+                          className="px-3 py-1 hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                        >
+                          <ChevronDown className="h-4 w-4 text-primary" />
+                        </button>
+                        <span className="px-4 py-1 text-sm font-medium border-y w-full text-center min-w-[3rem]">
+                          {servings || 1}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            handleServingsChange(
+                              Math.min(50, Number(servings) + 1),
+                            )
+                          }
+                          disabled={Number(servings) >= 50}
+                          className="px-3 py-1 hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                        >
+                          <ChevronUp className="h-4 w-4 text-primary" />
+                        </button>
+                      </div>
                       {errors.servings && (
                         <p className="text-xs text-destructive">
                           {errors.servings}
@@ -530,6 +617,7 @@ const RecipeForm = ({
                     placeholder="e.g., Grated coconut"
                     label="Ingredients"
                     showMeasurement={true}
+                    hasError={!!errors.ingredients}
                     onClearError={() =>
                       setErrors((prev) => ({ ...prev, ingredients: "" }))
                     }
@@ -548,6 +636,7 @@ const RecipeForm = ({
                     }}
                     placeholder="e.g., Roast the red chilies..."
                     label="Instructions"
+                    hasError={!!errors.instructions}
                     onClearError={() =>
                       setErrors((prev) => ({ ...prev, instructions: "" }))
                     }

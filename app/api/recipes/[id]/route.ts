@@ -69,13 +69,20 @@ export async function PUT(
 
     const body = await req.json();
 
+    const calculatedDifficulty =
+      body.timeNeeded <= 30
+        ? "Easy"
+        : body.timeNeeded <= 60
+        ? "Medium"
+        : "Hard";
+
     const updatedRecipe = await Recipe.findByIdAndUpdate(
       id,
       {
         title: body.title,
         description: body.description,
         category: body.category,
-        difficulty: body.difficulty,
+        difficulty: calculatedDifficulty,
         timeNeeded: body.timeNeeded,
         servings: body.servings,
         image: body.image,

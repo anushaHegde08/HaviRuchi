@@ -42,6 +42,10 @@ export const authOptions: AuthOptions = {
           throw new Error("Incorrect password");
         }
 
+        if (!user.isVerified) {
+          throw new Error("Please verify your email before signing in");
+        }
+
         return {
           id: user._id.toString(),
           name: user.name,

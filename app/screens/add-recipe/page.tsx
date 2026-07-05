@@ -20,7 +20,6 @@ const AddRecipe = () => {
           title: data.title,
           description: data.description,
           category: data.category,
-          difficulty: data.difficulty,
           timeNeeded: totalMinutes,
           servings: Number(data.servings),
           ingredients: data.ingredients,
@@ -33,7 +32,6 @@ const AddRecipe = () => {
       if (!response.ok) throw new Error(result.error);
 
       toast.success("Recipe added successfully!");
-      setAllRecipes([]);
       setRecipesFetched(false);
       router.push("/screens/discover");
     } finally {
