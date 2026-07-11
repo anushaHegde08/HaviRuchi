@@ -49,7 +49,6 @@ export default function Home() {
               width={90}
               height={36}
               priority
-              className="h-auto w-[70px] md:w-[80px] lg:w-[90px]"
             />
           </Link>
           <div className="flex items-center gap-4">
@@ -79,7 +78,7 @@ export default function Home() {
       </nav>
 
       {/* Hero Section */}
-      <section className="relative min-h-screen flex flex-col items-center justify-center pt-20 overflow-hidden bg-gradient-to-b from-primary/20 to-background">
+      <section className="relative min-h-screen flex flex-col items-center justify-center pt-24 overflow-hidden bg-gradient-to-b from-primary/20 to-background">
         <div className="container px-4 md:px-6 flex flex-col items-center text-center z-10 relative animate-in fade-in slide-in-from-bottom-8 duration-1000">
           <h1 className="text-5xl md:text-7xl font-extrabold text-primary mb-6 tracking-tight">
             {"HaviRuchi".split("").map((letter, i) => (
@@ -89,7 +88,7 @@ export default function Home() {
                   animating
                     ? {
                         display: "inline-block",
-                        animation: `letterBounce 0.6s ease ${i * 0.1}s ${Math.floor(5 / 0.6)} forwards`,
+                        animation: `letterBounce 0.6s ease ${i * 0.1}s ${Math.floor(3 / 0.6)} forwards`,
                       }
                     : { display: "inline-block" }
                 }
@@ -232,8 +231,8 @@ export default function Home() {
       {/* Stats Section */}
       <section className="py-20 bg-background">
         <div className="container px-4 md:px-6 mx-auto">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-10 max-w-3xl mx-auto">
-            <div className="flex flex-col items-center gap-2 py-8 px-4 rounded-2xl bg-card border border-border shadow-sm transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:scale-[1.02]">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-12 md:gap-16 max-w-5xl mx-auto">
+            <div className="flex flex-col items-center gap-2 py-8 px-4 rounded-2xl bg-primary/5 border border-primary/10 shadow-sm transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:scale-[1.02]">
               <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
                 <UtensilsCrossed className="h-6 w-6 text-primary" />
               </div>
@@ -243,8 +242,8 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="flex flex-col items-center gap-2 py-8 px-4 rounded-2xl bg-card border border-border shadow-sm transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:scale-[1.02]">
-              <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
+            <div className="flex flex-col items-center gap-2 py-8 px-4 rounded-2xl bg-green-500/5 border border-green-500/10 shadow-sm transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:scale-[1.02]">
+              <div className="h-12 w-12 rounded-full bg-green-500/10 flex items-center justify-center">
                 <Leaf className="h-6 w-6 text-green-600" />
               </div>
               <div className="text-3xl font-extrabold text-green-700">
@@ -255,8 +254,8 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="flex flex-col items-center gap-2 py-8 px-4 rounded-2xl bg-card border border-border shadow-sm transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:scale-[1.02]">
-              <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
+            <div className="flex flex-col items-center gap-2 py-8 px-4 rounded-2xl bg-amber-500/5 border border-amber-500/10 shadow-sm transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:scale-[1.02]">
+              <div className="h-12 w-12 rounded-full bg-amber-500/10 flex items-center justify-center">
                 <CheckCircle className="h-6 w-6 text-amber-600" />
               </div>
               <div className="text-3xl font-extrabold text-amber-700">100%</div>

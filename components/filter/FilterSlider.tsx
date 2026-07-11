@@ -13,7 +13,7 @@ export const FilterSlider = ({
   onChange,
   className,
 }: FilterSliderProps) => (
-  <div className={`flex flex-col gap-3 ${className}`}>
+  <div className={`flex flex-col gap-3 pr-2 md:pr-4 ${className}`}>
     <div className="flex items-center justify-between">
       <p className="text-sm font-semibold text-primary tracking-widest uppercase">
         Time Needed

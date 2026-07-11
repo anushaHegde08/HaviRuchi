@@ -16,7 +16,7 @@ import { useEffect, useRef, useState } from "react";
 
 const MyRecipes = () => {
   const router = useRouter();
-  const { handleToggleFavorite } = useRecipes();
+  const { handleToggleFavorite, sortRecipes } = useRecipes();
 
   const onToggleFavorite = (id: string) => {
     handleToggleFavorite(id);
@@ -81,14 +81,15 @@ const MyRecipes = () => {
   }, []);
 
   // desktop pagination
+  const sortedMyRecipes = sortRecipes ? sortRecipes(myRecipes) : myRecipes;
   const startIndex = currentPage * ITEMS_PER_PAGE;
-  const itemsToRender = myRecipes.slice(
+  const itemsToRender = sortedMyRecipes.slice(
     startIndex,
     startIndex + ITEMS_PER_PAGE,
   );
 
   // mobile infinite scroll
-  const mobileItems = myRecipes.slice(0, mobileVisibleCount);
+  const mobileItems = sortedMyRecipes.slice(0, mobileVisibleCount);
 
   const handleDelete = (id: string) => {
     setMyRecipes((prev) => prev.filter((r) => r._id !== id)); // ← remove instantly
