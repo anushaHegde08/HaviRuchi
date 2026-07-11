@@ -18,6 +18,7 @@ export const useRecipes = () => {
     setRecipesFetched,
     favoritesFetched,
     setFavoritesFetched,
+    discoverFilters,
   } = useGlobalContext();
   const [loading, setLoading] = useState(!recipesFetched);
   const [error, setError] = useState<string | null>(null);
@@ -164,7 +165,31 @@ export const useRecipes = () => {
     };
   }, [fetchRecipes, recipesFetched, favoritesFetched]);
 
-  const favoriteRecipes = allRecipes.filter((r) => r.isFavorite);
+  const sortRecipes = useCallback((recipes: RecipeItem[]) => {
+    const sortBy = discoverFilters?.sortBy || "newest";
+    return [...recipes].sort((a, b) => {
+      switch (sortBy) {
+        case "newest": return b._id.localeCompare(a._id);
+        case "oldest": return a._id.localeCompare(b._id);
+        case "time_asc": return a.timeNeeded - b.timeNeeded;
+        case "time_desc": return b.timeNeeded - a.timeNeeded;
+        case "difficulty_asc": {
+          const diff: Record<string, number> = { Easy: 1, Medium: 2, Hard: 3 };
+          return (diff[a.difficulty] || 0) - (diff[b.difficulty] || 0);
+        }
+        case "difficulty_desc": {
+          const diff: Record<string, number> = { Easy: 1, Medium: 2, Hard: 3 };
+          return (diff[b.difficulty] || 0) - (diff[a.difficulty] || 0);
+        }
+        case "alpha_asc": return a.title.localeCompare(b.title);
+        case "alpha_desc": return b.title.localeCompare(a.title);
+        default: return 0;
+      }
+    });
+  }, [discoverFilters?.sortBy]);
+
+  const sortedAllRecipes = sortRecipes(allRecipes);
+  const favoriteRecipes = sortRecipes(allRecipes.filter((r) => r.isFavorite));
 
   // toggle favorite — updates DB and local state
   const handleToggleFavorite = useCallback(
@@ -228,7 +253,7 @@ export const useRecipes = () => {
   );
 
   return {
-    allRecipes,
+    allRecipes: sortedAllRecipes,
     setAllRecipes,
     favoriteRecipes,
     handleToggleFavorite,
@@ -237,5 +262,6 @@ export const useRecipes = () => {
     setLoading,
     error,
     retryFetch: fetchRecipes,
+    sortRecipes,
   };
 };

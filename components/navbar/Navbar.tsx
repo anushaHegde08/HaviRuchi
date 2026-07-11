@@ -128,7 +128,7 @@ export function Navbar() {
               width={90}
               height={36}
               priority
-              className="h-auto w-[70px] md:w-[80px] lg:w-[90px]"
+              className="py-2"
             />
           </Link>
           {!hideNavItems && (
