@@ -95,86 +95,86 @@ const MyRecipes = () => {
   };
 
   return (
-    <>
-      {error ? (
+    <div className="flex flex-col gap-4 px-6 py-4">
+      <div className="flex flex-col gap-2">
+        <Typography
+          variant="h3"
+          color="primary"
+          weight="semibold"
+          className="text-start"
+        >
+          My Recipes
+        </Typography>
+        <Typography variant="body" color="text" className="italic text-start">
+          You have added {loading ? <span className="inline-block w-4 h-4 rounded bg-muted animate-pulse align-middle mx-1" /> : myRecipes.length} recipes
+        </Typography>
+      </div>
+
+      {loading ? (
+        <RecipeGridSkeleton count={ITEMS_PER_PAGE} />
+      ) : error ? (
         <APIErrors
           onRetry={() => void fetchMyRecipes(true)}
           className="min-h-[400px] md:min-h-[400px]"
         />
-      ) : loading ? (
-        <RecipeGridSkeleton count={ITEMS_PER_PAGE} />
+      ) : myRecipes.length === 0 ? (
+        <NoItemsFound
+          icon={<BookOpen className="h-8 w-8 text-primary" />}
+          title="No recipes added yet"
+          description="Share your favorite Havyaka recipes with the community"
+          actionLabel="Add Recipe"
+          actionHref="/screens/add-recipe"
+          className="min-h-[400px] md:min-h-[400px]"
+        />
       ) : (
-        <div className="flex flex-col gap-4 px-6 py-4">
-          <Typography
-            variant="h3"
-            color="primary"
-            weight="semibold"
-            className="text-start"
-          >
-            My Recipes
-          </Typography>
-          <Typography variant="body" color="text" className="italic text-start">
-            You have added {myRecipes.length} recipes
-          </Typography>
-
-          {myRecipes.length === 0 && !loading ? (
-            <NoItemsFound
-              icon={<BookOpen className="h-8 w-8 text-primary" />}
-              title="No recipes added yet"
-              description="Share your favorite Havyaka recipes with the community"
-              actionLabel="Add Recipe"
-              actionHref="/screens/add-recipe"
-              className="min-h-[400px] md:min-h-[400px]"
-            />
-          ) : (
-            <>
-              {/* Mobile grid */}
-              <div className="grid grid-cols-1 gap-6 md:hidden">
-                {mobileItems.map((item: RecipeItem, index: number) => (
-                  <RecipeCard
-                    key={item._id}
-                    item={item}
-                    priority={index < 2}
-                    onToggleFavorite={onToggleFavorite}
-                    onClickRecipeCard={(id) =>
-                      router.push("/screens/recipe/" + id)
-                    }
-                    onDelete={() => handleDelete(item._id as string)}
-                  />
-                ))}
-              </div>
-
-              {/* Desktop grid */}
-              <div className="hidden md:grid md:grid-cols-2 gap-6">
-                {itemsToRender.map((item: RecipeItem, index: number) => (
-                  <RecipeCard
-                    key={item._id}
-                    item={item}
-                    priority={index < 2}
-                    onToggleFavorite={onToggleFavorite}
-                    onClickRecipeCard={(id) =>
-                      router.push("/screens/recipe/" + id)
-                    }
-                    onDelete={() => handleDelete(item._id as string)}
-                  />
-                ))}
-              </div>
-
-              <PaginationComponent
-                totalPages={totalPages(myRecipes, ITEMS_PER_PAGE)}
-                currentPage={currentPage}
-                onPageChange={setCurrentPage}
-                allFilteredRecipes={myRecipes}
-                visibleItems={mobileVisibleCount}
-                onLoadMore={() =>
-                  setMobileVisibleCount((prev) => prev + MOBILE_LOAD_COUNT)
+        <>
+          {/* Mobile grid */}
+          <div className="grid grid-cols-1 gap-6 md:hidden">
+            {mobileItems.map((item: RecipeItem, index: number) => (
+              <RecipeCard
+                key={item._id}
+                item={item}
+                priority={index < 2}
+                onToggleFavorite={onToggleFavorite}
+                onClickRecipeCard={(id) =>
+                  router.push("/screens/recipe/" + id)
                 }
+                onDelete={() => handleDelete(item._id as string)}
+                showActions={true}
               />
-            </>
-          )}
-        </div>
+            ))}
+          </div>
+
+          {/* Desktop grid */}
+          <div className="hidden md:grid md:grid-cols-2 gap-6">
+            {itemsToRender.map((item: RecipeItem, index: number) => (
+              <RecipeCard
+                key={item._id}
+                item={item}
+                priority={index < 2}
+                onToggleFavorite={onToggleFavorite}
+                onClickRecipeCard={(id) =>
+                  router.push("/screens/recipe/" + id)
+                }
+                onDelete={() => handleDelete(item._id as string)}
+                showActions={true}
+              />
+            ))}
+          </div>
+
+          <PaginationComponent
+            totalPages={totalPages(myRecipes, ITEMS_PER_PAGE)}
+            currentPage={currentPage}
+            onPageChange={setCurrentPage}
+            allFilteredRecipes={myRecipes}
+            visibleItems={mobileVisibleCount}
+            onLoadMore={() =>
+              setMobileVisibleCount((prev) => prev + MOBILE_LOAD_COUNT)
+            }
+          />
+        </>
       )}
-    </>
+    </div>
   );
 };
 

@@ -6,10 +6,12 @@ import { RecipeBadges } from "@/components/recipe/RecipeBadges";
 import { RecipeImage } from "@/components/recipe/RecipeImage";
 import { RecipeIngredients } from "@/components/recipe/RecipeIngredients";
 import { RecipeInstructions } from "@/components/recipe/RecipeInstructions";
+import { ServingsSelector } from "@/components/recipe/ServingsSelector";
 import { useGlobalContext } from "@/context";
 import { useIsOwner } from "@/hooks/useIsOwner";
 import { useRecipes } from "@/hooks/useRecipes";
 import { getRecipeImage } from "@/lib/utilities/categoryImages";
+import { scaleIngredients } from "@/lib/utilities/helperFunction";
 import { RecipeDetail } from "@/types";
 import { useSession } from "next-auth/react";
 import { use, useCallback, useEffect, useRef, useState } from "react";
@@ -29,6 +31,7 @@ export default function RecipeDetailPage({
   const { handleToggleFavorite } = useRecipes();
   const initialized = useRef(false);
   const [recipe, setRecipe] = useState<RecipeDetail | null>(null);
+  const [selectedServings, setSelectedServings] = useState<number>(1);
   const [error, setError] = useState<string | null>(null);
 
   const fetchRecipeDetail = useCallback(
@@ -37,6 +40,7 @@ export default function RecipeDetailPage({
         const cached = recipeDetails[id];
         if (cached) {
           setRecipe(cached);
+          setSelectedServings(cached.servings);
           setLoading(false);
           return;
         }
@@ -79,6 +83,7 @@ export default function RecipeDetailPage({
         };
         cacheRecipeDetail(id, mapped);
         setRecipe(mapped);
+        setSelectedServings(mapped.servings);
         setError(null);
       } catch (error) {
         setError("Something went wrong");
@@ -136,7 +141,13 @@ export default function RecipeDetailPage({
                 <p className="whitespace-pre-wrap break-words text-secondary/80 text-sm md:text-base">
                   {recipe.description}
                 </p>
-                <RecipeBadges recipe={recipe} showServings={true} />
+                <div className="flex flex-col md:flex-row gap-2 md:items-center">
+                  <RecipeBadges recipe={recipe} />
+                  <ServingsSelector
+                    selectedServings={selectedServings}
+                    onServingsChange={setSelectedServings}
+                  />
+                </div>
                 {recipe.createdBy?.name && (
                   <p className="text-xs lg:text-sm text-muted-foreground mt-2">
                     Recipe by {recipe.createdBy.name}
@@ -144,7 +155,16 @@ export default function RecipeDetailPage({
                 )}
               </div>
               <hr />
-              <RecipeIngredients ingredients={recipe.ingredients} />
+              <div className="flex flex-col gap-2">
+                <RecipeIngredients 
+                  ingredients={scaleIngredients(recipe.ingredients, recipe.servings, selectedServings)} 
+                />
+                {selectedServings !== recipe.servings && (
+                  <p className="text-sm text-muted-foreground italic mt-2">
+                    Ingredient quantities adjusted for {selectedServings} servings.
+                  </p>
+                )}
+              </div>
               <hr />
               <RecipeInstructions instructions={recipe.instructions} />
             </div>

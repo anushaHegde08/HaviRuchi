@@ -1,5 +1,3 @@
-import { Button } from "@/components/ui/button";
-import { ButtonGroup } from "@/components/ui/button-group";
 import { Field } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Search, X } from "lucide-react";
@@ -12,28 +10,25 @@ interface SearchBarProps {
 const SearchBar = ({ value, onChange }: SearchBarProps) => {
   return (
     <Field>
-      <ButtonGroup>
+      <div className="relative w-full">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
         <Input
-          id="input-button-group"
-          className="rounded-s-xl border-secondary"
-          placeholder="Discover Recipes (e.g., dosa, idli)"
+          id="input-search"
+          className="rounded-xl border-secondary pl-9 pr-10"
+          placeholder="Discover Recipes (ex: appehuli, hashi)"
           value={value}
           onChange={(e) => onChange(e.target.value)}
         />
         {value && (
-          <Button
-            variant="ghost"
-            size="icon"
+          <button
+            type="button"
             onClick={() => onChange("")}
-            className="border border-secondary"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
           >
             <X className="h-4 w-4" />
-          </Button>
+          </button>
         )}
-        <Button variant="outline" className="border-secondary rounded-e-xl">
-          <Search />
-        </Button>
-      </ButtonGroup>
+      </div>
     </Field>
   );
 };

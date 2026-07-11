@@ -4,6 +4,7 @@ import RecipeCard from "@/components/discover/RecipeCard";
 import SearchBar from "@/components/discover/SearchBar";
 import { NoItemsFound } from "@/components/empty-state/NoItemsFound";
 import { APIErrors } from "@/components/error-screens/APIErrors";
+import { FilterTrigger } from "@/components/filter/FilterTrigger";
 import { RecipeGridSkeleton } from "@/components/loading/RecipeCardSkeleton";
 import { Badge } from "@/components/ui/badge";
 import { useGlobalContext } from "@/context/globalContext";
@@ -16,19 +17,7 @@ import {
 import { totalPages } from "@/lib/utilities/helperFunction";
 import { defaultFilters, FilterState, RecipeItem } from "@/types";
 import { DatabaseSearch } from "lucide-react";
-import dynamic from "next/dynamic";
 import { useCallback, useMemo } from "react";
-
-const LazyFilterTrigger = dynamic(
-  () =>
-    import("@/components/filter/FilterTrigger").then(
-      (mod) => mod.FilterTrigger,
-    ),
-  {
-    ssr: false,
-    loading: () => <div className="h-8 w-20 animate-pulse rounded bg-muted" />,
-  },
-);
 
 const Discover = () => {
   const {
@@ -46,7 +35,6 @@ const Discover = () => {
 
   const {
     allRecipes,
-    setAllRecipes,
     handleToggleFavorite,
     onClickRecipeCard,
     loading,
@@ -144,13 +132,6 @@ const Discover = () => {
     setMobileVisibleCount((prev) => prev + MOBILE_LOAD_COUNT);
   }, [setMobileVisibleCount]);
 
-  const handleDelete = useCallback(
-    (id: string) => {
-      setAllRecipes(allRecipes.filter((r) => r._id !== id));
-    },
-    [allRecipes, setAllRecipes],
-  );
-
   return (
     <div className="flex flex-col gap-4 px-6 py-4">
       <div className="flex items-center gap-4 md:gap-0">
@@ -167,7 +148,7 @@ const Discover = () => {
               </Badge>
             ),
           )}
-          <LazyFilterTrigger
+          <FilterTrigger
             filters={filters}
             onApply={handleApplyFilter}
             onClear={handleClearFilter}
@@ -177,7 +158,7 @@ const Discover = () => {
           <SearchBar value={searchQuery} onChange={handleSearchChange} />
         </div>
         <div className="md:hidden">
-          <LazyFilterTrigger
+          <FilterTrigger
             filters={filters}
             onApply={handleApplyFilter}
             onClear={handleClearFilter}
@@ -206,7 +187,6 @@ const Discover = () => {
                 priority={index < 2}
                 onToggleFavorite={handleToggleFavorite}
                 onClickRecipeCard={onClickRecipeCard}
-                onDelete={() => handleDelete(item._id as string)}
               />
             ))
           ) : (
@@ -231,7 +211,6 @@ const Discover = () => {
                 priority={index < 2}
                 onToggleFavorite={handleToggleFavorite}
                 onClickRecipeCard={onClickRecipeCard}
-                onDelete={() => handleDelete(item._id as string)}
               />
             ))
           ) : (

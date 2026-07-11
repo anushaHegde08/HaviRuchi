@@ -1,7 +1,7 @@
-import { NextResponse } from "next/server";
 import connectDB from "@/lib/mongodb";
 import User from "@/models/User";
 import crypto from "crypto";
+import { NextResponse } from "next/server";
 import { Resend } from "resend";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
@@ -36,7 +36,7 @@ export async function POST(req: Request) {
     const verifyUrl = `${process.env.NEXTAUTH_URL}/api/auth/verify-email?token=${emailVerifyToken}`;
 
     await resend.emails.send({
-      from: "HaviRuchi <onboarding@resend.dev>",
+      from: "HaviRuchi <noreply@haviruchi.com>",
       to: email,
       subject: "Verify your HaviRuchi account",
       html: `
@@ -55,7 +55,9 @@ export async function POST(req: Request) {
       `,
     });
 
-    return NextResponse.json({ message: "Verification email sent successfully" });
+    return NextResponse.json({
+      message: "Verification email sent successfully",
+    });
   } catch (error) {
     console.error("Resend verification error:", error);
     return NextResponse.json(

@@ -95,26 +95,56 @@ body {
   color: hsl(var(--primary)) !important;
 }
 
-.scrollbar-thin { scrollbar-width: thin; scrollbar-color: hsl(0 0% 90%) transparent; }
-.scrollbar-thin::-webkit-scrollbar { height: 2px; }
-.scrollbar-thin::-webkit-scrollbar-thumb { 
-  background: hsl(0 0% 90%); 
-  border-radius: 999px; 
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
 }
-.scrollbar-thin::-webkit-scrollbar-track { 
-  background: transparent; 
+.animate-float { animation: float 3s ease-in-out infinite; }
+
+@keyframes pulse-soft {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(239,99,81,0.3); }
+  50% { box-shadow: 0 0 0 6px rgba(239,99,81,0); }
+}
+.animate-pulse-soft { 
+  animation: pulse-soft 2s ease-in-out infinite; 
 }
 
-/* Custom scrollbar utility classes requested */
-.scrollbar-thumb-transparent::-webkit-scrollbar-thumb {
-  background: transparent;
+.btn-shine {
+  position: relative;
+  overflow: hidden;
 }
-.hover\:scrollbar-thumb-gray-200:hover::-webkit-scrollbar-thumb {
-  background: #e5e7eb;
+.btn-shine::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -75%;
+  width: 50%;
+  height: 200%;
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(255,255,255,0.25),
+    transparent
+  );
+  transform: skewX(-20deg);
+  transition: none;
 }
-.scrollbar-thumb-transparent {
-  scrollbar-color: transparent transparent;
+.btn-shine:hover::after {
+  left: 125%;
+  transition: left 0.5s ease;
 }
-.hover\:scrollbar-thumb-gray-200:hover {
-  scrollbar-color: #e5e7eb transparent;
+
+@keyframes slideInLeft {
+  0% { transform: translateX(-50px); opacity: 0; }
+  100% { transform: translateX(0); opacity: 1; }
+}
+
+.animate-slide-in-left {
+  animation: slideInLeft 1s ease-out forwards;
+}
+
+@keyframes letterBounce {
+  0%, 100% { transform: translateY(0); }
+  30% { transform: translateY(-12px); }
+  60% { transform: translateY(-6px); }
 }
