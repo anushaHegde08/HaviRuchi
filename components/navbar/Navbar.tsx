@@ -119,16 +119,16 @@ export function Navbar() {
 
   return (
     <>
-      <header className="h-16 border-b bg-background sticky top-0 px-6 z-50">
-        <div className="flex h-full items-center justify-between">
+      <header className="border-b bg-background sticky top-0 px-6 z-50">
+        <div className="flex items-center justify-between">
           <Link href="/" className="text-2xl font-bold text-primary">
             <Image
               src="/images/HaviRuchi_logo.png"
               alt="HaviRuchi Logo"
-              width={100}
-              height={40}
+              width={90}
+              height={36}
               priority
-              className="w-[60px] md:w-[75px] lg:w-[90px] h-auto"
+              className="h-auto w-[70px] md:w-[80px] lg:w-[90px]"
             />
           </Link>
           {!hideNavItems && (
@@ -165,7 +165,7 @@ export function Navbar() {
       </header>
       {!hideNavItems && (
         <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-background border-t">
-          <div className="flex items-center justify-around h-16">
+          <div className="flex items-center justify-around py-2">
             <NavLinks className="flex flex-col items-center gap-1 text-xs font-medium" />
           </div>
         </nav>

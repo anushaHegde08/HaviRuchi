@@ -1,8 +1,8 @@
-import { NextResponse } from "next/server";
 import connectDB from "@/lib/mongodb";
 import User from "@/models/User";
-import { Resend } from "resend";
 import crypto from "crypto";
+import { NextResponse } from "next/server";
+import { Resend } from "resend";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -26,8 +26,11 @@ export async function POST(req: Request) {
 
     if (!user.password) {
       return NextResponse.json(
-        { error: "This account uses Google sign in. Please sign in with Google." },
-        { status: 400 }
+        {
+          error:
+            "This account uses Google sign in. Please sign in with Google.",
+        },
+        { status: 400 },
       );
     }
 
@@ -42,7 +45,7 @@ export async function POST(req: Request) {
     const resetUrl = `${process.env.NEXTAUTH_URL}/screens/reset-password?token=${resetToken}`;
 
     const result = await resend.emails.send({
-      from: "HaviRuchi <onboarding@resend.dev>",
+      from: "HaviRuchi <noreply@haviruchi.com>",
       to: email,
       subject: "Reset your HaviRuchi password",
       html: `
@@ -64,7 +67,7 @@ export async function POST(req: Request) {
 
     if (result.error) {
       console.error("Resend error:", result.error);
-      // still return generic success message to user for security 
+      // still return generic success message to user for security
       // (don't reveal email sending failures to prevent enumeration)
     }
 

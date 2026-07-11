@@ -21,9 +21,8 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
-import { Typography } from "@/components/ui/typography";
 import { uploadImage } from "@/lib/uploadImage";
-import { CATEGORIES, MAX_DESCRIPTION_LENGTH } from "@/lib/utilities/constatnts";
+import { CATEGORIES } from "@/lib/utilities/constatnts";
 import { capitalizeFirst } from "@/lib/utilities/helperFunction";
 import { cn } from "@/lib/utils";
 import { AddField } from "@/types";
@@ -322,7 +321,7 @@ const RecipeForm = ({
                       <Input
                         id="title"
                         type="text"
-                        placeholder="e.g., Pineapple Gojju"
+                        placeholder="ex: Pineapple Gojju"
                         value={title}
                         className={
                           errors.title
@@ -344,20 +343,11 @@ const RecipeForm = ({
                     </Field>
 
                     <Field>
-                      <FieldLabel htmlFor="description">
-                        Description
-                        <Typography
-                          variant="xsmall"
-                          className="ml-auto text-muted-foreground"
-                        >
-                          {description.length}/{MAX_DESCRIPTION_LENGTH}
-                        </Typography>
-                      </FieldLabel>
+                      <FieldLabel htmlFor="description">Description</FieldLabel>
                       <Textarea
                         id="description"
                         placeholder="Describe your traditional dish..."
                         rows={4}
-                        maxLength={MAX_DESCRIPTION_LENGTH}
                         value={description}
                         className={cn(
                           "text-sm",
@@ -439,7 +429,11 @@ const RecipeForm = ({
                         >
                           <SelectValue placeholder="Select Category" />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent
+                          position="popper"
+                          sideOffset={4}
+                          className="w-[var(--radix-select-trigger-width)]"
+                        >
                           <SelectGroup>
                             {CATEGORIES.filter((c) => c !== "All").map(
                               (cat) => (
@@ -459,8 +453,8 @@ const RecipeForm = ({
                     </Field>
                     <Field>
                       <FieldLabel>Cook Time</FieldLabel>
-                      <div className="flex items-center gap-2">
-                        <div className="flex items-center gap-1">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <div className="flex items-center gap-1 shrink-0">
                           <Button
                             type="button"
                             variant="outline"
@@ -501,12 +495,12 @@ const RecipeForm = ({
                           >
                             <Plus className="h-3 w-3" />
                           </Button>
+                          <span className="text-muted-foreground text-xs ml-1">
+                            Hr
+                          </span>
                         </div>
-                        <span className="text-muted-foreground shrink-0 text-sm">
-                          Hr
-                        </span>
 
-                        <div className="flex items-center gap-1 ml-2">
+                        <div className="flex items-center gap-1 shrink-0">
                           <Button
                             type="button"
                             variant="outline"
@@ -554,10 +548,10 @@ const RecipeForm = ({
                           >
                             <Plus className="h-3 w-3" />
                           </Button>
+                          <span className="text-muted-foreground text-xs ml-1">
+                            Min
+                          </span>
                         </div>
-                        <span className="text-muted-foreground shrink-0 text-sm">
-                          Min
-                        </span>
                       </div>
                       {errors.time && (
                         <p className="text-xs text-destructive mt-1">
@@ -614,7 +608,7 @@ const RecipeForm = ({
                       setIngredients(fields);
                       onFormChange?.();
                     }}
-                    placeholder="e.g., Grated coconut"
+                    placeholder="ex: Grated coconut"
                     label="Ingredients"
                     showMeasurement={true}
                     hasError={!!errors.ingredients}
@@ -634,7 +628,7 @@ const RecipeForm = ({
                       setInstructions(fields);
                       onFormChange?.();
                     }}
-                    placeholder="e.g., Roast the red chilies..."
+                    placeholder="ex: Roast the red chilies..."
                     label="Instructions"
                     hasError={!!errors.instructions}
                     onClearError={() =>

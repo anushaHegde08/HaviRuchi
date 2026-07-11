@@ -1,10 +1,10 @@
-import { NextResponse } from "next/server";
-import bcrypt from "bcryptjs";
 import connectDB from "@/lib/mongodb";
 import User from "@/models/User";
-import { z } from "zod";
+import bcrypt from "bcryptjs";
 import crypto from "crypto";
+import { NextResponse } from "next/server";
 import { Resend } from "resend";
+import { z } from "zod";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -49,7 +49,7 @@ export async function POST(req: Request) {
     const emailVerifyTokenExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
 
     // create user in DB
-    const user = await User.create({
+    await User.create({
       name,
       email,
       password: hashedPassword,
@@ -62,7 +62,7 @@ export async function POST(req: Request) {
     const verifyUrl = `${process.env.NEXTAUTH_URL}/api/auth/verify-email?token=${emailVerifyToken}`;
 
     await resend.emails.send({
-      from: "HaviRuchi <onboarding@resend.dev>",
+      from: "HaviRuchi <noreply@haviruchi.com>",
       to: email,
       subject: "Verify your HaviRuchi account",
       html: `
@@ -82,7 +82,10 @@ export async function POST(req: Request) {
     });
 
     return NextResponse.json(
-      { message: "User created successfully. Please check your email to verify your account." },
+      {
+        message:
+          "User created successfully. Please check your email to verify your account.",
+      },
       { status: 201 },
     );
   } catch (error) {

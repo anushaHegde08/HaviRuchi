@@ -13,6 +13,10 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "lh3.googleusercontent.com", // ← for Google profile images
       },
+      {
+        protocol: "https",
+        hostname: "images.unsplash.com",
+      },
     ],
     minimumCacheTTL: 60 * 60 * 24, // 24 hours
   },
