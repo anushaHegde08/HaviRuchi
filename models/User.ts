@@ -7,6 +7,7 @@ export interface IUser extends Document {
   image?: string;
   phone?: string;
   provider: "credentials" | "google";
+  role: "user" | "admin";
   favorites: mongoose.Types.ObjectId[];
   createdAt: Date;
   isVerified: boolean;
@@ -27,6 +28,11 @@ const UserSchema = new Schema<IUser>(
       type: String,
       enum: ["credentials", "google"],
       default: "credentials",
+    },
+    role: {
+      type: String,
+      enum: ["user", "admin"],
+      default: "user",
     },
     favorites: [
       {
