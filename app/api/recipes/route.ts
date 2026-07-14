@@ -26,9 +26,9 @@ const AddRecipeSchema = z.object({
   ingredients: z
     .array(
       z.object({
-        id: z.number(),
-        value: z.string().min(1, "Ingredient name cannot be empty"),
-        measurement: z.string().min(1, "Measurement cannot be empty"),
+        name: z.string().min(1, "Ingredient name cannot be empty"),
+        quantity: z.number().nullable(),
+        unit: z.string().min(1, "Unit cannot be empty"),
       }),
     )
     .min(1, "Add at least one ingredient"),
@@ -85,6 +85,11 @@ export async function POST(req: Request) {
     if (!dbUser) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
+    
+    // Check if the user is an admin
+    const isAdmin = session.user.role === "admin";
+    const status = isAdmin ? "approved" : "pending";
+
     // save to MongoDB
     const recipe = await Recipe.create({
       title,
@@ -94,10 +99,10 @@ export async function POST(req: Request) {
       difficulty: calculatedDifficulty,
       timeNeeded,
       servings,
-      ingredients: ingredients.map((i) => `${i.value} - ${i.measurement}`),
+      ingredients,
       instructions: instructions.map((i) => i.value),
       isFavorite: false,
-      status: "pending",
+      status,
       createdBy: dbUser._id,
     });
 

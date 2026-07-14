@@ -97,11 +97,7 @@ export async function PUT(
         timeNeeded: body.timeNeeded,
         servings: body.servings,
         image: body.image,
-        // transform same as POST
-        ingredients: body.ingredients.map(
-          (i: { value: string; measurement: string }) =>
-            `${i.value} - ${i.measurement}`,
-        ),
+        ingredients: body.ingredients,
         instructions: body.instructions.map((i: { value: string }) => i.value),
         // Reset status if it was not already pending, unless the user is an admin
         ...(recipe.status !== "pending" && user.role !== "admin" ? { status: "pending" } : {}),
