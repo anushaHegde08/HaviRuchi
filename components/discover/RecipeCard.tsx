@@ -7,6 +7,7 @@ import Image from "next/image";
 import React from "react";
 import RecipeActions from "../recipe/RecipeActions";
 import { RecipeBadges } from "../recipe/RecipeBadges";
+import { RecipeStatusNote } from "../recipe/RecipeStatusNote";
 import {
   Card,
   CardAction,
@@ -83,7 +84,7 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
             className={cn("min-w-0", showActions ? "col-span-5" : "col-span-6")}
           >
             <CardHeader className="p-0">
-              <CardTitle className="text-sm md:text-2xl lg:text-2xl truncate">
+              <CardTitle className="text-sm md:text-2xl lg:text-2xl truncate flex items-center gap-2">
                 {item.title.length > 20
                   ? `${item.title.slice(0, 18)}...`
                   : item.title}
@@ -93,7 +94,7 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
               <CardDescription className="text-xs md:text-xl text-secondary/70 line-clamp-2 md:line-clamp-3 break-words whitespace-pre-wrap">
                 {item.description}
               </CardDescription>
-              {item.createdBy?.name && (
+              {!showActions && item.createdBy?.name && (
                 <p className="text-[10px] md:text-sm text-muted-foreground mt-1">
                   by {item.createdBy.name}
                 </p>
@@ -128,7 +129,16 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
             </div>
           )}
         </div>
-        <RecipeBadges recipe={item} />
+        {showActions ? (
+          item.status && (
+            <RecipeStatusNote
+              status={item.status}
+              reviewNote={item.reviewNote}
+            />
+          )
+        ) : (
+          <RecipeBadges recipe={item} />
+        )}
       </div>
     </Card>
   );
