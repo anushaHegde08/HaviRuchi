@@ -8,7 +8,11 @@ export interface IRecipe extends Document {
   difficulty: "Easy" | "Medium" | "Hard";
   timeNeeded: number;
   servings: number;
-  ingredients: string[];
+  ingredients: {
+    name: string;
+    quantity: number | null;
+    unit: string;
+  }[];
   instructions: string[];
   isFavorite: boolean;
   status: "pending" | "approved" | "rejected";
@@ -30,7 +34,13 @@ const RecipeSchema = new Schema<IRecipe>(
     },
     timeNeeded: { type: Number, required: true },
     servings: { type: Number, required: true },
-    ingredients: [{ type: String, required: true }],
+    ingredients: [
+      {
+        name: { type: String, required: true },
+        quantity: { type: Number, default: null },
+        unit: { type: String, required: true },
+      },
+    ],
     instructions: [{ type: String, required: true }],
     isFavorite: { type: Boolean, default: false },
     status: {
