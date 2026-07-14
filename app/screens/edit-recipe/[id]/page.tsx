@@ -2,8 +2,10 @@
 import { LoadingScreen } from "@/components/loading/LoadingScreen";
 import { PageOverlay } from "@/components/loading/PageOverlay";
 import RecipeForm, { RecipeFormData } from "@/components/recipe/RecipeForm";
+import { IngredientFieldProps } from "@/components/add-recipes/IngredientFields";
 import { useGlobalContext } from "@/context";
 import { AddField } from "@/types";
+import { Ingredient } from "@/types/recipe";
 import { useRouter } from "next/navigation";
 import { use, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
@@ -15,7 +17,7 @@ export default function EditRecipePage({
 }) {
   const { id } = use(params);
   const router = useRouter();
-  const { setAllRecipes, setRecipesFetched, invalidateRecipeDetail } = useGlobalContext();
+  const { setRecipesFetched, invalidateRecipeDetail } = useGlobalContext();
   const [buttonLoading, setButtonLoading] = useState(false);
   const [fetching, setFetching] = useState(true);
   const [initialData, setInitialData] = useState<RecipeFormData | undefined>(
@@ -39,16 +41,18 @@ export default function EditRecipePage({
           return;
         }
 
-        // parse ingredients back to AddField
-        const ingredients: AddField[] = data.ingredients.map(
-          (ing: string, index: number) => {
-            const parts = ing.split(" - ");
+        // parse ingredients back to IngredientFieldProps
+        const ingredients: IngredientFieldProps[] = data.ingredients.map(
+          (ing: Ingredient, index: number) => {
+            const isStandardUnit = ["cup", "tbsp", "tsp", "g", "kg", "ml", "l", "piece", "whole", "pinch", "sprig", "clove", "leaf", "handful", "inch", "to taste"].includes(ing.unit);
             return {
               id: index + 1,
-              value: parts[0] || ing,
-              measurement: parts[1] || "",
+              name: ing.name,
+              quantity: ing.quantity,
+              unit: isStandardUnit ? ing.unit : "Other",
+              customUnit: isStandardUnit ? undefined : ing.unit,
             };
-          },
+          }
         );
 
         const instructions: AddField[] = data.instructions.map(
@@ -83,12 +87,18 @@ export default function EditRecipePage({
   const handleSubmit = async (data: RecipeFormData, totalMinutes: number) => {
     try {
       setButtonLoading(true);
-      const { servings, hours, minutes, ...rest } = data;
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { servings, hours: _hours, minutes: _minutes, ...rest } = data;
       const response = await fetch(`/api/recipes/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...rest,
+          ingredients: data.ingredients.map(i => ({
+            name: i.name,
+            quantity: i.quantity,
+            unit: i.unit === "Other" && i.customUnit ? i.customUnit : i.unit,
+          })),
           timeNeeded: totalMinutes,
           servings: Number(servings),
         }),

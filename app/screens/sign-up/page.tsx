@@ -106,6 +106,7 @@ export default function SignUpPage() {
       }
       toast.success("Verification email resent!");
     } catch (error) {
+      console.error(error);
       toast.error("Something went wrong");
     } finally {
       setResendLoading(false);

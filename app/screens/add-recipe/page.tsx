@@ -8,7 +8,7 @@ import { toast } from "sonner";
 
 const AddRecipe = () => {
   const router = useRouter();
-  const { setAllRecipes, setRecipesFetched } = useGlobalContext();
+  const { setRecipesFetched } = useGlobalContext();
   const [buttonloading, setButtonLoading] = useState(false);
 
   const handleSubmit = async (data: RecipeFormData, totalMinutes: number) => {
@@ -22,7 +22,11 @@ const AddRecipe = () => {
           category: data.category,
           timeNeeded: totalMinutes,
           servings: Number(data.servings),
-          ingredients: data.ingredients,
+          ingredients: data.ingredients.map((i) => ({
+            name: i.name,
+            quantity: i.quantity,
+            unit: i.unit === "Other" && i.customUnit ? i.customUnit : i.unit,
+          })),
           instructions: data.instructions,
           image: data.image,
         }),
