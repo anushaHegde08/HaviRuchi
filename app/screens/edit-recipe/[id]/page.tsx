@@ -15,7 +15,7 @@ export default function EditRecipePage({
 }) {
   const { id } = use(params);
   const router = useRouter();
-  const { setAllRecipes, setRecipesFetched } = useGlobalContext();
+  const { setAllRecipes, setRecipesFetched, invalidateRecipeDetail } = useGlobalContext();
   const [buttonLoading, setButtonLoading] = useState(false);
   const [fetching, setFetching] = useState(true);
   const [initialData, setInitialData] = useState<RecipeFormData | undefined>(
@@ -98,6 +98,7 @@ export default function EditRecipePage({
       if (!response.ok) throw new Error(result.error);
 
       toast.success("Recipe updated successfully!");
+      invalidateRecipeDetail(id as string);
       setRecipesFetched(false);
       router.back();
     } finally {
