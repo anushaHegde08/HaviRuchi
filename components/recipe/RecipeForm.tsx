@@ -1,5 +1,6 @@
 "use client";
 import AddFields from "@/components/add-recipes/AddFields";
+import { IngredientFields, IngredientFieldProps } from "@/components/add-recipes/IngredientFields";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
@@ -40,7 +41,7 @@ export interface RecipeFormData {
   hours: number;
   minutes: number;
   servings: number | "";
-  ingredients: AddField[];
+  ingredients: IngredientFieldProps[];
   instructions: AddField[];
   image?: string;
 }
@@ -78,7 +79,7 @@ const defaultData: RecipeFormData = {
   hours: 0,
   minutes: 10,
   servings: 1,
-  ingredients: [{ id: 1, value: "", measurement: "" }],
+  ingredients: [{ id: 1, name: "", quantity: null, unit: "cup" }],
   instructions: [{ id: 1, value: "" }],
 };
 
@@ -101,7 +102,7 @@ const RecipeForm = ({
   const [hours, setHours] = useState(initialData.hours);
   const [minutes, setMinutes] = useState(initialData.minutes);
   const [servings, setServings] = useState(initialData.servings);
-  const [ingredients, setIngredients] = useState<AddField[]>(
+  const [ingredients, setIngredients] = useState<IngredientFieldProps[]>(
     initialData.ingredients,
   );
   const [instructions, setInstructions] = useState<AddField[]>(
@@ -239,8 +240,8 @@ const RecipeForm = ({
       newErrors.servings = "Servings must be at least 1";
       hasError = true;
     }
-    if (ingredients.some((i) => !i.value.trim() || !i.measurement?.trim())) {
-      newErrors.ingredients = "All ingredient fields must be filled";
+    if (ingredients.some((i) => !i.name.trim() || !i.unit || (i.unit === "Other" && !i.customUnit?.trim()))) {
+      newErrors.ingredients = "All ingredient names and units must be filled";
       hasError = true;
     }
     if (instructions.some((i) => !i.value.trim())) {
@@ -602,15 +603,12 @@ const RecipeForm = ({
 
                 {/* Full width */}
                 <div className="flex flex-col gap-4 mt-6">
-                  <AddFields
+                  <IngredientFields
                     fields={ingredients}
                     onChange={(fields) => {
                       setIngredients(fields);
                       onFormChange?.();
                     }}
-                    placeholder="ex: Grated coconut"
-                    label="Ingredients"
-                    showMeasurement={true}
                     hasError={!!errors.ingredients}
                     onClearError={() =>
                       setErrors((prev) => ({ ...prev, ingredients: "" }))

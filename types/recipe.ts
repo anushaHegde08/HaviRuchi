@@ -25,7 +25,13 @@ export interface AddField {
   measurement?: string;
 }
 
+export interface Ingredient {
+  name: string;
+  quantity: number | null;
+  unit: string;
+}
+
 export interface RecipeDetail extends RecipeItem {
-  ingredients: string[];
+  ingredients: Ingredient[];
   instructions: string[];
 }
