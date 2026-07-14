@@ -1,6 +1,5 @@
 "use client";
 
-import React, { useState } from "react";
 import {
   Popover,
   PopoverContent,
@@ -8,6 +7,7 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { MessageSquareWarning, X } from "lucide-react";
+import { useState } from "react";
 
 interface RecipeStatusNoteProps {
   status: string;
@@ -64,7 +64,7 @@ export function RecipeStatusNote({
               </button>
               <div className="flex flex-col gap-2 pr-4">
                 <h4 className="text-sm font-semibold leading-none text-foreground">
-                  Admin's Note
+                  Admin&apos;s Note
                 </h4>
                 <p className="text-sm text-muted-foreground whitespace-pre-wrap break-words">
                   {reviewNote}

@@ -30,6 +30,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useRecipes } from "@/hooks/useRecipes";
+import { useGlobalContext } from "@/context";
 import { uploadImage } from "@/lib/uploadImage";
 import {
   ArrowRight,
@@ -43,6 +44,7 @@ import {
   Pencil,
   Phone,
   X,
+  ClipboardCheck,
 } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
 import dynamic from "next/dynamic";
@@ -65,6 +67,7 @@ const UserProfile = () => {
 
   const router = useRouter();
   const { favoriteRecipes, loading, setLoading } = useRecipes();
+  const { pendingCount } = useGlobalContext();
 
   const [preview, setPreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -300,6 +303,15 @@ const UserProfile = () => {
     },
   ];
 
+  const adminItems = [
+    {
+      icon: <ClipboardCheck className="h-5 w-5 text-primary" />,
+      label: "Pending Approvals",
+      description: `${pendingCount} recipe${pendingCount === 1 ? '' : 's'} waiting for review`,
+      onClick: () => router.push("/admin/recipes"),
+    },
+  ];
+
   return (
     <>
       {loading || status === "loading" ? (
@@ -504,6 +516,36 @@ const UserProfile = () => {
                 ))}
               </div>
             </div>
+
+            {session?.user?.role === "admin" && (
+              <div className="flex flex-col gap-2">
+                <span className="text-xs font-semibold uppercase text-muted-foreground tracking-widest">
+                  Admin
+                </span>
+                <div className="flex flex-col gap-3">
+                  {adminItems.map((item) => (
+                    <Card
+                      key={item.label}
+                      onClick={item.onClick ?? undefined}
+                      className="flex items-center gap-4 p-4 cursor-pointer hover:bg-muted/50 transition-colors"
+                    >
+                      <div className="bg-primary/10 rounded-full p-2 shrink-0">
+                        {item.icon}
+                      </div>
+                      <div className="flex flex-col flex-1">
+                        <span className="text-sm font-bold">{item.label}</span>
+                        <span className="text-xs text-muted-foreground">
+                          {item.description}
+                        </span>
+                      </div>
+                      <div className="bg-primary/10 rounded-full p-1">
+                        <ChevronRight className="h-4 w-4 text-primary" />
+                      </div>
+                    </Card>
+                  ))}
+                </div>
+              </div>
+            )}
 
             <Button
               onClick={handleLogout}

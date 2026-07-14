@@ -33,7 +33,7 @@ export async function GET(req: Request) {
     // find recipes created by this user
     const recipes = await Recipe.find({ createdBy: user._id })
       .select(
-        "_id title description image category difficulty timeNeeded servings isFavorite createdBy",
+        "_id title description image category difficulty timeNeeded servings isFavorite status reviewNote createdBy",
       )
       .sort({
         createdAt: -1,

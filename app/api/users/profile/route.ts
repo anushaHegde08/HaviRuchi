@@ -70,7 +70,7 @@ export async function PATCH(req: Request) {
     const updatedUser = await User.findOneAndUpdate(
       { email: session.user.email },
       updateData,
-      { new: true }, // return updated document
+      { returnDocument: 'after' }, // return updated document
     );
 
     return NextResponse.json({
