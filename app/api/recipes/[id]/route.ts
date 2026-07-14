@@ -4,6 +4,7 @@ import Recipe from "@/models/Recipe";
 import User from "@/models/User";
 import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
+import { Resend } from "resend";
 
 export const dynamic = "force-dynamic";
 
@@ -21,6 +22,16 @@ export async function GET(
 
     if (!recipe) {
       return NextResponse.json({ error: "Recipe not found" }, { status: 404 });
+    }
+
+    if (recipe.status !== "approved") {
+      const session = await getServerSession(authOptions);
+      const isOwner = session?.user?.id === recipe.createdBy._id.toString();
+      const isAdmin = session?.user?.role === "admin";
+
+      if (!isOwner && !isAdmin) {
+        return NextResponse.json({ error: "Recipe not found" }, { status: 404 });
+      }
     }
 
     return NextResponse.json(recipe);
@@ -92,9 +103,39 @@ export async function PUT(
             `${i.value} - ${i.measurement}`,
         ),
         instructions: body.instructions.map((i: { value: string }) => i.value),
+        // Reset status if it was not already pending, unless the user is an admin
+        ...(recipe.status !== "pending" && user.role !== "admin" ? { status: "pending" } : {}),
       },
       { returnDocument: "after" },
     );
+
+    // Send admin notification if status was reset to pending
+    if (recipe.status !== "pending" && user.role !== "admin") {
+      const adminEmail = process.env.ADMIN_EMAIL;
+      if (!adminEmail) {
+        console.warn("ADMIN_EMAIL is not set in environment variables. Admin notification email skipped.");
+      } else if (!process.env.RESEND_API_KEY) {
+        console.warn("RESEND_API_KEY is not set. Admin notification email skipped.");
+      } else {
+        try {
+          const resend = new Resend(process.env.RESEND_API_KEY);
+          const adminUrl = process.env.NEXTAUTH_URL 
+            ? `${process.env.NEXTAUTH_URL}/admin/recipes` 
+            : 'http://localhost:3000/admin/recipes';
+            
+          const { error } = await resend.emails.send({
+            from: "noreply@haviruchi.com",
+            to: adminEmail,
+            subject: "Resubmitted Recipe Pending Approval",
+            html: `<p>A recipe "<strong>${updatedRecipe.title}</strong>" has been edited and resubmitted by ${user.name} (${user.email}).</p>
+                   <p>Please review and approve or reject it here: <a href="${adminUrl}">Admin Dashboard</a></p>`
+          });
+          if (error) console.error("Resend delivery error for resubmission:", error);
+        } catch (err) {
+          console.error("Failed to send admin email on resubmission", err);
+        }
+      }
+    }
 
     return NextResponse.json(updatedRecipe);
   } catch (error) {
