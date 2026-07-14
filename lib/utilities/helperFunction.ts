@@ -1,5 +1,4 @@
-import { RecipeItem } from "@/types";
-
+import { RecipeItem, Ingredient } from "@/types";
 export const totalPages = (recipes: RecipeItem[], itemsPerPage: number) => {
   return Math.ceil(recipes.length / itemsPerPage);
 };
@@ -14,16 +13,37 @@ export const formatTime = (totalMinutes: number) => {
   return `${hours}H ${mins}M`;
 };
 
+export const generateTimeOptions = () => {
+  const options = [];
+  for (let i = 10; i <= 240; i += 10) {
+    if (i < 60) {
+      options.push({ label: `${i} mins`, value: i });
+    } else {
+      const hrs = Math.floor(i / 60);
+      const mins = i % 60;
+      if (mins === 0) {
+        options.push({ label: `${hrs} hr${hrs > 1 ? "s" : ""}`, value: i });
+      } else {
+        options.push({
+          label: `${hrs} hr${hrs > 1 ? "s" : ""} ${mins} mins`,
+          value: i,
+        });
+      }
+    }
+  }
+  return options;
+};
+
 export const capitalizeFirst = (value: string) => {
   if (!value) return "";
   return value.charAt(0).toUpperCase() + value.slice(1);
 };
 
 export const scaleIngredients = (
-  ingredients: string[],
+  ingredients: Ingredient[],
   originalServings: number,
   targetServings: number
-): string[] => {
+): Ingredient[] => {
   if (originalServings === targetServings || originalServings <= 0) {
     return ingredients;
   }
@@ -31,45 +51,12 @@ export const scaleIngredients = (
   const ratio = targetServings / originalServings;
   
   return ingredients.map(ingredient => {
-    // Current schema stores ingredients as "Name - Measurement"
-    const parts = ingredient.split(" - ");
-    if (parts.length < 2) return ingredient; // No measurement found
-    
-    const name = parts[0];
-    const measurement = parts[1];
-    
-    // Naive scaling: look for leading number (including decimals and fractions)
-    const match = measurement.trim().match(/^(\d+(?:\.\d+)?|\d+\s+\d+\/\d+|\d+\/\d+)\s*(.*)/);
-    
-    if (match) {
-      const quantityStr = match[1];
-      const rest = match[2];
-      
-      let numericValue = 0;
-      if (quantityStr.includes('/')) {
-        const fracParts = quantityStr.split(' ');
-        if (fracParts.length === 2) {
-          const [whole, frac] = fracParts;
-          const [num, den] = frac.split('/');
-          numericValue = parseInt(whole) + parseInt(num) / parseInt(den);
-        } else {
-          const [num, den] = quantityStr.split('/');
-          numericValue = parseInt(num) / parseInt(den);
-        }
-      } else {
-        numericValue = parseFloat(quantityStr);
-      }
-      
-      const scaledValue = numericValue * ratio;
-      // Round to 2 decimals max to avoid floating point issues
-      const formattedValue = Number.isInteger(scaledValue) 
-        ? scaledValue.toString() 
-        : Number(scaledValue.toFixed(2)).toString(); // Will strip trailing zeros naturally after converting to Number
-        
-      return `${name} - ${formattedValue} ${rest}`.trim();
+    if (ingredient.quantity !== null) {
+      return {
+        ...ingredient,
+        quantity: parseFloat((ingredient.quantity * ratio).toFixed(2))
+      };
     }
-    
-    // If no leading number, return original
     return ingredient;
   });
 };
