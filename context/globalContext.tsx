@@ -18,6 +18,7 @@ export interface GlobalContextType {
   toggleFavorite: (id: string) => void;
   recipeDetails: Record<string, RecipeDetail>;
   cacheRecipeDetail: (id: string, recipe: RecipeDetail) => void;
+  invalidateRecipeDetail: (id: string) => void;
   discoverSearchQuery: string;
   setDiscoverSearchQuery: (value: string) => void;
   discoverFilters: FilterState;
@@ -28,6 +29,8 @@ export interface GlobalContextType {
   setDiscoverCurrentPage: (value: number | ((prev: number) => number)) => void;
   discoverMobileVisibleCount: number;
   setDiscoverMobileVisibleCount: (value: number | ((prev: number) => number)) => void;
+  pendingCount: number;
+  setPendingCount: (value: number | ((prev: number) => number)) => void;
 }
 
 export const GlobalContext = createContext<GlobalContextType | undefined>(

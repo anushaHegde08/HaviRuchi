@@ -7,6 +7,17 @@ declare module "next-auth" {
       name: string;
       email: string;
       image?: string;
+      role: "user" | "admin";
     };
+  }
+
+  interface User {
+    role: "user" | "admin";
+  }
+}
+
+declare module "next-auth/adapters" {
+  interface AdapterUser {
+    role: "user" | "admin";
   }
 }

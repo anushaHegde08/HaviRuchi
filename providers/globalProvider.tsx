@@ -19,6 +19,14 @@ export function GlobalProvider({ children }: { children: ReactNode }) {
     setRecipeDetails((prev) => ({ ...prev, [id]: recipe }));
   };
 
+  const invalidateRecipeDetail = (id: string) => {
+    setRecipeDetails((prev) => {
+      const newDetails = { ...prev };
+      delete newDetails[id];
+      return newDetails;
+    });
+  };
+
   const [discoverSearchQuery, setDiscoverSearchQuery] = useState("");
   const [discoverFilters, setDiscoverFilters] =
     useState<FilterState>(defaultFilters);
@@ -27,6 +35,7 @@ export function GlobalProvider({ children }: { children: ReactNode }) {
   const [discoverCurrentPage, setDiscoverCurrentPage] = useState(0);
   const [discoverMobileVisibleCount, setDiscoverMobileVisibleCount] =
     useState(MOBILE_LOAD_COUNT);
+  const [pendingCount, setPendingCount] = useState(0);
 
   const toggleFavorite = (id: string) => {
     setAllRecipes((prev) =>
@@ -55,6 +64,7 @@ export function GlobalProvider({ children }: { children: ReactNode }) {
         toggleFavorite,
         recipeDetails,
         cacheRecipeDetail,
+        invalidateRecipeDetail,
         discoverSearchQuery,
         setDiscoverSearchQuery,
         discoverFilters,
@@ -65,6 +75,8 @@ export function GlobalProvider({ children }: { children: ReactNode }) {
         setDiscoverCurrentPage,
         discoverMobileVisibleCount,
         setDiscoverMobileVisibleCount,
+        pendingCount,
+        setPendingCount,
       }}
     >
       {children}

@@ -51,6 +51,7 @@ export const authOptions: AuthOptions = {
           name: user.name,
           email: user.email,
           image: user.image,
+          role: user.role,
         };
       },
     }),
@@ -99,6 +100,7 @@ export const authOptions: AuthOptions = {
           session.user.name = dbUser.name ?? session.user.name ?? "";
           session.user.email = dbUser.email ?? session.user.email ?? "";
           session.user.image = dbUser.image ?? session.user.image ?? undefined;
+          session.user.role = dbUser.role ?? "user";
         }
       }
       return session;
@@ -112,6 +114,7 @@ export const authOptions: AuthOptions = {
         token.email = user.email;
         token.name = user.name;
         token.picture = user.image as string | null | undefined;
+        token.role = user.role;
       }
 
       // handle manual session updates from the client

@@ -9,11 +9,14 @@ export interface RecipeItem {
   difficulty: string;
   servings: number;
   isFavorite: boolean;
+  status?: "pending" | "approved" | "rejected";
+  reviewNote?: string;
   createdBy?: {
     _id: string;
     name: string;
     email: string;
   };
+  createdAt?: string | Date;
 }
 
 export interface AddField {

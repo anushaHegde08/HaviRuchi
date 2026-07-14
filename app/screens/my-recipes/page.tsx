@@ -61,6 +61,8 @@ const MyRecipes = () => {
         timeNeeded: r.timeNeeded,
         servings: r.servings,
         isFavorite: r.isFavorite,
+        status: r.status,
+        reviewNote: r.reviewNote,
         createdBy: r.createdBy,
       }));
 

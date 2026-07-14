@@ -1,9 +1,10 @@
 import { AppShell } from "@/components/layout/AppShell";
+import React from "react";
 
-export default function ScreensLayout({
+export default function AdminLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return <AppShell>{children}</AppShell>;
 }

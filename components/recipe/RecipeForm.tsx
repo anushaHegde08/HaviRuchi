@@ -77,7 +77,7 @@ const defaultData: RecipeFormData = {
   category: "",
   hours: 0,
   minutes: 10,
-  servings: "",
+  servings: 1,
   ingredients: [{ id: 1, value: "", measurement: "" }],
   instructions: [{ id: 1, value: "" }],
 };

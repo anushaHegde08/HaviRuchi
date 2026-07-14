@@ -11,6 +11,8 @@ export interface IRecipe extends Document {
   ingredients: string[];
   instructions: string[];
   isFavorite: boolean;
+  status: "pending" | "approved" | "rejected";
+  reviewNote?: string | null;
   createdBy: mongoose.Types.ObjectId;
   createdAt: Date;
 }
@@ -31,6 +33,12 @@ const RecipeSchema = new Schema<IRecipe>(
     ingredients: [{ type: String, required: true }],
     instructions: [{ type: String, required: true }],
     isFavorite: { type: Boolean, default: false },
+    status: {
+      type: String,
+      enum: ["pending", "approved", "rejected"],
+      default: "pending",
+    },
+    reviewNote: { type: String, default: null },
     createdBy: {
       type: Schema.Types.ObjectId,
       ref: "User",

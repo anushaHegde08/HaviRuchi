@@ -1,19 +1,7 @@
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import { formatTime } from "@/lib/utilities/helperFunction";
 import { cn } from "@/lib/utils";
 import { RecipeItem } from "@/types";
-import {
-  ChevronsDown,
-  Clock,
-  ForkKnife,
-  Minus,
-  Plus,
-  Users,
-} from "lucide-react";
+import { Clock, ForkKnife } from "lucide-react";
 
 const categoryColors: Record<string, string> = {
   Breakfast: "bg-amber-50 text-amber-700 border-amber-200",
@@ -51,17 +39,13 @@ const getBadges = (recipe: RecipeItem) => [
   },
 ];
 
-export const RecipeBadges = ({
-  recipe,
-}: {
-  recipe: RecipeItem;
-}) => (
-  <div className="flex gap-2 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] pb-1">
+export const RecipeBadges = ({ recipe }: { recipe: RecipeItem }) => (
+  <div className="flex gap-2 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] pb-0.5">
     {getBadges(recipe).map((badge) => (
       <span
         key={badge.label}
         className={cn(
-          "flex flex-shrink-0 items-center gap-1 text-[8px] md:text-base lg:text-lg py-1 px-3 rounded-full border",
+          "flex flex-shrink-0 items-center gap-1 text-[8px] md:text-base lg:text-lg py-0.5 px-2 rounded-full border",
           badge.color,
         )}
       >

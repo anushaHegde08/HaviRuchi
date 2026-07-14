@@ -15,19 +15,22 @@ import {
   Menu,
   PlusCircle,
   UserCircle,
+  ClipboardCheck,
 } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { Button } from "../ui/button";
+import { useGlobalContext } from "@/context";
 
 interface NavItem {
   name: string;
   icon: React.ReactNode;
   href: string;
+  badge?: number;
 }
 
 const NavLinks = ({
@@ -39,7 +42,26 @@ const NavLinks = ({
 }) => {
   const pathname = usePathname();
   const router = useRouter();
-  const { status } = useSession();
+  const { data: session, status } = useSession();
+  const { pendingCount, setPendingCount } = useGlobalContext();
+
+  useEffect(() => {
+    if (session?.user?.role === "admin") {
+      const fetchPendingCount = async () => {
+        try {
+          const res = await fetch("/api/admin/recipes?status=pending");
+          if (res.ok) {
+            const data = await res.json();
+            setPendingCount(data.length);
+          }
+        } catch (error) {
+          console.error("Failed to fetch pending count", error);
+        }
+      };
+      
+      void fetchPendingCount();
+    }
+  }, [session?.user?.role, setPendingCount]);
 
   const dynamicNavItems: NavItem[] = [
     {
@@ -47,6 +69,16 @@ const NavLinks = ({
       icon: <BookOpen className="h-5 w-5" />,
       href: "/screens/discover",
     },
+    ...(session?.user?.role === "admin"
+      ? [
+          {
+            name: "Approvals",
+            icon: <ClipboardCheck className="h-5 w-5" />,
+            href: "/admin/recipes",
+            badge: pendingCount,
+          },
+        ]
+      : []),
     {
       name: "Add",
       icon: <PlusCircle className="h-5 w-5" />,
@@ -97,7 +129,14 @@ const NavLinks = ({
             className,
           )}
         >
-          {item.icon}
+          <div className="relative flex items-center justify-center">
+            {item.icon}
+            {item.badge !== undefined && item.badge > 0 && (
+              <span className="absolute -top-1.5 -right-2 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[9px] font-bold text-white">
+                {item.badge}
+              </span>
+            )}
+          </div>
           <span>{item.name}</span>
         </Link>
       ))}

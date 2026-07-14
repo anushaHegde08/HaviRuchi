@@ -128,7 +128,7 @@ export default function RecipeDetailPage({
             <div className="px-4 md:px-0 py-6 flex flex-col gap-6">
               <div className="flex flex-col gap-3">
                 <div className="flex flex-col md:flex-row gap-4 justify-between">
-                  <h1 className="text-2xl md:text-3xl font-bold text-primary">
+                  <h1 className="whitespace-pre-wrap break-words text-2xl md:text-3xl font-bold text-primary min-w-0 flex-1">
                     {recipe.title}
                   </h1>
                   <RecipeActions
@@ -156,12 +156,17 @@ export default function RecipeDetailPage({
               </div>
               <hr />
               <div className="flex flex-col gap-2">
-                <RecipeIngredients 
-                  ingredients={scaleIngredients(recipe.ingredients, recipe.servings, selectedServings)} 
+                <RecipeIngredients
+                  ingredients={scaleIngredients(
+                    recipe.ingredients,
+                    recipe.servings,
+                    selectedServings,
+                  )}
                 />
                 {selectedServings !== recipe.servings && (
                   <p className="text-sm text-muted-foreground italic mt-2">
-                    Ingredient quantities adjusted for {selectedServings} servings.
+                    Ingredient quantities adjusted for {selectedServings}{" "}
+                    servings.
                   </p>
                 )}
               </div>
