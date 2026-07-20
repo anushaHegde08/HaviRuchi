@@ -5,6 +5,7 @@ export interface IRecipe extends Document {
   description: string;
   image?: string;
   category: string;
+  subCategory?: string | null;
   difficulty: "Easy" | "Medium" | "Hard";
   timeNeeded: number;
   servings: number;
@@ -27,6 +28,7 @@ const RecipeSchema = new Schema<IRecipe>(
     description: { type: String, required: true },
     image: { type: String },
     category: { type: String, required: true },
+    subCategory: { type: String, default: null },
     difficulty: {
       type: String,
       enum: ["Easy", "Medium", "Hard"],
@@ -57,6 +59,10 @@ const RecipeSchema = new Schema<IRecipe>(
   },
   { timestamps: true },
 );
+
+if (process.env.NODE_ENV !== "production") {
+  delete mongoose.models.Recipe;
+}
 
 export default mongoose.models.Recipe ||
   mongoose.model<IRecipe>("Recipe", RecipeSchema);

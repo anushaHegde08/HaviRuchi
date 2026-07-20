@@ -1,10 +1,10 @@
 const CATEGORIES = [
   "All",
   "Breakfast",
-  "Lunch",
-  "Dinner",
+  "Main Course",
+  "Sides",
   "Snack",
-  "Dessert",
+  "Sweets",
   "Beverage",
 ];
 const DIFFICULTIES = ["Easy", "Medium", "Hard"];
