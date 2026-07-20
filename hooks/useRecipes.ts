@@ -18,7 +18,7 @@ export const useRecipes = () => {
     setRecipesFetched,
     favoritesFetched,
     setFavoritesFetched,
-    discoverFilters,
+    panelFilters,
   } = useGlobalContext();
   const [loading, setLoading] = useState(!recipesFetched);
   const [error, setError] = useState<string | null>(null);
@@ -166,7 +166,7 @@ export const useRecipes = () => {
   }, [fetchRecipes, recipesFetched, favoritesFetched]);
 
   const sortRecipes = useCallback((recipes: RecipeItem[]) => {
-    const sortBy = discoverFilters?.sortBy || "newest";
+    const sortBy = panelFilters?.sortBy || "newest";
     return [...recipes].sort((a, b) => {
       switch (sortBy) {
         case "newest": return b._id.localeCompare(a._id);
@@ -186,7 +186,7 @@ export const useRecipes = () => {
         default: return 0;
       }
     });
-  }, [discoverFilters?.sortBy]);
+  }, [panelFilters?.sortBy]);
 
   const sortedAllRecipes = sortRecipes(allRecipes);
   const favoriteRecipes = sortRecipes(allRecipes.filter((r) => r.isFavorite));
