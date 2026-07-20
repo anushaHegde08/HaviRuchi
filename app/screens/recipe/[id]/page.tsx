@@ -71,6 +71,7 @@ export default function RecipeDetailPage({
           description: data.description,
           image: getRecipeImage(data.image, data.category),
           category: data.category,
+          subCategory: data.subCategory,
           difficulty: data.difficulty,
           timeNeeded: data.timeNeeded,
           servings: data.servings,
@@ -142,7 +143,7 @@ export default function RecipeDetailPage({
                   {recipe.description}
                 </p>
                 <div className="flex flex-col md:flex-row gap-2 md:items-center">
-                  <RecipeBadges recipe={recipe} />
+                  <RecipeBadges recipe={recipe} variant="detail" />
                   <ServingsSelector
                     selectedServings={selectedServings}
                     onServingsChange={setSelectedServings}

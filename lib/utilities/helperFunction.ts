@@ -60,3 +60,10 @@ export const scaleIngredients = (
     return ingredient;
   });
 };
+
+export const getRecipeDisplayCategory = (recipe: { category: string; subCategory?: string | null }) => {
+  if (recipe.subCategory && recipe.subCategory.trim() !== "" && recipe.subCategory !== "Other") {
+    return recipe.subCategory;
+  }
+  return recipe.category;
+};

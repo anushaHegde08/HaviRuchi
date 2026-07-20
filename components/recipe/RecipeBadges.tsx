@@ -1,14 +1,17 @@
-import { formatTime } from "@/lib/utilities/helperFunction";
+import {
+  formatTime,
+  getRecipeDisplayCategory,
+} from "@/lib/utilities/helperFunction";
 import { cn } from "@/lib/utils";
 import { RecipeItem } from "@/types";
 import { Clock, ForkKnife } from "lucide-react";
 
 const categoryColors: Record<string, string> = {
   Breakfast: "bg-amber-50 text-amber-700 border-amber-200",
-  Lunch: "bg-green-50 text-green-700 border-green-200",
-  Dinner: "bg-blue-50 text-blue-700 border-blue-200",
+  "Main Course": "bg-green-50 text-green-700 border-green-200",
+  Sides: "bg-blue-50 text-blue-700 border-blue-200",
   Snack: "bg-orange-50 text-orange-700 border-orange-200",
-  Dessert: "bg-pink-50 text-pink-700 border-pink-200",
+  Sweets: "bg-pink-50 text-pink-700 border-pink-200",
   Beverage: "bg-cyan-50 text-cyan-700 border-cyan-200",
 };
 
@@ -18,9 +21,17 @@ const difficultyColors: Record<string, string> = {
   Hard: "bg-red-50 text-red-700 border-red-200",
 };
 
-const getBadges = (recipe: RecipeItem) => [
+const getBadges = (recipe: RecipeItem, variant: "card" | "detail") => [
   {
-    label: recipe.category,
+    label:
+      variant === "detail"
+        ? recipe.subCategory &&
+          recipe.subCategory.trim() !== "" &&
+          recipe.subCategory !== "Other" &&
+          !recipe.subCategory.includes(":Other")
+          ? `${recipe.category} - ${recipe.subCategory}`
+          : recipe.category
+        : getRecipeDisplayCategory(recipe),
     color:
       categoryColors[recipe.category] ??
       "bg-muted text-muted-foreground border-border",
@@ -39,9 +50,15 @@ const getBadges = (recipe: RecipeItem) => [
   },
 ];
 
-export const RecipeBadges = ({ recipe }: { recipe: RecipeItem }) => (
+export const RecipeBadges = ({
+  recipe,
+  variant = "card",
+}: {
+  recipe: RecipeItem;
+  variant?: "card" | "detail";
+}) => (
   <div className="flex gap-2 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] pb-0.5">
-    {getBadges(recipe).map((badge) => (
+    {getBadges(recipe, variant).map((badge) => (
       <span
         key={badge.label}
         className={cn(
