@@ -93,6 +93,7 @@ export async function PUT(
         title: body.title,
         description: body.description,
         category: body.category,
+        subCategory: body.subCategory || null,
         difficulty: calculatedDifficulty,
         timeNeeded: body.timeNeeded,
         servings: body.servings,

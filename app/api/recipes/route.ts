@@ -21,6 +21,7 @@ const AddRecipeSchema = z.object({
     ),
   image: z.string().optional(),
   category: z.string().min(1, "Category is required"),
+  subCategory: z.string().nullable().optional(),
   timeNeeded: z.number().min(10, "Minimum cook time is 10 minutes"),
   servings: z.number().min(1, "Servings must be at least 1"),
   ingredients: z
@@ -41,6 +42,16 @@ const AddRecipeSchema = z.object({
       }),
     )
     .min(1, "Add at least one instruction"),
+}).superRefine((data, ctx) => {
+  if (data.category === "Main Course" || data.category === "Sides") {
+    if (!data.subCategory || data.subCategory.trim() === "") {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "SubCategory is required for this category",
+        path: ["subCategory"],
+      });
+    }
+  }
 });
 
 export async function POST(req: Request) {
@@ -69,6 +80,7 @@ export async function POST(req: Request) {
       title,
       description,
       category,
+      subCategory,
       timeNeeded,
       servings,
       ingredients,
@@ -96,6 +108,7 @@ export async function POST(req: Request) {
       description,
       image: result.data.image || "",
       category,
+      subCategory: subCategory || null,
       difficulty: calculatedDifficulty,
       timeNeeded,
       servings,
@@ -151,6 +164,7 @@ export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
     const search = searchParams.get("search") || "";
     const categories = searchParams.getAll("category");
+    const subCategories = searchParams.getAll("subCategory");
     const difficulties = searchParams.getAll("difficulty");
     const maxTime = searchParams.get("maxTime");
 
@@ -163,6 +177,7 @@ export async function GET(req: Request) {
           { title: { $regex: search, $options: "i" } }, // case insensitive
           { description: { $regex: search, $options: "i" } },
           { category: { $regex: search, $options: "i" } },
+          { subCategory: { $regex: search, $options: "i" } },
         ],
       });
     }
@@ -170,6 +185,44 @@ export async function GET(req: Request) {
     // filter by categories
     if (categories.length > 0) {
       andConditions.push({ category: { $in: categories } });
+    }
+
+    // filter by subCategories
+    if (subCategories.length > 0) {
+      if (subCategories.some((s: string) => s === "Other" || s === "Main Course:Other" || s === "Sides:Other")) {
+        const namedSubs = subCategories.filter(
+          (s: string) => s !== "Other" && s !== "Main Course:Other" && s !== "Sides:Other"
+        );
+        const MAIN_COURSE_SUBCATS = ["Tambuli", "Sasive", "Majjige Huli", "Hasi", "Sambar", "Saaru"];
+        const SIDES_SUBCATS = ["Chatni", "Palya", "Kosambari"];
+        
+        const isMainCourseOther = subCategories.includes("Main Course:Other");
+        const isSidesOther = subCategories.includes("Sides:Other");
+        
+        const excludeList = isMainCourseOther ? MAIN_COURSE_SUBCATS : (isSidesOther ? SIDES_SUBCATS : [...MAIN_COURSE_SUBCATS, ...SIDES_SUBCATS]);
+        const otherCondition: any = {
+          subCategory: { $nin: [...excludeList, null, ""], $exists: true }
+        };
+        
+        if (isMainCourseOther) {
+          otherCondition.category = "Main Course";
+        } else if (isSidesOther) {
+          otherCondition.category = "Sides";
+        }
+
+        if (namedSubs.length > 0) {
+          andConditions.push({
+            $or: [
+              { subCategory: { $in: namedSubs } },
+              otherCondition,
+            ],
+          });
+        } else {
+          andConditions.push(otherCondition);
+        }
+      } else {
+        andConditions.push({ subCategory: { $in: subCategories } });
+      }
     }
 
     // filter by difficulties
@@ -189,7 +242,7 @@ export async function GET(req: Request) {
 
     const recipes = await Recipe.find(query)
       .select(
-        "_id title description image category difficulty timeNeeded servings isFavorite status createdBy",
+        "_id title description image category subCategory difficulty timeNeeded servings isFavorite status createdBy",
       )
       .populate("createdBy", "name email")
       .sort({ createdAt: -1 })
