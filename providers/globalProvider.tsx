@@ -1,7 +1,7 @@
 "use client";
 import { GlobalContext } from "@/context/globalContext";
 import { MOBILE_LOAD_COUNT } from "@/lib/utilities/constatnts";
-import { defaultFilters, FilterState, RecipeDetail, RecipeItem } from "@/types";
+import { BadgeFilterState, PanelFilterState, FilterMode, defaultBadgeFilters, defaultPanelFilters, RecipeDetail, RecipeItem } from "@/types";
 import { ReactNode, useState } from "react";
 
 export function GlobalProvider({ children }: { children: ReactNode }) {
@@ -26,12 +26,10 @@ export function GlobalProvider({ children }: { children: ReactNode }) {
       return newDetails;
     });
   };
-
   const [discoverSearchQuery, setDiscoverSearchQuery] = useState("");
-  const [discoverFilters, setDiscoverFilters] =
-    useState<FilterState>(defaultFilters);
-  const [discoverSelectedCategory, setDiscoverSelectedCategory] =
-    useState("All");
+  const [activeFilterMode, setActiveFilterMode] = useState<FilterMode>("none");
+  const [badgeFilters, setBadgeFilters] = useState<BadgeFilterState>(defaultBadgeFilters);
+  const [panelFilters, setPanelFilters] = useState<PanelFilterState>(defaultPanelFilters);
   const [discoverCurrentPage, setDiscoverCurrentPage] = useState(0);
   const [discoverMobileVisibleCount, setDiscoverMobileVisibleCount] =
     useState(MOBILE_LOAD_COUNT);
@@ -67,10 +65,12 @@ export function GlobalProvider({ children }: { children: ReactNode }) {
         invalidateRecipeDetail,
         discoverSearchQuery,
         setDiscoverSearchQuery,
-        discoverFilters,
-        setDiscoverFilters,
-        discoverSelectedCategory,
-        setDiscoverSelectedCategory,
+        activeFilterMode,
+        setActiveFilterMode,
+        badgeFilters,
+        setBadgeFilters,
+        panelFilters,
+        setPanelFilters,
         discoverCurrentPage,
         setDiscoverCurrentPage,
         discoverMobileVisibleCount,

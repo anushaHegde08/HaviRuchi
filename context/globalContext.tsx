@@ -1,5 +1,5 @@
 "use client";
-import { FilterState, RecipeDetail, RecipeItem } from "@/types";
+import { BadgeFilterState, PanelFilterState, FilterMode, RecipeDetail, RecipeItem } from "@/types";
 import { createContext, useContext } from "react";
 
 export interface GlobalContextType {
@@ -21,10 +21,13 @@ export interface GlobalContextType {
   invalidateRecipeDetail: (id: string) => void;
   discoverSearchQuery: string;
   setDiscoverSearchQuery: (value: string) => void;
-  discoverFilters: FilterState;
-  setDiscoverFilters: (value: FilterState | ((prev: FilterState) => FilterState)) => void;
-  discoverSelectedCategory: string;
-  setDiscoverSelectedCategory: (value: string) => void;
+  activeFilterMode: FilterMode;
+  setActiveFilterMode: (value: FilterMode | ((prev: FilterMode) => FilterMode)) => void;
+  badgeFilters: BadgeFilterState;
+  setBadgeFilters: (value: BadgeFilterState | ((prev: BadgeFilterState) => BadgeFilterState)) => void;
+  panelFilters: PanelFilterState;
+  setPanelFilters: (value: PanelFilterState | ((prev: PanelFilterState) => PanelFilterState)) => void;
+
   discoverCurrentPage: number;
   setDiscoverCurrentPage: (value: number | ((prev: number) => number)) => void;
   discoverMobileVisibleCount: number;
