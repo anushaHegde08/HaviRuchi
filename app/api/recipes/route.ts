@@ -5,54 +5,56 @@ import Recipe from "@/models/Recipe";
 import User from "@/models/User";
 import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
-import { z } from "zod";
 import { Resend } from "resend";
+import { z } from "zod";
 
 export const dynamic = "force-dynamic";
 
-const AddRecipeSchema = z.object({
-  title: z.string().min(1, "Title is required"),
-  description: z
-    .string()
-    .min(1, "Description is required")
-    .max(
-      MAX_DESCRIPTION_LENGTH,
-      `Description must be ${MAX_DESCRIPTION_LENGTH} characters or less`,
-    ),
-  image: z.string().optional(),
-  category: z.string().min(1, "Category is required"),
-  subCategory: z.string().nullable().optional(),
-  timeNeeded: z.number().min(10, "Minimum cook time is 10 minutes"),
-  servings: z.number().min(1, "Servings must be at least 1"),
-  ingredients: z
-    .array(
-      z.object({
-        name: z.string().min(1, "Ingredient name cannot be empty"),
-        quantity: z.number().nullable(),
-        unit: z.string().min(1, "Unit cannot be empty"),
-      }),
-    )
-    .min(1, "Add at least one ingredient"),
-  instructions: z
-    .array(
-      z.object({
-        id: z.number(),
-        value: z.string().min(1, "Instruction cannot be empty"),
-        measurement: z.string().optional(),
-      }),
-    )
-    .min(1, "Add at least one instruction"),
-}).superRefine((data, ctx) => {
-  if (data.category === "Main Course" || data.category === "Sides") {
-    if (!data.subCategory || data.subCategory.trim() === "") {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: "SubCategory is required for this category",
-        path: ["subCategory"],
-      });
+const AddRecipeSchema = z
+  .object({
+    title: z.string().min(1, "Title is required"),
+    description: z
+      .string()
+      .min(1, "Description is required")
+      .max(
+        MAX_DESCRIPTION_LENGTH,
+        `Description must be ${MAX_DESCRIPTION_LENGTH} characters or less`,
+      ),
+    image: z.string().optional(),
+    category: z.string().min(1, "Category is required"),
+    subCategory: z.string().nullable().optional(),
+    timeNeeded: z.number().min(10, "Minimum cook time is 10 minutes"),
+    servings: z.number().min(1, "Servings must be at least 1"),
+    ingredients: z
+      .array(
+        z.object({
+          name: z.string().min(1, "Ingredient name cannot be empty"),
+          quantity: z.number().nullable(),
+          unit: z.string().min(1, "Unit cannot be empty"),
+        }),
+      )
+      .min(1, "Add at least one ingredient"),
+    instructions: z
+      .array(
+        z.object({
+          id: z.number(),
+          value: z.string().min(1, "Instruction cannot be empty"),
+          measurement: z.string().optional(),
+        }),
+      )
+      .min(1, "Add at least one instruction"),
+  })
+  .superRefine((data, ctx) => {
+    if (data.category === "Main Course" || data.category === "Sides") {
+      if (!data.subCategory || data.subCategory.trim() === "") {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "SubCategory is required for this category",
+          path: ["subCategory"],
+        });
+      }
     }
-  }
-});
+  });
 
 export async function POST(req: Request) {
   try {
@@ -97,7 +99,7 @@ export async function POST(req: Request) {
     if (!dbUser) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
-    
+
     // Check if the user is an admin
     const isAdmin = session.user.role === "admin";
     const status = isAdmin ? "approved" : "pending";
@@ -121,24 +123,29 @@ export async function POST(req: Request) {
 
     const adminEmail = process.env.ADMIN_EMAIL;
     if (!adminEmail) {
-      console.warn("ADMIN_EMAIL is not set in environment variables. Admin notification email skipped.");
+      console.warn(
+        "ADMIN_EMAIL is not set in environment variables. Admin notification email skipped.",
+      );
     } else if (!process.env.RESEND_API_KEY) {
-      console.warn("RESEND_API_KEY is not set. Admin notification email skipped.");
+      console.warn(
+        "RESEND_API_KEY is not set. Admin notification email skipped.",
+      );
     } else {
       try {
         const resend = new Resend(process.env.RESEND_API_KEY);
-        const adminUrl = process.env.NEXTAUTH_URL 
-          ? `${process.env.NEXTAUTH_URL}/admin/recipes` 
-          : 'http://localhost:3000/admin/recipes';
-          
+        const adminUrl = process.env.NEXTAUTH_URL
+          ? `${process.env.NEXTAUTH_URL}/admin/recipes`
+          : "http://localhost:3000/admin/recipes";
+
         const { error } = await resend.emails.send({
           from: "noreply@haviruchi.com",
           to: adminEmail,
           subject: "New Recipe Pending Approval",
           html: `<p>A new recipe "<strong>${title}</strong>" has been submitted by ${dbUser.name} (${dbUser.email}).</p>
-                 <p>Please review and approve or reject it here: <a href="${adminUrl}">Admin Dashboard</a></p>`
+                 <p>Please review and approve or reject it here: <a href="${adminUrl}">Admin Dashboard</a></p>`,
         });
-        if (error) console.error("Resend delivery error for new recipe:", error);
+        if (error)
+          console.error("Resend delivery error for new recipe:", error);
       } catch (err) {
         console.error("Failed to send admin email", err);
       }
@@ -189,21 +196,38 @@ export async function GET(req: Request) {
 
     // filter by subCategories
     if (subCategories.length > 0) {
-      if (subCategories.some((s: string) => s === "Other" || s === "Main Course:Other" || s === "Sides:Other")) {
+      if (
+        subCategories.some(
+          (s: string) =>
+            s === "Other" || s === "Main Course:Other" || s === "Sides:Other",
+        )
+      ) {
         const namedSubs = subCategories.filter(
-          (s: string) => s !== "Other" && s !== "Main Course:Other" && s !== "Sides:Other"
+          (s: string) =>
+            s !== "Other" && s !== "Main Course:Other" && s !== "Sides:Other",
         );
-        const MAIN_COURSE_SUBCATS = ["Tambuli", "Sasive", "Majjige Huli", "Hasi", "Sambar", "Saaru"];
+        const MAIN_COURSE_SUBCATS = [
+          "Tambuli",
+          "Sasive",
+          "Majjige Huli",
+          "Hasi",
+          "Sambar",
+          "Saaru",
+        ];
         const SIDES_SUBCATS = ["Chatni", "Palya", "Kosambari"];
-        
+
         const isMainCourseOther = subCategories.includes("Main Course:Other");
         const isSidesOther = subCategories.includes("Sides:Other");
-        
-        const excludeList = isMainCourseOther ? MAIN_COURSE_SUBCATS : (isSidesOther ? SIDES_SUBCATS : [...MAIN_COURSE_SUBCATS, ...SIDES_SUBCATS]);
-        const otherCondition: any = {
-          subCategory: { $nin: [...excludeList, null, ""], $exists: true }
+
+        const excludeList = isMainCourseOther
+          ? MAIN_COURSE_SUBCATS
+          : isSidesOther
+            ? SIDES_SUBCATS
+            : [...MAIN_COURSE_SUBCATS, ...SIDES_SUBCATS];
+        const otherCondition: Record<string, unknown> = {
+          subCategory: { $nin: [...excludeList, null, ""], $exists: true },
         };
-        
+
         if (isMainCourseOther) {
           otherCondition.category = "Main Course";
         } else if (isSidesOther) {
@@ -212,10 +236,7 @@ export async function GET(req: Request) {
 
         if (namedSubs.length > 0) {
           andConditions.push({
-            $or: [
-              { subCategory: { $in: namedSubs } },
-              otherCondition,
-            ],
+            $or: [{ subCategory: { $in: namedSubs } }, otherCondition],
           });
         } else {
           andConditions.push(otherCondition);
