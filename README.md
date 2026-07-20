@@ -40,7 +40,7 @@ _(coming soon)_
   - Cook time in hours and minutes
   - Difficulty levels (Easy, Medium, Hard)
   - No. of servings
-  - Category support (Breakfast, Lunch, Dinner, Snack, Dessert, Beverage)
+  - Category support (Breakfast, Main Course, Sides, Snack, Sweets, Beverage)
 
 - 🔍 **Discover**
   - Search recipes by title, description and category
