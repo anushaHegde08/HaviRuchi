@@ -8,15 +8,31 @@ export type SortOption =
   | "alpha_asc" 
   | "alpha_desc";
 
-export interface FilterState {
+export interface BadgeFilterState {
+  category: string;
+  subCategory: string;
+}
+
+export interface PanelFilterState {
   categories: string[];
+  mainCourseSubCategories: string[];
+  sidesSubCategories: string[];
   difficulties: string[];
   maxTime: number;
   sortBy: SortOption;
 }
 
-export const defaultFilters: FilterState = {
+export type FilterMode = "badge" | "panel" | "none";
+
+export const defaultBadgeFilters: BadgeFilterState = {
+  category: "All",
+  subCategory: "All",
+};
+
+export const defaultPanelFilters: PanelFilterState = {
   categories: [],
+  mainCourseSubCategories: [],
+  sidesSubCategories: [],
   difficulties: [],
   maxTime: 120,
   sortBy: "newest",

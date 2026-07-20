@@ -66,6 +66,7 @@ export default function EditRecipePage({
           title: data.title,
           description: data.description,
           category: data.category,
+          subCategory: data.subCategory,
           hours: Math.floor(data.timeNeeded / 60),
           minutes: data.timeNeeded % 60 || 10,
           servings: data.servings,

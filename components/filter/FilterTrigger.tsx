@@ -8,14 +8,14 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { defaultFilters, FilterState } from "@/types/filter";
+import { defaultPanelFilters, PanelFilterState } from "@/types/filter";
 import { FilterIcon } from "lucide-react";
 import { useState } from "react";
 import { FilterBody } from "./FilterBody";
 
 interface FilterTriggerProps {
-  filters: FilterState;
-  onApply: (filters: FilterState) => void;
+  filters: PanelFilterState;
+  onApply: (filters: PanelFilterState) => void;
   onClear: () => void;
 }
 
@@ -24,7 +24,7 @@ export const FilterTrigger = ({
   onApply,
   onClear,
 }: FilterTriggerProps) => {
-  const [localFilters, setLocalFilters] = useState<FilterState>(filters);
+  const [localFilters, setLocalFilters] = useState<PanelFilterState>(filters);
   const [open, setOpen] = useState(false);
 
   const handleApply = () => {
@@ -34,7 +34,7 @@ export const FilterTrigger = ({
 
   const handleClear = () => {
     onClear();
-    setLocalFilters(defaultFilters);
+    setLocalFilters(defaultPanelFilters);
     setOpen(false);
   };
 

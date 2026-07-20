@@ -20,6 +20,7 @@ const AddRecipe = () => {
           title: data.title,
           description: data.description,
           category: data.category,
+          subCategory: data.subCategory,
           timeNeeded: totalMinutes,
           servings: Number(data.servings),
           ingredients: data.ingredients.map((i) => ({

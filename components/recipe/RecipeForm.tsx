@@ -38,6 +38,7 @@ export interface RecipeFormData {
   title: string;
   description: string;
   category: string;
+  subCategory?: string;
   hours: number;
   minutes: number;
   servings: number | "";
@@ -76,6 +77,7 @@ const defaultData: RecipeFormData = {
   description: "",
   image: "",
   category: "",
+  subCategory: "",
   hours: 0,
   minutes: 10,
   servings: 1,
@@ -99,6 +101,16 @@ const RecipeForm = ({
   const [title, setTitle] = useState(initialData.title);
   const [description, setDescription] = useState(initialData.description);
   const [category, setCategory] = useState(initialData.category);
+  const [subCategory, setSubCategory] = useState(
+    ["Tambuli", "Sasive", "Majjige Huli", "Hasi", "Sambar", "Saaru", "Chatni", "Palya", "Kosambari", ""].includes(initialData.subCategory || "")
+      ? (initialData.subCategory || "")
+      : "Other"
+  );
+  const [customSubCategory, setCustomSubCategory] = useState(
+    ["Tambuli", "Sasive", "Majjige Huli", "Hasi", "Sambar", "Saaru", "Chatni", "Palya", "Kosambari", ""].includes(initialData.subCategory || "")
+      ? ""
+      : (initialData.subCategory || "")
+  );
   const [hours, setHours] = useState(initialData.hours);
   const [minutes, setMinutes] = useState(initialData.minutes);
   const [servings, setServings] = useState(initialData.servings);
@@ -119,6 +131,7 @@ const RecipeForm = ({
     description: "",
     imageFile: "",
     category: "",
+    subCategory: "",
     time: "",
     servings: "",
     ingredients: "",
@@ -132,6 +145,7 @@ const RecipeForm = ({
       description: "",
       imageFile: "",
       category: "",
+      subCategory: "",
       time: "",
       servings: "",
       ingredients: "",
@@ -232,6 +246,12 @@ const RecipeForm = ({
       newErrors.category = "Please select a category";
       hasError = true;
     }
+    if ((category === "Main Course" || category === "Sides")) {
+      if (!subCategory || (subCategory === "Other" && !customSubCategory.trim())) {
+        newErrors.subCategory = "Please specify a subcategory";
+        hasError = true;
+      }
+    }
     if (hours === 0 && minutes < 10) {
       newErrors.time = "Minimum cook time is 10 minutes";
       hasError = true;
@@ -274,6 +294,7 @@ const RecipeForm = ({
           title,
           description,
           category,
+          subCategory: subCategory === "Other" ? customSubCategory : subCategory,
           hours,
           minutes,
           servings,
@@ -414,6 +435,10 @@ const RecipeForm = ({
                       <Select
                         value={category}
                         onValueChange={(val) => {
+                          if (val !== category) {
+                            setSubCategory("");
+                            setCustomSubCategory("");
+                          }
                           setCategory(val);
                           onFormChange?.();
                           if (errors.category)
@@ -452,6 +477,76 @@ const RecipeForm = ({
                         </p>
                       )}
                     </Field>
+                    {(category === "Main Course" || category === "Sides") && (
+                      <Field>
+                        <FieldLabel htmlFor="subCategory">Subcategory</FieldLabel>
+                        <div className="flex flex-col gap-2">
+                          <Select
+                            value={subCategory}
+                            onValueChange={(val) => {
+                              setSubCategory(val);
+                              onFormChange?.();
+                              if (errors.subCategory)
+                                setErrors((prev) => ({ ...prev, subCategory: "" }));
+                            }}
+                          >
+                            <SelectTrigger
+                              id="subCategory"
+                              className={
+                                errors.subCategory
+                                  ? "border-destructive focus-visible:ring-destructive"
+                                  : ""
+                              }
+                            >
+                              <SelectValue placeholder="Select Subcategory" />
+                            </SelectTrigger>
+                            <SelectContent
+                              position="popper"
+                              sideOffset={4}
+                              className="w-[var(--radix-select-trigger-width)]"
+                            >
+                              <SelectGroup>
+                                {(category === "Main Course"
+                                  ? ["Tambuli", "Sasive", "Majjige Huli", "Hasi", "Sambar", "Saaru", "Other"]
+                                  : category === "Sides"
+                                  ? ["Chatni", "Palya", "Kosambari", "Other"]
+                                  : []
+                                ).map(
+                                  (subCat) => (
+                                    <SelectItem key={subCat} value={subCat}>
+                                      {subCat}
+                                    </SelectItem>
+                                  ),
+                                )}
+                              </SelectGroup>
+                            </SelectContent>
+                          </Select>
+                          
+                          {subCategory === "Other" && (
+                            <Input
+                              placeholder="Enter custom subcategory"
+                              value={customSubCategory}
+                              onChange={(e) => {
+                                setCustomSubCategory(capitalizeFirst(e.target.value));
+                                onFormChange?.();
+                                if (errors.subCategory)
+                                  setErrors((prev) => ({ ...prev, subCategory: "" }));
+                              }}
+                              className={
+                                errors.subCategory && !customSubCategory.trim()
+                                  ? "border-destructive focus-visible:ring-destructive"
+                                  : ""
+                              }
+                            />
+                          )}
+                        </div>
+                        {errors.subCategory && (
+                          <p className="text-xs text-destructive">
+                            {errors.subCategory}
+                          </p>
+                        )}
+                      </Field>
+                    )}
                     <Field>
                       <FieldLabel>Cook Time</FieldLabel>
                       <div className="flex flex-wrap items-center gap-2">
