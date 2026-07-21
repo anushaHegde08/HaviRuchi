@@ -38,4 +38,8 @@ yarn-error.log*
 
 # typescript
 *.tsbuildinfo
+
+# recipe data
+scripts/recipeData/
+scripts/insert-batch*.ts
 next-env.d.ts
