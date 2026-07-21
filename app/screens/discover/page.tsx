@@ -109,7 +109,7 @@ const Discover = () => {
           recipe.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
           (recipe.subCategory && recipe.subCategory.toLowerCase().includes(searchQuery.toLowerCase()));
 
-        const MAIN_COURSE_SUBCATS = ["Tambuli", "Sasive", "Majjige Huli", "Hasi", "Sambar", "Saaru"];
+        const MAIN_COURSE_SUBCATS = ["Tambuli", "Sasive", "Majjige Huli", "Hashi", "Sambar", "Saaru"];
         const SIDES_SUBCATS = ["Chatni", "Palya", "Kosambari"];
 
         let categoryMatch = true;
@@ -204,7 +204,7 @@ const Discover = () => {
               { label: "Tambuli", value: "Tambuli" },
               { label: "Sasive", value: "Sasive" },
               { label: "Majjige Huli", value: "Majjige Huli" },
-              { label: "Hasi", value: "Hasi" },
+              { label: "Hashi", value: "Hashi" },
               { label: "Sambar", value: "Sambar" },
               { label: "Saaru", value: "Saaru" },
               { label: "Other", value: "Main Course:Other" },
