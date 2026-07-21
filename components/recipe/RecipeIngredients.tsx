@@ -48,7 +48,7 @@ const renderIngredient = (ing: Ingredient) => {
     }
   }
   
-  if (displayUnit === "piece" || displayUnit === "pieces" || displayUnit === "whole") {
+  if (displayUnit === "whole") {
      return `${name} - ${qtyStr}`.trim();
   }
   

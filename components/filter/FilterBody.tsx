@@ -68,7 +68,7 @@ export const FilterBody = ({ filters, onChange }: FilterBodyProps) => (
                   { label: "Tambuli", value: "Tambuli" },
                   { label: "Sasive", value: "Sasive" },
                   { label: "Majjige Huli", value: "Majjige Huli" },
-                  { label: "Hasi", value: "Hasi" },
+                  { label: "Hashi", value: "Hashi" },
                   { label: "Sambar", value: "Sambar" },
                   { label: "Saaru", value: "Saaru" },
                   { label: "Other", value: "Main Course:Other" },

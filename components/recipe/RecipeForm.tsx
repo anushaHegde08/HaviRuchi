@@ -102,12 +102,12 @@ const RecipeForm = ({
   const [description, setDescription] = useState(initialData.description);
   const [category, setCategory] = useState(initialData.category);
   const [subCategory, setSubCategory] = useState(
-    ["Tambuli", "Sasive", "Majjige Huli", "Hasi", "Sambar", "Saaru", "Chatni", "Palya", "Kosambari", ""].includes(initialData.subCategory || "")
+    ["Tambuli", "Sasive", "Majjige Huli", "Hashi", "Sambar", "Saaru", "Chatni", "Palya", "Kosambari", ""].includes(initialData.subCategory || "")
       ? (initialData.subCategory || "")
       : "Other"
   );
   const [customSubCategory, setCustomSubCategory] = useState(
-    ["Tambuli", "Sasive", "Majjige Huli", "Hasi", "Sambar", "Saaru", "Chatni", "Palya", "Kosambari", ""].includes(initialData.subCategory || "")
+    ["Tambuli", "Sasive", "Majjige Huli", "Hashi", "Sambar", "Saaru", "Chatni", "Palya", "Kosambari", ""].includes(initialData.subCategory || "")
       ? ""
       : (initialData.subCategory || "")
   );
@@ -507,7 +507,7 @@ const RecipeForm = ({
                             >
                               <SelectGroup>
                                 {(category === "Main Course"
-                                  ? ["Tambuli", "Sasive", "Majjige Huli", "Hasi", "Sambar", "Saaru", "Other"]
+                                  ? ["Tambuli", "Sasive", "Majjige Huli", "Hashi", "Sambar", "Saaru", "Other"]
                                   : category === "Sides"
                                   ? ["Chatni", "Palya", "Kosambari", "Other"]
                                   : []

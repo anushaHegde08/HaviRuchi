@@ -210,7 +210,7 @@ export async function GET(req: Request) {
           "Tambuli",
           "Sasive",
           "Majjige Huli",
-          "Hasi",
+          "Hashi",
           "Sambar",
           "Saaru",
         ];
